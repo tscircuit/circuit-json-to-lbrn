@@ -1,6 +1,7 @@
 {
   "name": "circuit-json-to-lbrn",
   "main": "dist/index.js",
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
     "build": "tsup-node ./lib/index.ts --dts --format esm"
@@ -8,9 +9,14 @@
   "devDependencies": {
     "@types/bun": "latest",
     "bun-match-svg": "^0.0.14",
+    "circuit-json": "^0.0.316",
+    "circuit-to-svg": "^0.0.271",
     "tsup": "^8.5.1"
   },
   "peerDependencies": {
     "typescript": "^5"
+  },
+  "dependencies": {
+    "lbrnts": "^0.0.1"
   }
 }
