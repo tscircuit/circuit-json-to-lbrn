@@ -9,6 +9,7 @@
     "format:check": "biome format ."
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.3.6",
     "@types/bun": "latest",
     "bun-match-svg": "^0.0.14",
     "circuit-json": "^0.0.316",
