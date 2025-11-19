@@ -4,7 +4,9 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "build": "tsup-node ./lib/index.ts --dts --format esm"
+    "build": "tsup-node ./lib/index.ts --dts --format esm",
+    "format": "biome format --write .",
+    "format:check": "biome format ."
   },
   "devDependencies": {
     "@types/bun": "latest",
