@@ -53,8 +53,8 @@ export const convertCircuitJsonToLbrn = (
     addPcbTrace(trace, ctx)
   }
 
-  // Create a union of all the net geoms, and add to project
-
+  // Draw each individual shape geometry as a ShapePath
+  // We're doing this to make it easier to inspect shapes
   for (const net of Object.keys(connMap.netMap)) {
     const netGeoms = ctx.netGeoms.get(net)!
 
@@ -62,29 +62,55 @@ export const convertCircuitJsonToLbrn = (
       continue
     }
 
-    let union = netGeoms[0]!
-    if (union instanceof Box) {
-      union = new Polygon(union)
-    }
-    for (const geom of netGeoms.slice(1)) {
-      if (geom instanceof Polygon) {
-        union = BooleanOperations.unify(union, geom)
-      } else if (geom instanceof Box) {
-        union = BooleanOperations.unify(union, new Polygon(geom))
-      }
-    }
+    for (const geom of netGeoms) {
+      // Convert Box to Polygon if needed
+      const polygon = geom instanceof Box ? new Polygon(geom) : geom
 
-    // Convert the polygon to verts and prims
-    const { verts, prims } = polygonToShapePathData(union)
+      // Convert the polygon to verts and prims
+      const { verts, prims } = polygonToShapePathData(polygon)
 
-    project.children.push(
-      new ShapePath({
-        cutIndex: copperCutSetting.index,
-        verts,
-        prims,
-        isClosed: false,
-      }),
-    )
+      project.children.push(
+        new ShapePath({
+          cutIndex: copperCutSetting.index,
+          verts,
+          prims,
+          isClosed: false,
+        }),
+      )
+    }
   }
+
+  // // Create a union of all the net geoms, and add to project
+  // for (const net of Object.keys(connMap.netMap)) {
+  //   const netGeoms = ctx.netGeoms.get(net)!
+
+  //   if (netGeoms.length === 0) {
+  //     continue
+  //   }
+
+  //   let union = netGeoms[0]!
+  //   if (union instanceof Box) {
+  //     union = new Polygon(union)
+  //   }
+  //   for (const geom of netGeoms.slice(1)) {
+  //     if (geom instanceof Polygon) {
+  //       union = BooleanOperations.unify(union, geom)
+  //     } else if (geom instanceof Box) {
+  //       union = BooleanOperations.unify(union, new Polygon(geom))
+  //     }
+  //   }
+
+  //   // Convert the polygon to verts and prims
+  //   const { verts, prims } = polygonToShapePathData(union)
+
+  //   project.children.push(
+  //     new ShapePath({
+  //       cutIndex: copperCutSetting.index,
+  //       verts,
+  //       prims,
+  //       isClosed: false,
+  //     }),
+  //   )
+  // }
   return project
 }
