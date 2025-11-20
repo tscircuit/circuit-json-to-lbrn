@@ -7,7 +7,7 @@
     "moduleDetection": "force",
     "jsx": "react-jsx",
     "allowJs": true,
-    "types": ["./types.d.ts"],
+    "types": ["bun-types", "./types.d.ts"],
 
     "resolveJsonModule": false,
 
