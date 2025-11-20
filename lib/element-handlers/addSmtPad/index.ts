@@ -8,7 +8,8 @@ export const addSmtPad = (smtPad: PcbSmtPad, ctx: ConvertContext) => {
       addRectSmtPad(smtPad, ctx)
       break
     }
+    default: {
+      throw new Error(`Unknown smt pad shape: ${smtPad.shape}`)
+    }
   }
-
-  throw new Error(`Unknown smt pad shape: ${smtPad.shape}`)
 }
