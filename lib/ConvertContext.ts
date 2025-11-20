@@ -1,6 +1,6 @@
 import type { CircuitJsonUtilObjects } from "@tscircuit/circuit-json-util"
 import type { CutSetting, LightBurnProject } from "lbrnts"
-import type { AnyShape, Polygon } from "@flatten-js/core"
+import type { AnyShape, Box, Polygon } from "@flatten-js/core"
 import type { ConnectivityMap } from "circuit-json-to-connectivity-map"
 
 export type ConnectivityMapKey = string
@@ -13,5 +13,5 @@ export interface ConvertContext {
 
   connMap: ConnectivityMap
 
-  netGeoms: Map<ConnectivityMapKey, Polygon[]>
+  netGeoms: Map<ConnectivityMapKey, Array<Polygon | Box>>
 }

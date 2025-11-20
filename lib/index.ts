@@ -61,18 +61,27 @@ export const convertCircuitJsonToLbrn = (
       continue
     }
 
+    console.log(netGeoms)
+
     let union = netGeoms[0]!
+    if (union instanceof Box) {
+      union = new Polygon(union)
+    }
     for (const geom of netGeoms.slice(1)) {
-      union = BooleanOperations.unify(union, geom!)
+      if (geom instanceof Polygon) {
+        union = BooleanOperations.unify(union, geom)
+      } else if (geom instanceof Box) {
+        union = BooleanOperations.unify(union, new Polygon(geom))
+      }
     }
 
-    // project.children.push(
-    //   new ShapePath({
-    //     cutIndex: copperCutSetting.index,
-    //     verts: [],
-    //     prims: [],
-    //   }),
-    // )
+    project.children.push(
+      new ShapePath({
+        cutIndex: copperCutSetting.index,
+        verts: [],
+        prims: [],
+      }),
+    )
   }
 
   return project
