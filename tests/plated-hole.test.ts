@@ -10,6 +10,9 @@ test("plated hole generates circular path", () => {
       width: 100,
       height: 100,
       center: { x: 0, y: 0 },
+      thickness: 1.6,
+      num_layers: 2,
+      material: "fr4",
     },
     {
       type: "pcb_plated_hole",
@@ -29,11 +32,15 @@ test("plated hole generates circular path", () => {
   expect(project.children.length).toBe(2)
 
   // First child should be CutSetting
-  const cutSetting = project.children[0]
+  const cutSetting = project.children.find(
+    (child) => child.token === "CutSetting",
+  )!
   expect(cutSetting.token).toBe("CutSetting")
 
   // Second child should be ShapePath (the plated hole)
-  const shapePath = project.children[1]
+  const shapePath = project.children.find(
+    (child) => child.token === "Shape.Path",
+  )!
   expect(shapePath.token).toBe("Shape.Path")
 
   // Verify the shape path has the expected properties
@@ -46,18 +53,18 @@ test("plated hole generates circular path", () => {
     // Should have 5 vertices (4 bezier curve points + 1 to close)
     const vertsLength = (shapePath as any).verts?.length
     const primsLength = (shapePath as any).prims?.length
-    expect(vertsLength).toBe(5);
-    expect(primsLength).toBe(4);
+    expect(vertsLength).toBe(5)
+    expect(primsLength).toBe(4)
 
     // Verify all primitives are bezier curves
-    const prims = (shapePath as any).prims || [];
+    const prims = (shapePath as any).prims || []
     for (const prim of prims) {
-      expect(prim.type).toBe(1); // 1 = BezierTo
+      expect(prim.type).toBe(1) // 1 = BezierTo
     }
 
     // Verify the circle is centered at (10, 20) with radius 1
-    const firstVert = (shapePath as any).verts?.[0];
-    expect(firstVert?.x).toBeCloseTo(11, 5); // 10 + 1 (radius)
-    expect(firstVert?.y).toBeCloseTo(20, 5);
+    const firstVert = (shapePath as any).verts?.[0]
+    expect(firstVert?.x).toBeCloseTo(11, 5) // 10 + 1 (radius)
+    expect(firstVert?.y).toBeCloseTo(20, 5)
   }
 })
