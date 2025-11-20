@@ -3,6 +3,7 @@ import { convertCircuitJsonToPcbSvg } from "circuit-to-svg"
 import { generateLightBurnSvg } from "lbrnts"
 import { convertCircuitJsonToLbrn } from "../../lib"
 import { stackSvgsVertically } from "stack-svgs"
+import type { SourceTrace } from "circuit-json"
 
 /**
  * This test demonstrates a bug where standalone traces (traces not connected
@@ -26,6 +27,7 @@ test("single-trace", async () => {
     {
       type: "pcb_trace",
       pcb_trace_id: "trace_1",
+      source_trace_id: "trace_1",
       route: [
         {
           x: -5,
@@ -41,6 +43,12 @@ test("single-trace", async () => {
         },
       ],
     },
+    {
+      type: "source_trace",
+      source_trace_id: "trace_2",
+      connected_source_net_ids: [],
+      connected_source_port_ids: [],
+    } as SourceTrace,
   ]
 
   const pcbSvg = await convertCircuitJsonToPcbSvg(circuitJson)
