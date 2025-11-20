@@ -366,164 +366,24 @@
     "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net2"
   },
   {
-    "type": "source_net",
-    "source_net_id": "test_fixture_net_conn_1763662028781",
-    "name": "NET1",
-    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net14"
-  },
-  {
-    "type": "source_net",
-    "source_net_id": "test_fixture_auto_net_0",
-    "name": "net_C1",
-    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net9"
-  },
-  {
-    "type": "source_net",
-    "source_net_id": "test_fixture_auto_net_1",
-    "name": "net_X18",
-    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net8"
-  },
-  {
-    "type": "source_net",
-    "source_net_id": "test_fixture_auto_net_2",
-    "name": "net_C18",
-    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net10"
-  },
-  {
-    "type": "source_net",
-    "source_net_id": "test_fixture_auto_net_3",
-    "name": "net_X17",
-    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net7"
-  },
-  {
-    "type": "source_net",
-    "source_net_id": "test_fixture_auto_net_4",
-    "name": "net_C17",
-    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net11"
-  },
-  {
-    "type": "source_net",
-    "source_net_id": "test_fixture_auto_net_5",
-    "name": "net_X16",
-    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net6"
-  },
-  {
-    "type": "source_net",
-    "source_net_id": "test_fixture_auto_net_6",
-    "name": "net_C16",
-    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net12"
-  },
-  {
-    "type": "source_net",
-    "source_net_id": "test_fixture_auto_net_7",
-    "name": "net_X15",
-    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net5"
-  },
-  {
-    "type": "source_net",
-    "source_net_id": "test_fixture_auto_net_8",
-    "name": "net_C15",
-    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net13"
-  },
-  {
-    "type": "source_net",
-    "source_net_id": "test_fixture_auto_net_9",
-    "name": "net_X14",
-    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net4"
-  },
-  {
-    "type": "source_net",
-    "source_net_id": "test_fixture_auto_net_10",
-    "name": "net_X1",
-    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net0"
-  },
-  {
-    "type": "source_net",
-    "source_net_id": "test_fixture_auto_net_11",
-    "name": "net_C6",
-    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net16"
-  },
-  {
-    "type": "source_net",
-    "source_net_id": "test_fixture_auto_net_12",
-    "name": "net_C8",
-    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net17"
-  },
-  {
-    "type": "source_net",
-    "source_net_id": "test_fixture_auto_net_13",
-    "name": "net_C9",
-    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net18"
-  },
-  {
-    "type": "source_net",
-    "source_net_id": "test_fixture_auto_net_14",
-    "name": "net_C2",
-    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net19"
-  },
-  {
-    "type": "source_net",
-    "source_net_id": "test_fixture_auto_net_15",
-    "name": "net_C5",
-    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net20"
-  },
-  {
-    "type": "source_net",
-    "source_net_id": "test_fixture_auto_net_16",
-    "name": "net_C12",
-    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net21"
-  },
-  {
-    "type": "source_net",
-    "source_net_id": "test_fixture_auto_net_17",
-    "name": "net_C4",
-    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net22"
-  },
-  {
-    "type": "source_net",
-    "source_net_id": "test_fixture_auto_net_18",
-    "name": "net_C7",
-    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net23"
-  },
-  {
-    "type": "source_net",
-    "source_net_id": "test_fixture_auto_net_19",
-    "name": "net_X13",
-    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net3"
-  },
-  {
-    "type": "source_net",
-    "source_net_id": "test_fixture_auto_net_20",
-    "name": "net_X2",
-    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net1"
-  },
-  {
-    "type": "source_net",
-    "source_net_id": "test_fixture_auto_net_21",
-    "name": "net_C10",
-    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net25"
-  },
-  {
-    "type": "source_net",
-    "source_net_id": "test_fixture_auto_net_22",
-    "name": "net_C13",
-    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net26"
-  },
-  {
-    "type": "source_net",
-    "source_net_id": "test_fixture_auto_net_23",
-    "name": "net_X12",
-    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net2"
-  },
-  {
     "type": "source_trace",
     "source_trace_id": "test_fixture_trace_0",
     "connected_source_port_ids": [
       "test_fixture_port_17",
       "test_fixture_port_18",
-      "test_fixture_port_31"
+      "test_fixture_port_31",
+      "test_fixture_inner_port_11",
+      "test_fixture_inner_port_12",
+      "test_fixture_inner_port_25",
+      "test_fixture_inner_port_33",
+      "test_fixture_inner_port_41",
+      "test_fixture_inner_port_66",
+      "test_fixture_inner_port_77",
+      "test_fixture_inner_port_82",
+      "test_fixture_inner_port_83",
+      "test_fixture_inner_port_85"
     ],
-    "connected_source_net_ids": ["test_fixture_net_conn_1763662028781"],
+    "connected_source_net_ids": ["test_fixture_net_conn_1763676130650"],
     "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net14"
   },
   {
@@ -817,9 +677,19 @@
     "port_hints": ["X1"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_11",
+    "name": "C3_X1_Y1",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1011,
+    "port_hints": ["C3_X1_Y1"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net14"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_11",
-    "source_port_id": "unconnected_source_port_11",
+    "source_port_id": "test_fixture_inner_port_11",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": -3.5,
     "y": 3.5,
@@ -839,9 +709,19 @@
     "port_hints": ["C3_X1_Y1"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_12",
+    "name": "C14_X2_Y1",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1012,
+    "port_hints": ["C14_X2_Y1"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net14"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_12",
-    "source_port_id": "unconnected_source_port_12",
+    "source_port_id": "test_fixture_inner_port_12",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": -2.5,
     "y": 3.5,
@@ -861,9 +741,19 @@
     "port_hints": ["C14_X2_Y1"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_13",
+    "name": "C6_X3_Y1",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1013,
+    "port_hints": ["C6_X3_Y1"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net16"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_13",
-    "source_port_id": "unconnected_source_port_13",
+    "source_port_id": "test_fixture_inner_port_13",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": -1.5,
     "y": 3.5,
@@ -883,9 +773,19 @@
     "port_hints": ["C6_X3_Y1"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_14",
+    "name": "C8_X4_Y1",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1014,
+    "port_hints": ["C8_X4_Y1"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net17"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_14",
-    "source_port_id": "unconnected_source_port_14",
+    "source_port_id": "test_fixture_inner_port_14",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": -0.5,
     "y": 3.5,
@@ -905,9 +805,19 @@
     "port_hints": ["C8_X4_Y1"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_15",
+    "name": "C9_X5_Y1",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1015,
+    "port_hints": ["C9_X5_Y1"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net18"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_15",
-    "source_port_id": "unconnected_source_port_15",
+    "source_port_id": "test_fixture_inner_port_15",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": 0.5,
     "y": 3.5,
@@ -927,9 +837,19 @@
     "port_hints": ["C9_X5_Y1"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_16",
+    "name": "C6_X6_Y1",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1016,
+    "port_hints": ["C6_X6_Y1"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net16"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_16",
-    "source_port_id": "unconnected_source_port_16",
+    "source_port_id": "test_fixture_inner_port_16",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": 1.5,
     "y": 3.5,
@@ -949,9 +869,19 @@
     "port_hints": ["C6_X6_Y1"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_17",
+    "name": "C18_X7_Y1",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1017,
+    "port_hints": ["C18_X7_Y1"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net10"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_17",
-    "source_port_id": "unconnected_source_port_17",
+    "source_port_id": "test_fixture_inner_port_17",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": 2.5,
     "y": 3.5,
@@ -971,9 +901,19 @@
     "port_hints": ["C18_X7_Y1"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_18",
+    "name": "C8_X8_Y1",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1018,
+    "port_hints": ["C8_X8_Y1"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net17"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_18",
-    "source_port_id": "unconnected_source_port_18",
+    "source_port_id": "test_fixture_inner_port_18",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": 3.5,
     "y": 3.5,
@@ -1037,9 +977,19 @@
     "port_hints": ["C2"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_21",
+    "name": "C8_X1_Y2",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1021,
+    "port_hints": ["C8_X1_Y2"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net17"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_21",
-    "source_port_id": "unconnected_source_port_21",
+    "source_port_id": "test_fixture_inner_port_21",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": -3.5,
     "y": 2.5,
@@ -1059,9 +1009,19 @@
     "port_hints": ["C8_X1_Y2"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_22",
+    "name": "C6_X2_Y2",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1022,
+    "port_hints": ["C6_X2_Y2"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net16"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_22",
-    "source_port_id": "unconnected_source_port_22",
+    "source_port_id": "test_fixture_inner_port_22",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": -2.5,
     "y": 2.5,
@@ -1081,9 +1041,19 @@
     "port_hints": ["C6_X2_Y2"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_23",
+    "name": "C5_X3_Y2",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1023,
+    "port_hints": ["C5_X3_Y2"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net20"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_23",
-    "source_port_id": "unconnected_source_port_23",
+    "source_port_id": "test_fixture_inner_port_23",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": -1.5,
     "y": 2.5,
@@ -1103,9 +1073,19 @@
     "port_hints": ["C5_X3_Y2"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_24",
+    "name": "C12_X4_Y2",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1024,
+    "port_hints": ["C12_X4_Y2"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net21"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_24",
-    "source_port_id": "unconnected_source_port_24",
+    "source_port_id": "test_fixture_inner_port_24",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": -0.5,
     "y": 2.5,
@@ -1125,9 +1105,19 @@
     "port_hints": ["C12_X4_Y2"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_25",
+    "name": "C3_X5_Y2",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1025,
+    "port_hints": ["C3_X5_Y2"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net14"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_25",
-    "source_port_id": "unconnected_source_port_25",
+    "source_port_id": "test_fixture_inner_port_25",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": 0.5,
     "y": 2.5,
@@ -1147,9 +1137,19 @@
     "port_hints": ["C3_X5_Y2"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_26",
+    "name": "C18_X6_Y2",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1026,
+    "port_hints": ["C18_X6_Y2"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net10"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_26",
-    "source_port_id": "unconnected_source_port_26",
+    "source_port_id": "test_fixture_inner_port_26",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": 1.5,
     "y": 2.5,
@@ -1169,9 +1169,19 @@
     "port_hints": ["C18_X6_Y2"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_27",
+    "name": "C4_X7_Y2",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1027,
+    "port_hints": ["C4_X7_Y2"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net22"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_27",
-    "source_port_id": "unconnected_source_port_27",
+    "source_port_id": "test_fixture_inner_port_27",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": 2.5,
     "y": 2.5,
@@ -1191,9 +1201,19 @@
     "port_hints": ["C4_X7_Y2"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_28",
+    "name": "C7_X8_Y2",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1028,
+    "port_hints": ["C7_X8_Y2"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net23"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_28",
-    "source_port_id": "unconnected_source_port_28",
+    "source_port_id": "test_fixture_inner_port_28",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": 3.5,
     "y": 2.5,
@@ -1257,9 +1277,19 @@
     "port_hints": ["X2"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_31",
+    "name": "C6_X1_Y3",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1031,
+    "port_hints": ["C6_X1_Y3"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net16"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_31",
-    "source_port_id": "unconnected_source_port_31",
+    "source_port_id": "test_fixture_inner_port_31",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": -3.5,
     "y": 1.5,
@@ -1279,9 +1309,19 @@
     "port_hints": ["C6_X1_Y3"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_32",
+    "name": "C7_X2_Y3",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1032,
+    "port_hints": ["C7_X2_Y3"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net23"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_32",
-    "source_port_id": "unconnected_source_port_32",
+    "source_port_id": "test_fixture_inner_port_32",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": -2.5,
     "y": 1.5,
@@ -1301,9 +1341,19 @@
     "port_hints": ["C7_X2_Y3"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_33",
+    "name": "C11_X3_Y3",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1033,
+    "port_hints": ["C11_X3_Y3"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net14"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_33",
-    "source_port_id": "unconnected_source_port_33",
+    "source_port_id": "test_fixture_inner_port_33",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": -1.5,
     "y": 1.5,
@@ -1323,9 +1373,19 @@
     "port_hints": ["C11_X3_Y3"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_34",
+    "name": "C16_X4_Y3",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1034,
+    "port_hints": ["C16_X4_Y3"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net12"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_34",
-    "source_port_id": "unconnected_source_port_34",
+    "source_port_id": "test_fixture_inner_port_34",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": -0.5,
     "y": 1.5,
@@ -1345,9 +1405,19 @@
     "port_hints": ["C16_X4_Y3"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_35",
+    "name": "C7_X5_Y3",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1035,
+    "port_hints": ["C7_X5_Y3"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net23"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_35",
-    "source_port_id": "unconnected_source_port_35",
+    "source_port_id": "test_fixture_inner_port_35",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": 0.5,
     "y": 1.5,
@@ -1367,9 +1437,19 @@
     "port_hints": ["C7_X5_Y3"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_36",
+    "name": "C15_X6_Y3",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1036,
+    "port_hints": ["C15_X6_Y3"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net13"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_36",
-    "source_port_id": "unconnected_source_port_36",
+    "source_port_id": "test_fixture_inner_port_36",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": 1.5,
     "y": 1.5,
@@ -1389,9 +1469,19 @@
     "port_hints": ["C15_X6_Y3"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_37",
+    "name": "C2_X7_Y3",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1037,
+    "port_hints": ["C2_X7_Y3"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net19"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_37",
-    "source_port_id": "unconnected_source_port_37",
+    "source_port_id": "test_fixture_inner_port_37",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": 2.5,
     "y": 1.5,
@@ -1411,9 +1501,19 @@
     "port_hints": ["C2_X7_Y3"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_38",
+    "name": "C10_X8_Y3",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1038,
+    "port_hints": ["C10_X8_Y3"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net25"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_38",
-    "source_port_id": "unconnected_source_port_38",
+    "source_port_id": "test_fixture_inner_port_38",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": 3.5,
     "y": 1.5,
@@ -1477,9 +1577,19 @@
     "port_hints": ["C3"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_41",
+    "name": "C11_X1_Y4",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1041,
+    "port_hints": ["C11_X1_Y4"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net14"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_41",
-    "source_port_id": "unconnected_source_port_41",
+    "source_port_id": "test_fixture_inner_port_41",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": -3.5,
     "y": 0.5,
@@ -1499,9 +1609,19 @@
     "port_hints": ["C11_X1_Y4"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_42",
+    "name": "C7_X2_Y4",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1042,
+    "port_hints": ["C7_X2_Y4"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net23"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_42",
-    "source_port_id": "unconnected_source_port_42",
+    "source_port_id": "test_fixture_inner_port_42",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": -2.5,
     "y": 0.5,
@@ -1521,9 +1641,19 @@
     "port_hints": ["C7_X2_Y4"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_43",
+    "name": "C17_X3_Y4",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1043,
+    "port_hints": ["C17_X3_Y4"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net11"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_43",
-    "source_port_id": "unconnected_source_port_43",
+    "source_port_id": "test_fixture_inner_port_43",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": -1.5,
     "y": 0.5,
@@ -1543,9 +1673,19 @@
     "port_hints": ["C17_X3_Y4"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_44",
+    "name": "C13_X4_Y4",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1044,
+    "port_hints": ["C13_X4_Y4"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net26"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_44",
-    "source_port_id": "unconnected_source_port_44",
+    "source_port_id": "test_fixture_inner_port_44",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": -0.5,
     "y": 0.5,
@@ -1565,9 +1705,19 @@
     "port_hints": ["C13_X4_Y4"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_45",
+    "name": "C12_X5_Y4",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1045,
+    "port_hints": ["C12_X5_Y4"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net21"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_45",
-    "source_port_id": "unconnected_source_port_45",
+    "source_port_id": "test_fixture_inner_port_45",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": 0.5,
     "y": 0.5,
@@ -1587,9 +1737,19 @@
     "port_hints": ["C12_X5_Y4"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_46",
+    "name": "C10_X6_Y4",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1046,
+    "port_hints": ["C10_X6_Y4"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net25"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_46",
-    "source_port_id": "unconnected_source_port_46",
+    "source_port_id": "test_fixture_inner_port_46",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": 1.5,
     "y": 0.5,
@@ -1609,9 +1769,19 @@
     "port_hints": ["C10_X6_Y4"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_47",
+    "name": "C16_X7_Y4",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1047,
+    "port_hints": ["C16_X7_Y4"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net12"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_47",
-    "source_port_id": "unconnected_source_port_47",
+    "source_port_id": "test_fixture_inner_port_47",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": 2.5,
     "y": 0.5,
@@ -1631,9 +1801,19 @@
     "port_hints": ["C16_X7_Y4"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_48",
+    "name": "C8_X8_Y4",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1048,
+    "port_hints": ["C8_X8_Y4"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net17"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_48",
-    "source_port_id": "unconnected_source_port_48",
+    "source_port_id": "test_fixture_inner_port_48",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": 3.5,
     "y": 0.5,
@@ -1697,9 +1877,19 @@
     "port_hints": ["X3"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_51",
+    "name": "C13_X1_Y5",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1051,
+    "port_hints": ["C13_X1_Y5"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net26"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_51",
-    "source_port_id": "unconnected_source_port_51",
+    "source_port_id": "test_fixture_inner_port_51",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": -3.5,
     "y": -0.5,
@@ -1719,9 +1909,19 @@
     "port_hints": ["C13_X1_Y5"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_52",
+    "name": "C1_X2_Y5",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1052,
+    "port_hints": ["C1_X2_Y5"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net9"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_52",
-    "source_port_id": "unconnected_source_port_52",
+    "source_port_id": "test_fixture_inner_port_52",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": -2.5,
     "y": -0.5,
@@ -1741,9 +1941,19 @@
     "port_hints": ["C1_X2_Y5"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_53",
+    "name": "C15_X3_Y5",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1053,
+    "port_hints": ["C15_X3_Y5"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net13"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_53",
-    "source_port_id": "unconnected_source_port_53",
+    "source_port_id": "test_fixture_inner_port_53",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": -1.5,
     "y": -0.5,
@@ -1763,9 +1973,19 @@
     "port_hints": ["C15_X3_Y5"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_54",
+    "name": "C9_X4_Y5",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1054,
+    "port_hints": ["C9_X4_Y5"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net18"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_54",
-    "source_port_id": "unconnected_source_port_54",
+    "source_port_id": "test_fixture_inner_port_54",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": -0.5,
     "y": -0.5,
@@ -1785,9 +2005,19 @@
     "port_hints": ["C9_X4_Y5"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_55",
+    "name": "C5_X5_Y5",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1055,
+    "port_hints": ["C5_X5_Y5"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net20"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_55",
-    "source_port_id": "unconnected_source_port_55",
+    "source_port_id": "test_fixture_inner_port_55",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": 0.5,
     "y": -0.5,
@@ -1807,9 +2037,19 @@
     "port_hints": ["C5_X5_Y5"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_56",
+    "name": "C12_X6_Y5",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1056,
+    "port_hints": ["C12_X6_Y5"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net21"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_56",
-    "source_port_id": "unconnected_source_port_56",
+    "source_port_id": "test_fixture_inner_port_56",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": 1.5,
     "y": -0.5,
@@ -1829,9 +2069,19 @@
     "port_hints": ["C12_X6_Y5"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_57",
+    "name": "C1_X7_Y5",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1057,
+    "port_hints": ["C1_X7_Y5"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net9"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_57",
-    "source_port_id": "unconnected_source_port_57",
+    "source_port_id": "test_fixture_inner_port_57",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": 2.5,
     "y": -0.5,
@@ -1851,9 +2101,19 @@
     "port_hints": ["C1_X7_Y5"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_58",
+    "name": "C6_X8_Y5",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1058,
+    "port_hints": ["C6_X8_Y5"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net16"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_58",
-    "source_port_id": "unconnected_source_port_58",
+    "source_port_id": "test_fixture_inner_port_58",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": 3.5,
     "y": -0.5,
@@ -1917,9 +2177,19 @@
     "port_hints": ["C4"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_61",
+    "name": "C12_X1_Y6",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1061,
+    "port_hints": ["C12_X1_Y6"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net21"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_61",
-    "source_port_id": "unconnected_source_port_61",
+    "source_port_id": "test_fixture_inner_port_61",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": -3.5,
     "y": -1.5,
@@ -1939,9 +2209,19 @@
     "port_hints": ["C12_X1_Y6"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_62",
+    "name": "C9_X2_Y6",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1062,
+    "port_hints": ["C9_X2_Y6"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net18"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_62",
-    "source_port_id": "unconnected_source_port_62",
+    "source_port_id": "test_fixture_inner_port_62",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": -2.5,
     "y": -1.5,
@@ -1961,9 +2241,19 @@
     "port_hints": ["C9_X2_Y6"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_63",
+    "name": "C5_X3_Y6",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1063,
+    "port_hints": ["C5_X3_Y6"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net20"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_63",
-    "source_port_id": "unconnected_source_port_63",
+    "source_port_id": "test_fixture_inner_port_63",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": -1.5,
     "y": -1.5,
@@ -1983,9 +2273,19 @@
     "port_hints": ["C5_X3_Y6"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_64",
+    "name": "C6_X4_Y6",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1064,
+    "port_hints": ["C6_X4_Y6"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net16"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_64",
-    "source_port_id": "unconnected_source_port_64",
+    "source_port_id": "test_fixture_inner_port_64",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": -0.5,
     "y": -1.5,
@@ -2005,9 +2305,19 @@
     "port_hints": ["C6_X4_Y6"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_65",
+    "name": "C18_X5_Y6",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1065,
+    "port_hints": ["C18_X5_Y6"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net10"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_65",
-    "source_port_id": "unconnected_source_port_65",
+    "source_port_id": "test_fixture_inner_port_65",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": 0.5,
     "y": -1.5,
@@ -2027,9 +2337,19 @@
     "port_hints": ["C18_X5_Y6"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_66",
+    "name": "C14_X6_Y6",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1066,
+    "port_hints": ["C14_X6_Y6"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net14"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_66",
-    "source_port_id": "unconnected_source_port_66",
+    "source_port_id": "test_fixture_inner_port_66",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": 1.5,
     "y": -1.5,
@@ -2049,9 +2369,19 @@
     "port_hints": ["C14_X6_Y6"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_67",
+    "name": "C10_X7_Y6",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1067,
+    "port_hints": ["C10_X7_Y6"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net25"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_67",
-    "source_port_id": "unconnected_source_port_67",
+    "source_port_id": "test_fixture_inner_port_67",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": 2.5,
     "y": -1.5,
@@ -2071,9 +2401,19 @@
     "port_hints": ["C10_X7_Y6"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_68",
+    "name": "C4_X8_Y6",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1068,
+    "port_hints": ["C4_X8_Y6"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net22"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_68",
-    "source_port_id": "unconnected_source_port_68",
+    "source_port_id": "test_fixture_inner_port_68",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": 3.5,
     "y": -1.5,
@@ -2137,9 +2477,19 @@
     "port_hints": ["X4"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_71",
+    "name": "C17_X1_Y7",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1071,
+    "port_hints": ["C17_X1_Y7"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net11"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_71",
-    "source_port_id": "unconnected_source_port_71",
+    "source_port_id": "test_fixture_inner_port_71",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": -3.5,
     "y": -2.5,
@@ -2159,9 +2509,19 @@
     "port_hints": ["C17_X1_Y7"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_72",
+    "name": "C2_X2_Y7",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1072,
+    "port_hints": ["C2_X2_Y7"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net19"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_72",
-    "source_port_id": "unconnected_source_port_72",
+    "source_port_id": "test_fixture_inner_port_72",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": -2.5,
     "y": -2.5,
@@ -2181,9 +2541,19 @@
     "port_hints": ["C2_X2_Y7"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_73",
+    "name": "C10_X3_Y7",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1073,
+    "port_hints": ["C10_X3_Y7"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net25"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_73",
-    "source_port_id": "unconnected_source_port_73",
+    "source_port_id": "test_fixture_inner_port_73",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": -1.5,
     "y": -2.5,
@@ -2203,9 +2573,19 @@
     "port_hints": ["C10_X3_Y7"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_74",
+    "name": "C16_X4_Y7",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1074,
+    "port_hints": ["C16_X4_Y7"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net12"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_74",
-    "source_port_id": "unconnected_source_port_74",
+    "source_port_id": "test_fixture_inner_port_74",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": -0.5,
     "y": -2.5,
@@ -2225,9 +2605,19 @@
     "port_hints": ["C16_X4_Y7"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_75",
+    "name": "C4_X5_Y7",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1075,
+    "port_hints": ["C4_X5_Y7"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net22"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_75",
-    "source_port_id": "unconnected_source_port_75",
+    "source_port_id": "test_fixture_inner_port_75",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": 0.5,
     "y": -2.5,
@@ -2247,9 +2637,19 @@
     "port_hints": ["C4_X5_Y7"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_76",
+    "name": "C17_X6_Y7",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1076,
+    "port_hints": ["C17_X6_Y7"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net11"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_76",
-    "source_port_id": "unconnected_source_port_76",
+    "source_port_id": "test_fixture_inner_port_76",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": 1.5,
     "y": -2.5,
@@ -2269,9 +2669,19 @@
     "port_hints": ["C17_X6_Y7"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_77",
+    "name": "C3_X7_Y7",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1077,
+    "port_hints": ["C3_X7_Y7"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net14"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_77",
-    "source_port_id": "unconnected_source_port_77",
+    "source_port_id": "test_fixture_inner_port_77",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": 2.5,
     "y": -2.5,
@@ -2291,9 +2701,19 @@
     "port_hints": ["C3_X7_Y7"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_78",
+    "name": "C15_X8_Y7",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1078,
+    "port_hints": ["C15_X8_Y7"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net13"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_78",
-    "source_port_id": "unconnected_source_port_78",
+    "source_port_id": "test_fixture_inner_port_78",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": 3.5,
     "y": -2.5,
@@ -2357,9 +2777,19 @@
     "port_hints": ["C5"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_81",
+    "name": "C13_X1_Y8",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1081,
+    "port_hints": ["C13_X1_Y8"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net26"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_81",
-    "source_port_id": "unconnected_source_port_81",
+    "source_port_id": "test_fixture_inner_port_81",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": -3.5,
     "y": -3.5,
@@ -2379,9 +2809,19 @@
     "port_hints": ["C13_X1_Y8"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_82",
+    "name": "C11_X2_Y8",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1082,
+    "port_hints": ["C11_X2_Y8"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net14"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_82",
-    "source_port_id": "unconnected_source_port_82",
+    "source_port_id": "test_fixture_inner_port_82",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": -2.5,
     "y": -3.5,
@@ -2401,9 +2841,19 @@
     "port_hints": ["C11_X2_Y8"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_83",
+    "name": "C14_X3_Y8",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1083,
+    "port_hints": ["C14_X3_Y8"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net14"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_83",
-    "source_port_id": "unconnected_source_port_83",
+    "source_port_id": "test_fixture_inner_port_83",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": -1.5,
     "y": -3.5,
@@ -2423,9 +2873,19 @@
     "port_hints": ["C14_X3_Y8"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_84",
+    "name": "C9_X4_Y8",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1084,
+    "port_hints": ["C9_X4_Y8"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net18"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_84",
-    "source_port_id": "unconnected_source_port_84",
+    "source_port_id": "test_fixture_inner_port_84",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": -0.5,
     "y": -3.5,
@@ -2445,9 +2905,19 @@
     "port_hints": ["C9_X4_Y8"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_85",
+    "name": "C11_X5_Y8",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1085,
+    "port_hints": ["C11_X5_Y8"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net14"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_85",
-    "source_port_id": "unconnected_source_port_85",
+    "source_port_id": "test_fixture_inner_port_85",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": 0.5,
     "y": -3.5,
@@ -2467,9 +2937,19 @@
     "port_hints": ["C11_X5_Y8"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_86",
+    "name": "C5_X6_Y8",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1086,
+    "port_hints": ["C5_X6_Y8"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net20"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_86",
-    "source_port_id": "unconnected_source_port_86",
+    "source_port_id": "test_fixture_inner_port_86",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": 1.5,
     "y": -3.5,
@@ -2489,9 +2969,19 @@
     "port_hints": ["C5_X6_Y8"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_87",
+    "name": "C13_X7_Y8",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1087,
+    "port_hints": ["C13_X7_Y8"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net26"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_87",
-    "source_port_id": "unconnected_source_port_87",
+    "source_port_id": "test_fixture_inner_port_87",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": 2.5,
     "y": -3.5,
@@ -2511,9 +3001,19 @@
     "port_hints": ["C13_X7_Y8"]
   },
   {
+    "type": "source_port",
+    "source_port_id": "test_fixture_inner_port_88",
+    "name": "C18_X8_Y8",
+    "source_component_id": "test_fixture_component",
+    "subcircuit_id": "test_fixture_subcircuit",
+    "pin_number": 1088,
+    "port_hints": ["C18_X8_Y8"],
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net10"
+  },
+  {
     "type": "pcb_port",
     "pcb_port_id": "test_fixture_pcb_port_all_88",
-    "source_port_id": "unconnected_source_port_88",
+    "source_port_id": "test_fixture_inner_port_88",
     "pcb_component_id": "test_fixture_pcb_component",
     "x": 3.5,
     "y": -3.5,
@@ -2773,6 +3273,156 @@
     "height": 0.5,
     "layer": "top",
     "port_hints": ["C10"]
+  },
+  {
+    "type": "source_net",
+    "source_net_id": "test_fixture_net_conn_1763676130650",
+    "name": "NET1",
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net14"
+  },
+  {
+    "type": "source_net",
+    "source_net_id": "test_fixture_auto_net_0",
+    "name": "net_C1",
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net9"
+  },
+  {
+    "type": "source_net",
+    "source_net_id": "test_fixture_auto_net_1",
+    "name": "net_X18",
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net8"
+  },
+  {
+    "type": "source_net",
+    "source_net_id": "test_fixture_auto_net_2",
+    "name": "net_C18",
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net10"
+  },
+  {
+    "type": "source_net",
+    "source_net_id": "test_fixture_auto_net_3",
+    "name": "net_X17",
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net7"
+  },
+  {
+    "type": "source_net",
+    "source_net_id": "test_fixture_auto_net_4",
+    "name": "net_C17",
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net11"
+  },
+  {
+    "type": "source_net",
+    "source_net_id": "test_fixture_auto_net_5",
+    "name": "net_X16",
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net6"
+  },
+  {
+    "type": "source_net",
+    "source_net_id": "test_fixture_auto_net_6",
+    "name": "net_C16",
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net12"
+  },
+  {
+    "type": "source_net",
+    "source_net_id": "test_fixture_auto_net_7",
+    "name": "net_X15",
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net5"
+  },
+  {
+    "type": "source_net",
+    "source_net_id": "test_fixture_auto_net_8",
+    "name": "net_C15",
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net13"
+  },
+  {
+    "type": "source_net",
+    "source_net_id": "test_fixture_auto_net_9",
+    "name": "net_X14",
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net4"
+  },
+  {
+    "type": "source_net",
+    "source_net_id": "test_fixture_auto_net_10",
+    "name": "net_X1",
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net0"
+  },
+  {
+    "type": "source_net",
+    "source_net_id": "test_fixture_auto_net_11",
+    "name": "net_C6",
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net16"
+  },
+  {
+    "type": "source_net",
+    "source_net_id": "test_fixture_auto_net_12",
+    "name": "net_C8",
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net17"
+  },
+  {
+    "type": "source_net",
+    "source_net_id": "test_fixture_auto_net_13",
+    "name": "net_C9",
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net18"
+  },
+  {
+    "type": "source_net",
+    "source_net_id": "test_fixture_auto_net_14",
+    "name": "net_C2",
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net19"
+  },
+  {
+    "type": "source_net",
+    "source_net_id": "test_fixture_auto_net_15",
+    "name": "net_C5",
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net20"
+  },
+  {
+    "type": "source_net",
+    "source_net_id": "test_fixture_auto_net_16",
+    "name": "net_C12",
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net21"
+  },
+  {
+    "type": "source_net",
+    "source_net_id": "test_fixture_auto_net_17",
+    "name": "net_C4",
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net22"
+  },
+  {
+    "type": "source_net",
+    "source_net_id": "test_fixture_auto_net_18",
+    "name": "net_C7",
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net23"
+  },
+  {
+    "type": "source_net",
+    "source_net_id": "test_fixture_auto_net_19",
+    "name": "net_X13",
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net3"
+  },
+  {
+    "type": "source_net",
+    "source_net_id": "test_fixture_auto_net_20",
+    "name": "net_X2",
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net1"
+  },
+  {
+    "type": "source_net",
+    "source_net_id": "test_fixture_auto_net_21",
+    "name": "net_C10",
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net25"
+  },
+  {
+    "type": "source_net",
+    "source_net_id": "test_fixture_auto_net_22",
+    "name": "net_C13",
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net26"
+  },
+  {
+    "type": "source_net",
+    "source_net_id": "test_fixture_auto_net_23",
+    "name": "net_X12",
+    "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net2"
   },
   {
     "type": "pcb_port",
@@ -4250,7 +4900,7 @@
     "type": "source_trace",
     "source_trace_id": "test_fixture_source_trace_testpad_17",
     "connected_source_port_ids": ["test_fixture_port_17"],
-    "connected_source_net_ids": ["test_fixture_net_conn_1763662028781"],
+    "connected_source_net_ids": ["test_fixture_net_conn_1763676130650"],
     "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net14"
   },
   {
@@ -4347,7 +4997,7 @@
     "type": "source_trace",
     "source_trace_id": "test_fixture_source_trace_testpad_18",
     "connected_source_port_ids": ["test_fixture_port_18"],
-    "connected_source_net_ids": ["test_fixture_net_conn_1763662028781"],
+    "connected_source_net_ids": ["test_fixture_net_conn_1763676130650"],
     "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net14"
   },
   {
@@ -5452,7 +6102,7 @@
     "type": "source_trace",
     "source_trace_id": "test_fixture_source_trace_testpad_31",
     "connected_source_port_ids": ["test_fixture_port_31"],
-    "connected_source_net_ids": ["test_fixture_net_conn_1763662028781"],
+    "connected_source_net_ids": ["test_fixture_net_conn_1763676130650"],
     "subcircuit_connectivity_map_key": "unnamedsubcircuit30560_connectivity_net14"
   },
   {
@@ -5839,8 +6489,8 @@
   },
   {
     "type": "pcb_trace",
-    "pcb_trace_id": "test_fixture_net_trace_conn_1763662028781_0",
-    "source_trace_id": "test_fixture_inner_trace_conn_1763662028781_0",
+    "pcb_trace_id": "test_fixture_net_trace_conn_1763676130650_0",
+    "source_trace_id": "test_fixture_trace_0",
     "route": [
       {
         "x": -3.5,
@@ -5859,8 +6509,8 @@
   },
   {
     "type": "pcb_trace",
-    "pcb_trace_id": "test_fixture_net_trace_conn_1763662028781_1",
-    "source_trace_id": "test_fixture_inner_trace_conn_1763662028781_1",
+    "pcb_trace_id": "test_fixture_net_trace_conn_1763676130650_1",
+    "source_trace_id": "test_fixture_trace_0",
     "route": [
       {
         "x": -1.5,

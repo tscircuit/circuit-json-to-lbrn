@@ -106,17 +106,19 @@ export const convertCircuitJsonToLbrn = (
       writeDebugSvg(net, union)
     }
 
-    // Convert the polygon to verts and prims
-    const { verts, prims } = polygonToShapePathData(union)
+    for (const island of union.splitToIslands()) {
+      // Convert the polygon to verts and prims
+      const { verts, prims } = polygonToShapePathData(island)
 
-    project.children.push(
-      new ShapePath({
-        cutIndex: copperCutSetting.index,
-        verts,
-        prims,
-        isClosed: false,
-      }),
-    )
+      project.children.push(
+        new ShapePath({
+          cutIndex: copperCutSetting.index,
+          verts,
+          prims,
+          isClosed: false,
+        }),
+      )
+    }
   }
   return project
 }
