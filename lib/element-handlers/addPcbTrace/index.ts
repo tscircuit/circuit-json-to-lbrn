@@ -86,7 +86,5 @@ export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
     }
   }
 
-  console.log({ netId })
-
   netGeoms.get(netId)?.push(tracePolygon)
 }
