@@ -12,5 +12,11 @@ export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
     return
   }
 
+  const { route } = trace
+
+  const traceWidth = route.find((point) => point.route_type === "wire")?.width
+
+  // TODO construct a polygon via inflating the route segments by trace width
+
   // netGeoms.get(netId)?.push(polygon)
 }
