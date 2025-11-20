@@ -7,6 +7,7 @@ import { addSmtPad } from "./element-handlers/addSmtPad"
 import { addPcbTrace } from "./element-handlers/addPcbTrace"
 import { getFullConnectivityMapFromCircuitJson } from "circuit-json-to-connectivity-map"
 import { Polygon, Box, BooleanOperations } from "@flatten-js/core"
+import { polygonToShapePathData } from "./polygon-to-shape-path"
 
 export const convertCircuitJsonToLbrn = (
   circuitJson: CircuitJson,
@@ -74,33 +75,7 @@ export const convertCircuitJsonToLbrn = (
     }
 
     // Convert the polygon to verts and prims
-    const verts = []
-    const prims = []
-
-    // Iterate through all faces (first face is outer boundary, rest are holes)
-    for (const face of union.faces) {
-      const faceStartIdx = verts.length
-
-      // Add vertices from each edge in the face
-      for (const edge of face.edges) {
-        verts.push({
-          x: edge.start.x,
-          y: edge.start.y,
-        })
-      }
-
-      // const lastEdge = face.edges[face.edges.length - 1]!
-      // verts.push({
-      //   x: lastEdge.end.x,
-      //   y: lastEdge.end.y,
-      // })
-
-      // Create LineTo primitives (type 0) for each edge
-      const faceVertCount = verts.length - faceStartIdx
-      for (let i = 0; i < faceVertCount; i++) {
-        prims.push({ type: 0 }) // 0 = LineTo
-      }
-    }
+    const { verts, prims } = polygonToShapePathData(union)
 
     project.children.push(
       new ShapePath({
