@@ -61,8 +61,6 @@ export const convertCircuitJsonToLbrn = (
       continue
     }
 
-    console.log(netGeoms)
-
     let union = netGeoms[0]!
     if (union instanceof Box) {
       union = new Polygon(union)
@@ -75,11 +73,35 @@ export const convertCircuitJsonToLbrn = (
       }
     }
 
+    // Convert the polygon to verts and prims
+    const verts = []
+    const prims = []
+
+    // Iterate through all faces (first face is outer boundary, rest are holes)
+    for (const face of union.faces) {
+      const faceStartIdx = verts.length
+
+      // Add vertices from each edge in the face
+      for (const edge of face.edges) {
+        verts.push({
+          x: edge.start.x,
+          y: edge.start.y,
+        })
+      }
+
+      // Create LineTo primitives (type 0) for each edge
+      const faceVertCount = verts.length - faceStartIdx
+      for (let i = 0; i < faceVertCount; i++) {
+        prims.push({ type: 0 }) // 0 = LineTo
+      }
+    }
+
     project.children.push(
       new ShapePath({
         cutIndex: copperCutSetting.index,
-        verts: [],
-        prims: [],
+        verts,
+        prims,
+        isClosed: true,
       }),
     )
   }
