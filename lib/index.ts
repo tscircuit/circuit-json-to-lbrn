@@ -8,7 +8,7 @@ import { addPcbTrace } from "./element-handlers/addPcbTrace"
 import { getFullConnectivityMapFromCircuitJson } from "circuit-json-to-connectivity-map"
 import { Polygon, Box, BooleanOperations } from "@flatten-js/core"
 import { polygonToShapePathData } from "./polygon-to-shape-path"
-import { writeDebugSvg } from "./writeDebugSvg"
+// import { writeDebugSvg } from "./writeDebugSvg"
 
 export const convertCircuitJsonToLbrn = (
   circuitJson: CircuitJson,
@@ -102,9 +102,9 @@ export const convertCircuitJsonToLbrn = (
     }
 
     // DEBUGGING ONLY!!!
-    if (netGeoms.length > 1) {
-      writeDebugSvg(net, union)
-    }
+    // if (netGeoms.length > 1) {
+    //   writeDebugSvg(net, union)
+    // }
 
     for (const island of union.splitToIslands()) {
       // Convert the polygon to verts and prims
