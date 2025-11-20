@@ -6,7 +6,7 @@ import {addPlatedHole} from "./element-handlers/addPlatedHole"
 
 export const convertCircuitJsonToLbrn = (
   circuitJson: CircuitJson,
-  options?: { includeSilkscreen?: boolean } = {},
+  options: { includeSilkscreen?: boolean } = {},
 ): LightBurnProject => {
   const db = cju(circuitJson)
   const project = new LightBurnProject({
@@ -14,16 +14,18 @@ export const convertCircuitJsonToLbrn = (
     formatVersion: "1",
   })
 
-  project.children.push(new CutSetting({
+  const copperCutSetting = new CutSetting({
     index: 0,
     name: "Cut Copper",
     numPasses: 12,
     speed: 100
-  }))
+  })
+  project.children.push(copperCutSetting)
 
   const ctx: ConvertContext = {
     db,
     project,
+    copperCutSetting,
   }
 
   for (const platedHole of db.pcb_plated_hole.list()) {
