@@ -89,6 +89,12 @@ export const convertCircuitJsonToLbrn = (
         })
       }
 
+      // const lastEdge = face.edges[face.edges.length - 1]!
+      // verts.push({
+      //   x: lastEdge.end.x,
+      //   y: lastEdge.end.y,
+      // })
+
       // Create LineTo primitives (type 0) for each edge
       const faceVertCount = verts.length - faceStartIdx
       for (let i = 0; i < faceVertCount; i++) {
@@ -101,10 +107,9 @@ export const convertCircuitJsonToLbrn = (
         cutIndex: copperCutSetting.index,
         verts,
         prims,
-        isClosed: true,
+        isClosed: false,
       }),
     )
   }
-
   return project
 }
