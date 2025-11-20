@@ -10,10 +10,14 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.6",
+    "@tscircuit/circuit-json-util": "^0.0.72",
     "@types/bun": "latest",
     "bun-match-svg": "^0.0.14",
     "circuit-json": "^0.0.316",
+    "circuit-json-to-connectivity-map": "^0.0.22",
     "circuit-to-svg": "^0.0.271",
+    "schematic-symbols": "^0.0.202",
+    "stack-svgs": "^0.0.1",
     "tsup": "^8.5.1"
   },
   "peerDependencies": {
