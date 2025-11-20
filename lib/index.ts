@@ -5,6 +5,10 @@ import type { ConvertContext } from "./ConvertContext"
 import { addPlatedHole } from "./element-handlers/addPlatedHole"
 import { addSmtPad } from "./element-handlers/addSmtPad"
 import { addPcbTrace } from "./element-handlers/addPcbTrace"
+import { groupElementsByConnectivity } from "./utils/group-elements-by-connectivity"
+import { elementToPolygon } from "./geometry/convert-element-to-polygon"
+import { unionPolygons } from "./geometry/union-polygons"
+import { polygonToShapePath } from "./geometry/convert-polygon-to-shape-path"
 
 export const convertCircuitJsonToLbrn = (
   circuitJson: CircuitJson,
@@ -30,15 +34,54 @@ export const convertCircuitJsonToLbrn = (
     copperCutSetting,
   }
 
-  for (const smtpad of db.pcb_smtpad.list()) {
-    addSmtPad(smtpad, ctx)
+  // Group elements by connectivity (net)
+  const grouped = groupElementsByConnectivity(db)
+
+  // Process each net group with boolean union operations
+  for (const netGroup of grouped.netGroups) {
+    const polygons = []
+
+    // Convert all pads to polygons
+    for (const pad of netGroup.pads) {
+      const poly = elementToPolygon(pad)
+      if (poly) polygons.push(poly)
+    }
+
+    // Convert all traces to polygons
+    for (const trace of netGroup.traces) {
+      const poly = elementToPolygon(trace)
+      if (poly) polygons.push(poly)
+    }
+
+    // Convert all plated holes to polygons
+    for (const hole of netGroup.platedHoles) {
+      const poly = elementToPolygon(hole)
+      if (poly) polygons.push(poly)
+    }
+
+    // Union all polygons and split into islands
+    const unifiedPolygons = unionPolygons(polygons)
+
+    // Create a ShapePath for each island
+    for (const polygon of unifiedPolygons) {
+      const shapePath = polygonToShapePath(
+        polygon,
+        copperCutSetting.index ?? 0,
+      )
+      project.children.push(shapePath)
+    }
   }
 
-  for (const platedHole of db.pcb_plated_hole.list()) {
-    addPlatedHole(platedHole, ctx)
+  // Process unconnected elements individually (backward compatible)
+  for (const pad of grouped.unconnectedPads) {
+    addSmtPad(pad, ctx)
   }
 
-  for (const trace of db.pcb_trace.list()) {
+  for (const hole of grouped.unconnectedPlatedHoles) {
+    addPlatedHole(hole, ctx)
+  }
+
+  for (const trace of grouped.unconnectedTraces) {
     addPcbTrace(trace, ctx)
   }
 

@@ -24,6 +24,7 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@flatten-js/core": "^1.6.8",
     "lbrnts": "^0.0.1"
   }
 }
