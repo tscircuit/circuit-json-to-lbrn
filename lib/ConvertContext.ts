@@ -13,5 +13,5 @@ export interface ConvertContext {
 
   connMap: ConnectivityMap
 
-  netGeoms: Map<ConnectivityMapKey, AnyShape[]>
+  netGeoms: Map<ConnectivityMapKey, Polygon[]>
 }

@@ -1,12 +1,12 @@
 import type { CircuitJson } from "circuit-json"
-import { LightBurnProject, CutSetting } from "lbrnts"
+import { LightBurnProject, CutSetting, ShapePath } from "lbrnts"
 import { cju } from "@tscircuit/circuit-json-util"
 import type { ConvertContext } from "./ConvertContext"
 import { addPlatedHole } from "./element-handlers/addPlatedHole"
 import { addSmtPad } from "./element-handlers/addSmtPad"
 import { addPcbTrace } from "./element-handlers/addPcbTrace"
 import { getFullConnectivityMapFromCircuitJson } from "circuit-json-to-connectivity-map"
-import { Polygon, Box } from "@flatten-js/core"
+import { Polygon, Box, BooleanOperations } from "@flatten-js/core"
 
 export const convertCircuitJsonToLbrn = (
   circuitJson: CircuitJson,
@@ -37,7 +37,7 @@ export const convertCircuitJsonToLbrn = (
   }
 
   for (const net of Object.keys(connMap.netMap)) {
-    ctx.netGeoms.set(net, new Polygon())
+    ctx.netGeoms.set(net, [])
   }
 
   for (const smtpad of db.pcb_smtpad.list()) {
@@ -50,6 +50,29 @@ export const convertCircuitJsonToLbrn = (
 
   for (const trace of db.pcb_trace.list()) {
     addPcbTrace(trace, ctx)
+  }
+
+  // Create a union of all the net geoms, and add to project
+
+  for (const net of Object.keys(connMap.netMap)) {
+    const netGeoms = ctx.netGeoms.get(net)!
+
+    if (netGeoms.length === 0) {
+      continue
+    }
+
+    let union = netGeoms[0]!
+    for (const geom of netGeoms.slice(1)) {
+      union = BooleanOperations.unify(union, geom!)
+    }
+
+    // project.children.push(
+    //   new ShapePath({
+    //     cutIndex: copperCutSetting.index,
+    //     verts: [],
+    //     prims: [],
+    //   }),
+    // )
   }
 
   return project
