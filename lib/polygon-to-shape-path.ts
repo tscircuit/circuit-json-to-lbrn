@@ -14,23 +14,35 @@ export function polygonToShapePathData(polygon: Polygon): ShapePathData {
   const verts: Array<{ x: number; y: number }> = []
   const prims: Array<{ type: number }> = []
 
-  // Iterate through all faces (first face is outer boundary, rest are holes)
-  for (const face of polygon.faces) {
-    const faceStartIdx = verts.length
+  // Get SVG representation and extract path data
+  const svgString = polygon.svg()
+  const dAttributeMatch = svgString.match(/\bd="([^"]+)"/)
 
-    // Add vertices from each edge in the face
-    for (const edge of face.edges) {
-      verts.push({
-        x: edge.start.x,
-        y: edge.start.y,
-      })
-    }
+  if (!dAttributeMatch || !dAttributeMatch[1]) {
+    return { verts, prims }
+  }
 
-    // Create LineTo primitives (type 0) for each edge
-    const faceVertCount = verts.length - faceStartIdx
-    for (let i = 0; i < faceVertCount; i++) {
-      prims.push({ type: 0 }) // 0 = LineTo
+  const pathData = dAttributeMatch[1].trim()
+
+  // Parse SVG path commands (M, L, z)
+  const commands = pathData.match(/[MLz][^MLz]*/g) || []
+
+  for (const command of commands) {
+    const type = command[0]
+    const coords = command.slice(1).trim()
+
+    if (type === 'M' || type === 'L') {
+      // Parse coordinates (format: "x,y")
+      const parts = coords.split(',')
+      const x = Number(parts[0])
+      const y = Number(parts[1])
+
+      if (!Number.isNaN(x) && !Number.isNaN(y)) {
+        verts.push({ x, y })
+        prims.push({ type: 0 }) // 0 = LineTo
+      }
     }
+    // 'z' closes the path, no action needed
   }
 
   return { verts, prims }
