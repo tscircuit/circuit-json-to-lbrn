@@ -28,6 +28,7 @@ export const convertCircuitJsonToLbrn = (
   project.children.push(copperCutSetting)
 
   const connMap = getFullConnectivityMapFromCircuitJson(circuitJson)
+  console.log(connMap.netMap)
 
   const ctx: ConvertContext = {
     db,

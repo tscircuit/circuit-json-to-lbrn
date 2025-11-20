@@ -6,7 +6,14 @@ import { circleToPolygon } from "./circle-to-polygon"
 export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
   const { netGeoms, connMap } = ctx
 
-  const netId = connMap.getNetConnectedToId(trace.pcb_trace_id)!
+  const netId = connMap.getNetConnectedToId(
+    trace.source_trace_id ?? trace.pcb_trace_id,
+  )!
+
+  if (!netId) {
+    console.warn(`Trace ${trace.pcb_trace_id} is not connected to any net`)
+    return
+  }
 
   if (!trace.route || trace.route.length < 2) {
     console.warn(`Trace ${trace.pcb_trace_id} has insufficient route points`)
@@ -78,6 +85,8 @@ export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
       tracePolygon = BooleanOperations.unify(tracePolygon, poly)
     }
   }
+
+  console.log({ netId })
 
   netGeoms.get(netId)?.push(tracePolygon)
 }
