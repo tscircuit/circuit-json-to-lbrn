@@ -1,7 +1,6 @@
 import type { PcbTrace } from "circuit-json"
 import type { ConvertContext } from "../../ConvertContext"
-import { Polygon } from "@flatten-js/core"
-import offsetPolygon from "offset-polygon"
+import { Polygon, Segment, segment, point } from "@flatten-js/core"
 
 export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
   const { netGeoms, connMap } = ctx
@@ -13,9 +12,5 @@ export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
     return
   }
 
-  const traceOutline = offsetPolygon(trace.route, 0.5)
-
-  const polygon = new Polygon(traceOutline.map((point) => [point.x, point.y]))
-
-  netGeoms.get(netId)?.push(polygon)
+  // netGeoms.get(netId)?.push(polygon)
 }
