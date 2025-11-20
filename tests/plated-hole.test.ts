@@ -29,6 +29,7 @@ test("plated hole generates circular path", () => {
   const project = convertCircuitJsonToLbrn(circuitJson)
 
   // Should have 1 CutSetting and 1 ShapePath
+  console.log(project.children)
   expect(project.children.length).toBe(2)
 
   // First child should be CutSetting

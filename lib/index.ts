@@ -64,25 +64,9 @@ export const convertCircuitJsonToLbrn = (
 
     // Create a ShapePath for each island
     for (const polygon of unifiedPolygons) {
-      const shapePath = polygonToShapePath(
-        polygon,
-        copperCutSetting.index ?? 0,
-      )
+      const shapePath = polygonToShapePath(polygon, copperCutSetting.index ?? 0)
       project.children.push(shapePath)
     }
-  }
-
-  // Process unconnected elements individually (backward compatible)
-  for (const pad of grouped.unconnectedPads) {
-    addSmtPad(pad, ctx)
-  }
-
-  for (const hole of grouped.unconnectedPlatedHoles) {
-    addPlatedHole(hole, ctx)
-  }
-
-  for (const trace of grouped.unconnectedTraces) {
-    addPcbTrace(trace, ctx)
   }
 
   return project

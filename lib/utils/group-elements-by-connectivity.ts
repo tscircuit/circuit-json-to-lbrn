@@ -5,6 +5,7 @@ import type {
   PcbPlatedHole,
   AnyCircuitElement,
 } from "circuit-json"
+import { getFullConnectivityMapFromCircuitJson } from "circuit-json-to-connectivity-map"
 
 export interface NetGroup {
   connectivityKey: string
@@ -22,40 +23,17 @@ export interface GroupedElements {
 
 /**
  * Groups circuit elements by their connectivity (net).
- * Elements with the same subcircuit_connectivity_map_key are grouped together.
+ * Uses circuit-json-to-connectivity-map to determine connectivity.
  * Elements without connectivity information are returned separately.
  */
 export function groupElementsByConnectivity(
   db: CircuitJsonUtilObjects,
 ): GroupedElements {
-  // Build mapping: pcb_port_id -> subcircuit_connectivity_map_key
-  const portIdToConnectivityKey = new Map<string, string>()
+  // Convert db to circuit JSON array
+  const circuitJson: AnyCircuitElement[] = db.toArray()
 
-  for (const pcbPort of db.pcb_port.list()) {
-    const sourcePort = db.source_port.get(pcbPort.source_port_id)
-    if (sourcePort?.subcircuit_connectivity_map_key) {
-      portIdToConnectivityKey.set(
-        pcbPort.pcb_port_id,
-        sourcePort.subcircuit_connectivity_map_key,
-      )
-    }
-  }
-
-  // Build spatial index of pad positions to connectivity keys
-  // This helps us determine which net a trace belongs to
-  interface PositionKey {
-    x: number
-    y: number
-    layer: string
-  }
-  const positionToConnectivityKey = new Map<string, string>()
-
-  const makePositionKey = (x: number, y: number, layer: string): string => {
-    // Round to avoid floating point precision issues
-    const roundedX = Math.round(x * 1000) / 1000
-    const roundedY = Math.round(y * 1000) / 1000
-    return `${roundedX},${roundedY},${layer}`
-  }
+  // Get connectivity map from circuit JSON
+  const connectivityMap = getFullConnectivityMapFromCircuitJson(circuitJson)
 
   // Map to store elements by connectivity key
   const netGroupMap = new Map<string, NetGroup>()
@@ -73,82 +51,41 @@ export function groupElementsByConnectivity(
     return netGroupMap.get(connKey)!
   }
 
-  // Group SMT pads
-  const unconnectedPads: PcbSmtPad[] = []
+  // Group SMT pads using connectivity map
   for (const pad of db.pcb_smtpad.list()) {
-    const connKey = pad.pcb_port_id
-      ? portIdToConnectivityKey.get(pad.pcb_port_id)
-      : undefined
+    // Get connectivity key, or use the element's ID as a default key
+    const connKey =
+      connectivityMap.getNetConnectedToId(pad.pcb_smtpad_id) || pad.pcb_smtpad_id
 
-    if (connKey) {
-      const netGroup = getOrCreateNetGroup(connKey)
-      netGroup.pads.push(pad)
-      // Add pad position to spatial index
-      const posKey = makePositionKey(pad.x, pad.y, pad.layer)
-      positionToConnectivityKey.set(posKey, connKey)
-    } else {
-      unconnectedPads.push(pad)
-    }
+    const netGroup = getOrCreateNetGroup(connKey)
+    netGroup.pads.push(pad)
   }
 
-  // Group plated holes
-  const unconnectedPlatedHoles: PcbPlatedHole[] = []
+  // Group plated holes using connectivity map
   for (const hole of db.pcb_plated_hole.list()) {
-    const connKey = hole.pcb_port_id
-      ? portIdToConnectivityKey.get(hole.pcb_port_id)
-      : undefined
+    // Get connectivity key, or use the element's ID as a default key
+    const connKey =
+      connectivityMap.getNetConnectedToId(hole.pcb_plated_hole_id) ||
+      hole.pcb_plated_hole_id
 
-    if (connKey) {
-      const netGroup = getOrCreateNetGroup(connKey)
-      netGroup.platedHoles.push(hole)
-      // Add hole position to spatial index for both layers
-      for (const layer of ["top", "bottom"]) {
-        const posKey = makePositionKey(hole.x, hole.y, layer)
-        positionToConnectivityKey.set(posKey, connKey)
-      }
-    } else {
-      unconnectedPlatedHoles.push(hole)
-    }
+    const netGroup = getOrCreateNetGroup(connKey)
+    netGroup.platedHoles.push(hole)
   }
 
-  // Group traces by determining which net they connect to
-  // We look at the start and end points and find matching pad positions
-  const unconnectedTraces: PcbTrace[] = []
+  // Group traces using connectivity map
   for (const trace of db.pcb_trace.list()) {
-    if (trace.route.length < 2) {
-      unconnectedTraces.push(trace)
-      continue
-    }
+    // Get connectivity key, or use the element's ID as a default key
+    const connKey =
+      connectivityMap.getNetConnectedToId(trace.pcb_trace_id) || trace.pcb_trace_id
 
-    // Check start and end points
-    const startPoint = trace.route[0]
-    const endPoint = trace.route[trace.route.length - 1]
-
-    const startPosKey = makePositionKey(
-      startPoint.x,
-      startPoint.y,
-      startPoint.layer,
-    )
-    const endPosKey = makePositionKey(endPoint.x, endPoint.y, endPoint.layer)
-
-    const startConnKey = positionToConnectivityKey.get(startPosKey)
-    const endConnKey = positionToConnectivityKey.get(endPosKey)
-
-    // Trace should connect pads with the same connectivity key
-    const connKey = startConnKey || endConnKey
-    if (connKey && startConnKey === endConnKey) {
-      const netGroup = getOrCreateNetGroup(connKey)
-      netGroup.traces.push(trace)
-    } else {
-      // Trace doesn't connect to known pads or connects different nets (error case)
-      unconnectedTraces.push(trace)
-    }
+    const netGroup = getOrCreateNetGroup(connKey)
+    netGroup.traces.push(trace)
   }
 
   return {
     netGroups: Array.from(netGroupMap.values()),
-    unconnectedPads,
-    unconnectedTraces,
-    unconnectedPlatedHoles,
+    unconnectedPads: [],
+    unconnectedTraces: [],
+    unconnectedPlatedHoles: [],
   }
 }
