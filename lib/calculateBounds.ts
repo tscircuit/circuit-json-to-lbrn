@@ -41,15 +41,22 @@ export const calculateCircuitBounds = (circuitJson: CircuitJson): Bounds => {
 
   // Calculate bounds from PCB traces
   for (const trace of db.pcb_trace.list()) {
+    const isWidthPoint = (
+      point: (typeof trace.route)[number],
+    ): point is (typeof trace.route)[number] & { width: number } =>
+      "width" in point && typeof point.width === "number"
+
     const halfWidth =
       trace.route_thickness_mode === "interpolated"
         ? 0
-        : (trace.route[0]?.width ?? 0) / 2
+        : (trace.route.find(isWidthPoint)?.width ?? 0) / 2
 
     for (const point of trace.route) {
       const pointWidth =
         trace.route_thickness_mode === "interpolated"
-          ? (point.width ?? 0) / 2
+          ? isWidthPoint(point)
+            ? point.width / 2
+            : 0
           : halfWidth
 
       minX = Math.min(minX, point.x - pointWidth)

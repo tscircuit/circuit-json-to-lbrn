@@ -7,6 +7,12 @@ import type { CircuitJson } from "circuit-json"
 let currentLbrnProject: any = null
 let currentCircuitJson: CircuitJson | null = null
 
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error && error.message) return error.message
+
+  return "Unknown error"
+}
+
 // Get DOM elements
 const dropArea = document.getElementById("dropArea") as HTMLDivElement
 const fileInput = document.getElementById("fileInput") as HTMLInputElement
@@ -85,7 +91,7 @@ async function processFile(file: File) {
   } catch (error) {
     showLoading(false)
     console.error("Error processing file:", error)
-    showError(`Error processing file: ${error.message || "Unknown error"}`)
+    showError(`Error processing file: ${getErrorMessage(error)}`)
   }
 }
 
@@ -149,7 +155,7 @@ async function convertAndDisplay() {
   } catch (error) {
     showLoading(false)
     console.error("Error converting:", error)
-    showError(`Error converting: ${error.message || "Unknown error"}`)
+    showError(`Error converting: ${getErrorMessage(error)}`)
   }
 }
 
@@ -215,7 +221,7 @@ downloadBtn.addEventListener("click", () => {
     URL.revokeObjectURL(url)
   } catch (error) {
     console.error("Error downloading file:", error)
-    showError(`Error downloading file: ${error.message || "Unknown error"}`)
+    showError(`Error downloading file: ${getErrorMessage(error)}`)
   }
 })
 
