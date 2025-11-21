@@ -1,4 +1,4 @@
-import { convertCircuitJsonToLbrn } from "../lib/index"
+import { convertCircuitJsonToLbrn } from "../lib/index.ts"
 import { convertCircuitJsonToPcbSvg } from "circuit-to-svg"
 import { generateLightBurnSvg } from "lbrnts"
 import type { CircuitJson } from "circuit-json"
@@ -22,24 +22,44 @@ const lbrnSvgContainer = document.getElementById(
 ) as HTMLDivElement
 const errorMessage = document.getElementById("errorMessage") as HTMLDivElement
 const loading = document.getElementById("loading") as HTMLDivElement
+const optionsContainer = document.getElementById(
+  "optionsContainer",
+) as HTMLDivElement
+const originXInput = document.getElementById("originX") as HTMLInputElement
+const originYInput = document.getElementById("originY") as HTMLInputElement
+const includeSilkscreenInput = document.getElementById(
+  "includeSilkscreen",
+) as HTMLInputElement
+const reconvertBtn = document.getElementById("reconvertBtn") as HTMLButtonElement
 
 // Show error message
 function showError(message: string) {
   errorMessage.textContent = message
-  errorMessage.classList.add("visible")
+  errorMessage.classList.remove("hidden")
   setTimeout(() => {
-    errorMessage.classList.remove("visible")
+    errorMessage.classList.add("hidden")
   }, 5000)
 }
 
 // Show loading state
 function showLoading(show: boolean) {
   if (show) {
-    loading.classList.add("visible")
-    previewContainer.classList.remove("visible")
+    loading.classList.remove("hidden")
+    previewContainer.classList.add("hidden")
     downloadBtn.disabled = true
   } else {
-    loading.classList.remove("visible")
+    loading.classList.add("hidden")
+  }
+}
+
+// Get conversion options from UI
+function getConversionOptions() {
+  return {
+    includeSilkscreen: includeSilkscreenInput.checked,
+    origin: {
+      x: parseFloat(originXInput.value) || 0,
+      y: parseFloat(originYInput.value) || 0,
+    },
   }
 }
 
@@ -47,7 +67,7 @@ function showLoading(show: boolean) {
 async function processFile(file: File) {
   try {
     showLoading(true)
-    errorMessage.classList.remove("visible")
+    errorMessage.classList.add("hidden")
 
     // Read the file
     const fileContent = await file.text()
@@ -55,13 +75,61 @@ async function processFile(file: File) {
 
     currentCircuitJson = circuitJson
 
+    // Show options container
+    optionsContainer.classList.remove("hidden")
+
+    // Convert to LBRN with options
+    await convertAndDisplay()
+  } catch (error) {
+    showLoading(false)
+    console.error("Error processing file:", error)
+    showError(`Error processing file: ${error.message || "Unknown error"}`)
+  }
+}
+
+// Convert circuit JSON to LBRN and display previews
+async function convertAndDisplay() {
+  if (!currentCircuitJson) return
+
+  try {
+    showLoading(true)
+
+    const options = getConversionOptions()
+
+    // Apply origin offset to circuit JSON if needed
+    let processedCircuitJson = currentCircuitJson
+    if (options.origin.x !== 0 || options.origin.y !== 0) {
+      processedCircuitJson = JSON.parse(JSON.stringify(currentCircuitJson))
+      // Apply offset to all elements with x/y coordinates
+      for (const element of processedCircuitJson as any[]) {
+        if (element.center) {
+          element.center.x += options.origin.x
+          element.center.y += options.origin.y
+        }
+        if (element.x !== undefined) {
+          element.x += options.origin.x
+        }
+        if (element.y !== undefined) {
+          element.y += options.origin.y
+        }
+        if (element.route) {
+          for (const point of element.route) {
+            if (point.x !== undefined) point.x += options.origin.x
+            if (point.y !== undefined) point.y += options.origin.y
+          }
+        }
+      }
+    }
+
     // Convert to LBRN
-    console.log("Converting to LBRN...")
-    currentLbrnProject = convertCircuitJsonToLbrn(circuitJson)
+    console.log("Converting to LBRN with options:", options)
+    currentLbrnProject = convertCircuitJsonToLbrn(processedCircuitJson, {
+      includeSilkscreen: options.includeSilkscreen,
+    })
 
     // Generate SVGs
     console.log("Generating Circuit JSON SVG...")
-    const circuitSvg = await convertCircuitJsonToPcbSvg(circuitJson)
+    const circuitSvg = await convertCircuitJsonToPcbSvg(processedCircuitJson)
 
     console.log("Generating LBRN SVG...")
     const lbrnSvg = await generateLightBurnSvg(currentLbrnProject)
@@ -71,15 +139,15 @@ async function processFile(file: File) {
     lbrnSvgContainer.innerHTML = lbrnSvg
 
     // Show preview and enable download
-    previewContainer.classList.add("visible")
+    previewContainer.classList.remove("hidden")
     downloadBtn.disabled = false
     showLoading(false)
 
     console.log("Conversion complete!")
   } catch (error) {
     showLoading(false)
-    console.error("Error processing file:", error)
-    showError(`Error processing file: ${error.message || "Unknown error"}`)
+    console.error("Error converting:", error)
+    showError(`Error converting: ${error.message || "Unknown error"}`)
   }
 }
 
@@ -99,16 +167,16 @@ dropArea.addEventListener("click", () => {
 // Handle drag and drop
 dropArea.addEventListener("dragover", (e) => {
   e.preventDefault()
-  dropArea.classList.add("drag-over")
+  dropArea.classList.add("border-blue-400")
 })
 
 dropArea.addEventListener("dragleave", () => {
-  dropArea.classList.remove("drag-over")
+  dropArea.classList.remove("border-blue-400")
 })
 
 dropArea.addEventListener("drop", (e) => {
   e.preventDefault()
-  dropArea.classList.remove("drag-over")
+  dropArea.classList.remove("border-blue-400")
 
   const file = e.dataTransfer?.files?.[0]
   if (file) {
@@ -118,6 +186,11 @@ dropArea.addEventListener("drop", (e) => {
       showError("Please upload a JSON file")
     }
   }
+})
+
+// Handle reconvert button
+reconvertBtn.addEventListener("click", () => {
+  convertAndDisplay()
 })
 
 // Handle download button

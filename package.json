@@ -4,6 +4,8 @@
   "version": "0.0.2",
   "type": "module",
   "scripts": {
+    "start": "bun run site/index.html",
+    "build:site": "bun build site/index.html --outdir site-dist",
     "build": "tsup-node ./lib/index.ts --dts --format esm",
     "format": "biome format --write .",
     "format:check": "biome format ."

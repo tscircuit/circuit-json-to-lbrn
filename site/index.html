@@ -4,190 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Circuit JSON to LBRN Converter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-        background: #1a1a1a;
-        color: #ffffff;
-        padding: 2rem;
-        min-height: 100vh;
-      }
-
-      .container {
-        max-width: 1400px;
-        margin: 0 auto;
-      }
-
-      h1 {
-        font-size: 2.5rem;
-        margin-bottom: 0.5rem;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-
-      .subtitle {
-        color: #999;
-        margin-bottom: 2rem;
-        font-size: 1.1rem;
-      }
-
-      .drop-area {
-        border: 3px dashed #667eea;
-        border-radius: 12px;
-        padding: 3rem;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        background: #2a2a2a;
-        margin-bottom: 2rem;
-      }
-
-      .drop-area:hover,
-      .drop-area.drag-over {
-        border-color: #764ba2;
-        background: #333;
-        transform: scale(1.01);
-      }
-
-      .drop-area-icon {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-      }
-
-      .drop-area-text {
-        font-size: 1.2rem;
-        color: #ccc;
-        margin-bottom: 0.5rem;
-      }
-
-      .drop-area-subtext {
-        font-size: 0.9rem;
-        color: #666;
-      }
-
-      .file-input {
-        display: none;
-      }
-
-      .preview-container {
-        display: none;
-        gap: 2rem;
-        margin-bottom: 2rem;
-      }
-
-      .preview-container.visible {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .preview-panel {
-        background: #2a2a2a;
-        border-radius: 12px;
-        padding: 1.5rem;
-        border: 1px solid #444;
-      }
-
-      .preview-panel h3 {
-        margin-bottom: 1rem;
-        color: #667eea;
-        font-size: 1.2rem;
-      }
-
-      .svg-container {
-        background: #ffffff;
-        border-radius: 8px;
-        padding: 1rem;
-        min-height: 400px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: auto;
-      }
-
-      .svg-container svg {
-        max-width: 100%;
-        height: auto;
-      }
-
-      .download-btn {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-        padding: 1rem 2rem;
-        font-size: 1.1rem;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-
-      .download-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-      }
-
-      .download-btn:active {
-        transform: translateY(0);
-      }
-
-      .download-btn:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        transform: none;
-      }
-
-      .actions {
-        display: flex;
-        gap: 1rem;
-        align-items: center;
-        margin-bottom: 2rem;
-      }
-
-      .error-message {
-        background: #ff4444;
-        color: white;
-        padding: 1rem;
-        border-radius: 8px;
-        margin-bottom: 1rem;
-        display: none;
-      }
-
-      .error-message.visible {
-        display: block;
-      }
-
-      .loading {
-        display: none;
-        text-align: center;
-        padding: 2rem;
-      }
-
-      .loading.visible {
-        display: block;
-      }
-
-      .spinner {
-        border: 4px solid #333;
-        border-top: 4px solid #667eea;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        animation: spin 1s linear infinite;
-        margin: 0 auto 1rem;
-      }
-
       @keyframes spin {
         0% {
           transform: rotate(0deg);
@@ -196,64 +14,129 @@
           transform: rotate(360deg);
         }
       }
-
-      @media (max-width: 768px) {
-        .preview-container.visible {
-          grid-template-columns: 1fr;
-        }
-
-        h1 {
-          font-size: 2rem;
-        }
+      .spinner {
+        animation: spin 1s linear infinite;
+      }
+      .svg-container svg {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
       }
     </style>
   </head>
-  <body>
-    <div class="container">
-      <h1>Circuit JSON to LBRN Converter</h1>
-      <p class="subtitle">
+  <body class="bg-gray-900 text-white min-h-screen p-8">
+    <div class="max-w-7xl mx-auto">
+      <h1 class="text-4xl font-bold mb-2 text-blue-400">
+        Circuit JSON to LBRN Converter
+      </h1>
+      <p class="text-gray-400 mb-8 text-lg">
         Convert your circuit designs to LightBurn format
       </p>
 
-      <div class="error-message" id="errorMessage"></div>
+      <div id="errorMessage" class="hidden bg-red-500 text-white p-4 rounded-lg mb-4"></div>
 
-      <div class="drop-area" id="dropArea">
-        <div class="drop-area-icon">=�</div>
-        <div class="drop-area-text">
+      <div
+        id="dropArea"
+        class="border-3 border-dashed border-blue-500 rounded-xl p-12 text-center cursor-pointer transition-all bg-gray-800 hover:bg-gray-750 hover:border-blue-400 hover:scale-[1.01] mb-6"
+      >
+        <div class="text-5xl mb-4">📁</div>
+        <div class="text-xl text-gray-300 mb-2">
           Drop your Circuit JSON file here or click to browse
         </div>
-        <div class="drop-area-subtext">Supports .json files</div>
+        <div class="text-sm text-gray-500">Supports .json files</div>
         <input
           type="file"
           id="fileInput"
-          class="file-input"
+          class="hidden"
           accept=".json,application/json"
         />
       </div>
 
-      <div class="loading" id="loading">
-        <div class="spinner"></div>
+      <div id="loading" class="hidden text-center py-8">
+        <div
+          class="spinner border-4 border-gray-700 border-t-blue-500 rounded-full w-10 h-10 mx-auto mb-4"
+        ></div>
         <div>Processing your file...</div>
       </div>
 
-      <div class="actions">
-        <button class="download-btn" id="downloadBtn" disabled>
-          <span></span>
+      <div id="optionsContainer" class="hidden bg-gray-800 rounded-lg p-6 mb-6">
+        <h3 class="text-lg font-semibold mb-4 text-blue-400">Conversion Options</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">
+              Origin X (mm)
+            </label>
+            <input
+              type="number"
+              id="originX"
+              value="0"
+              step="0.1"
+              class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">
+              Origin Y (mm)
+            </label>
+            <input
+              type="number"
+              id="originY"
+              value="0"
+              step="0.1"
+              class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div class="md:col-span-2">
+            <label class="flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                id="includeSilkscreen"
+                class="w-5 h-5 text-blue-500 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-2"
+              />
+              <span class="ml-3 text-sm font-medium text-gray-300">
+                Include Silkscreen Layer
+              </span>
+            </label>
+          </div>
+        </div>
+        <button
+          id="reconvertBtn"
+          class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
+        >
+          Apply Changes
+        </button>
+      </div>
+
+      <div class="flex gap-4 items-center mb-6">
+        <button
+          id="downloadBtn"
+          disabled
+          class="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-all disabled:opacity-50 flex items-center gap-2"
+        >
+          <span>⬇</span>
           <span>Download LBRN File</span>
         </button>
       </div>
 
-      <div class="preview-container" id="previewContainer">
-        <div class="preview-panel">
-          <h3>Circuit JSON Preview</h3>
-          <div class="svg-container" id="circuitSvgContainer">
-            <div style="color: #666">No file loaded</div>
+      <div id="previewContainer" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+          <h3 class="text-lg font-semibold mb-4 text-blue-400">
+            Circuit JSON Preview
+          </h3>
+          <div
+            id="circuitSvgContainer"
+            class="svg-container bg-white rounded-lg p-4 h-[500px] flex items-center justify-center overflow-auto"
+          >
+            <div class="text-gray-400">No file loaded</div>
           </div>
         </div>
-        <div class="preview-panel">
-          <h3>LBRN Preview</h3>
-          <div class="svg-container" id="lbrnSvgContainer">
-            <div style="color: #666">No file loaded</div>
+        <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+          <h3 class="text-lg font-semibold mb-4 text-blue-400">LBRN Preview</h3>
+          <div
+            id="lbrnSvgContainer"
+            class="svg-container bg-white rounded-lg p-4 h-[500px] flex items-center justify-center overflow-auto"
+          >
+            <div class="text-gray-400">No file loaded</div>
           </div>
         </div>
       </div>
