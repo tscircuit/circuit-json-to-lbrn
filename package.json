@@ -1,7 +1,7 @@
 {
   "name": "circuit-json-to-lbrn",
   "main": "dist/index.js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "scripts": {
     "build": "tsup-node ./lib/index.ts --dts --format esm",
