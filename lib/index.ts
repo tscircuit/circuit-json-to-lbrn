@@ -8,6 +8,10 @@ import { addPcbTrace } from "./element-handlers/addPcbTrace"
 import { getFullConnectivityMapFromCircuitJson } from "circuit-json-to-connectivity-map"
 import { Polygon, Box, BooleanOperations } from "@flatten-js/core"
 import { polygonToShapePathData } from "./polygon-to-shape-path"
+import {
+  calculateCircuitBounds,
+  calculateOriginFromBounds,
+} from "./calculateBounds"
 // import { writeDebugSvg } from "./writeDebugSvg"
 
 export const convertCircuitJsonToLbrn = (
@@ -15,6 +19,7 @@ export const convertCircuitJsonToLbrn = (
   options: {
     includeSilkscreen?: boolean
     origin?: { x: number; y: number }
+    margin?: number
   } = {},
 ): LightBurnProject => {
   const db = cju(circuitJson)
@@ -33,13 +38,20 @@ export const convertCircuitJsonToLbrn = (
 
   const connMap = getFullConnectivityMapFromCircuitJson(circuitJson)
 
+  // Auto-calculate origin if not provided to ensure all elements are in positive quadrant
+  let origin = options.origin
+  if (!origin) {
+    const bounds = calculateCircuitBounds(circuitJson)
+    origin = calculateOriginFromBounds(bounds, options.margin)
+  }
+
   const ctx: ConvertContext = {
     db,
     project,
     copperCutSetting,
     connMap,
     netGeoms: new Map(),
-    origin: options.origin ?? { x: 0, y: 0 },
+    origin,
   }
 
   for (const net of Object.keys(connMap.netMap)) {

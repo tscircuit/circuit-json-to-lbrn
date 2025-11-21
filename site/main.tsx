@@ -30,7 +30,9 @@ const originYInput = document.getElementById("originY") as HTMLInputElement
 const includeSilkscreenInput = document.getElementById(
   "includeSilkscreen",
 ) as HTMLInputElement
-const reconvertBtn = document.getElementById("reconvertBtn") as HTMLButtonElement
+const reconvertBtn = document.getElementById(
+  "reconvertBtn",
+) as HTMLButtonElement
 
 // Show error message
 function showError(message: string) {
