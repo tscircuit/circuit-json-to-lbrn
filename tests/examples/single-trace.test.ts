@@ -3,7 +3,7 @@ import { convertCircuitJsonToPcbSvg } from "circuit-to-svg"
 import { generateLightBurnSvg } from "lbrnts"
 import { convertCircuitJsonToLbrn } from "../../lib"
 import { stackSvgsVertically } from "stack-svgs"
-import type { SourceTrace } from "circuit-json"
+import type { CircuitJson, SourceTrace } from "circuit-json"
 
 /**
  * This test demonstrates a bug where standalone traces (traces not connected
@@ -49,11 +49,15 @@ test("single-trace", async () => {
       connected_source_net_ids: [],
       connected_source_port_ids: [],
     } as SourceTrace,
-  ]
+  ] as CircuitJson
 
   const pcbSvg = await convertCircuitJsonToPcbSvg(circuitJson)
 
   const project = convertCircuitJsonToLbrn(circuitJson)
+
+  Bun.write("debug-output/single-trace.lbrn2", project.getString(), {
+    createPath: true,
+  })
 
   const lbrnSvg = await generateLightBurnSvg(project)
 
