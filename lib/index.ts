@@ -12,7 +12,7 @@ import { polygonToShapePathData } from "./polygon-to-shape-path"
 
 export const convertCircuitJsonToLbrn = (
   circuitJson: CircuitJson,
-  options: { includeSilkscreen?: boolean } = {},
+  options: { includeSilkscreen?: boolean; origin?: { x: number; y: number } } = {},
 ): LightBurnProject => {
   const db = cju(circuitJson)
   const project = new LightBurnProject({
@@ -36,6 +36,7 @@ export const convertCircuitJsonToLbrn = (
     copperCutSetting,
     connMap,
     netGeoms: new Map(),
+    origin: options.origin ?? { x: 0, y: 0 },
   }
 
   for (const net of Object.keys(connMap.netMap)) {
