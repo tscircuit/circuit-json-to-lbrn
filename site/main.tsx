@@ -85,7 +85,9 @@ async function processFile(file: File) {
   } catch (error) {
     showLoading(false)
     console.error("Error processing file:", error)
-    showError(`Error processing file: ${error.message || "Unknown error"}`)
+    showError(
+      `Error processing file: ${error instanceof Error ? error.message : "Unknown error"}`,
+    )
   }
 }
 
@@ -149,7 +151,9 @@ async function convertAndDisplay() {
   } catch (error) {
     showLoading(false)
     console.error("Error converting:", error)
-    showError(`Error converting: ${error.message || "Unknown error"}`)
+    showError(
+      `Error converting: ${error instanceof Error ? error.message : "Unknown error"}`,
+    )
   }
 }
 
@@ -215,7 +219,9 @@ downloadBtn.addEventListener("click", () => {
     URL.revokeObjectURL(url)
   } catch (error) {
     console.error("Error downloading file:", error)
-    showError(`Error downloading file: ${error.message || "Unknown error"}`)
+    showError(
+      `Error downloading file: ${error instanceof Error ? error.message : "Unknown error"}`,
+    )
   }
 })
 
