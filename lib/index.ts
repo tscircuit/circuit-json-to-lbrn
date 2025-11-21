@@ -8,7 +8,10 @@ import { addPcbTrace } from "./element-handlers/addPcbTrace"
 import { getFullConnectivityMapFromCircuitJson } from "circuit-json-to-connectivity-map"
 import { Polygon, Box, BooleanOperations } from "@flatten-js/core"
 import { polygonToShapePathData } from "./polygon-to-shape-path"
-import { calculateCircuitBounds, calculateOriginFromBounds } from "./calculateBounds"
+import {
+  calculateCircuitBounds,
+  calculateOriginFromBounds,
+} from "./calculateBounds"
 // import { writeDebugSvg } from "./writeDebugSvg"
 
 export const convertCircuitJsonToLbrn = (
@@ -16,6 +19,7 @@ export const convertCircuitJsonToLbrn = (
   options: {
     includeSilkscreen?: boolean
     origin?: { x: number; y: number }
+    margin?: number
   } = {},
 ): LightBurnProject => {
   const db = cju(circuitJson)
@@ -38,7 +42,7 @@ export const convertCircuitJsonToLbrn = (
   let origin = options.origin
   if (!origin) {
     const bounds = calculateCircuitBounds(circuitJson)
-    origin = calculateOriginFromBounds(bounds)
+    origin = calculateOriginFromBounds(bounds, options.margin)
   }
 
   const ctx: ConvertContext = {

@@ -41,14 +41,16 @@ export const calculateCircuitBounds = (circuitJson: CircuitJson): Bounds => {
 
   // Calculate bounds from PCB traces
   for (const trace of db.pcb_trace.list()) {
-    const halfWidth = trace.route_thickness_mode === "interpolated"
-      ? 0
-      : (trace.route[0]?.width ?? 0) / 2
+    const halfWidth =
+      trace.route_thickness_mode === "interpolated"
+        ? 0
+        : (trace.route[0]?.width ?? 0) / 2
 
     for (const point of trace.route) {
-      const pointWidth = trace.route_thickness_mode === "interpolated"
-        ? (point.width ?? 0) / 2
-        : halfWidth
+      const pointWidth =
+        trace.route_thickness_mode === "interpolated"
+          ? (point.width ?? 0) / 2
+          : halfWidth
 
       minX = Math.min(minX, point.x - pointWidth)
       minY = Math.min(minY, point.y - pointWidth)
@@ -70,7 +72,12 @@ export const calculateCircuitBounds = (circuitJson: CircuitJson): Bounds => {
   }
 
   // If no elements were found, return a default bounds
-  if (!isFinite(minX) || !isFinite(minY) || !isFinite(maxX) || !isFinite(maxY)) {
+  if (
+    !isFinite(minX) ||
+    !isFinite(minY) ||
+    !isFinite(maxX) ||
+    !isFinite(maxY)
+  ) {
     return { minX: 0, minY: 0, maxX: 0, maxY: 0 }
   }
 
@@ -81,10 +88,14 @@ export const calculateCircuitBounds = (circuitJson: CircuitJson): Bounds => {
  * Calculates the origin needed to shift all elements to the positive quadrant
  * with a small margin
  */
-export const calculateOriginFromBounds = (bounds: Bounds, margin = 0.1): { x: number; y: number } => {
+export const calculateOriginFromBounds = (
+  bounds: Bounds,
+  margin?: number,
+): { x: number; y: number } => {
+  const m = margin ?? 0.1
   // If minimum coordinates are already positive, no shift needed (but add margin)
-  const originX = bounds.minX < margin ? -bounds.minX + margin : 0
-  const originY = bounds.minY < margin ? -bounds.minY + margin : 0
+  const originX = bounds.minX < m ? -bounds.minX + m : 0
+  const originY = bounds.minY < m ? -bounds.minY + m : 0
 
   return { x: originX, y: originY }
 }
