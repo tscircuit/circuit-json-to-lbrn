@@ -12,6 +12,10 @@ test("lga-interconnect", async () => {
 
   const project = convertCircuitJsonToLbrn(circuitJson)
 
+  Bun.write("debug-output/lga-interconnect.lbrn2", project.getString(), {
+    createPath: true,
+  })
+
   const lbrnSvg = await generateLightBurnSvg(project)
 
   expect(stackSvgsVertically([pcbSvg, lbrnSvg])).toMatchSvgSnapshot(
