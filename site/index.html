@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Circuit JSON to LBRN Converter</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+        background: #1a1a1a;
+        color: #ffffff;
+        padding: 2rem;
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .subtitle {
+        color: #999;
+        margin-bottom: 2rem;
+        font-size: 1.1rem;
+      }
+
+      .drop-area {
+        border: 3px dashed #667eea;
+        border-radius: 12px;
+        padding: 3rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: #2a2a2a;
+        margin-bottom: 2rem;
+      }
+
+      .drop-area:hover,
+      .drop-area.drag-over {
+        border-color: #764ba2;
+        background: #333;
+        transform: scale(1.01);
+      }
+
+      .drop-area-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+      }
+
+      .drop-area-text {
+        font-size: 1.2rem;
+        color: #ccc;
+        margin-bottom: 0.5rem;
+      }
+
+      .drop-area-subtext {
+        font-size: 0.9rem;
+        color: #666;
+      }
+
+      .file-input {
+        display: none;
+      }
+
+      .preview-container {
+        display: none;
+        gap: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .preview-container.visible {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .preview-panel {
+        background: #2a2a2a;
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 1px solid #444;
+      }
+
+      .preview-panel h3 {
+        margin-bottom: 1rem;
+        color: #667eea;
+        font-size: 1.2rem;
+      }
+
+      .svg-container {
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 1rem;
+        min-height: 400px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: auto;
+      }
+
+      .svg-container svg {
+        max-width: 100%;
+        height: auto;
+      }
+
+      .download-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .download-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+      }
+
+      .download-btn:active {
+        transform: translateY(0);
+      }
+
+      .download-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .actions {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      .error-message {
+        background: #ff4444;
+        color: white;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        display: none;
+      }
+
+      .error-message.visible {
+        display: block;
+      }
+
+      .loading {
+        display: none;
+        text-align: center;
+        padding: 2rem;
+      }
+
+      .loading.visible {
+        display: block;
+      }
+
+      .spinner {
+        border: 4px solid #333;
+        border-top: 4px solid #667eea;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .preview-container.visible {
+          grid-template-columns: 1fr;
+        }
+
+        h1 {
+          font-size: 2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Circuit JSON to LBRN Converter</h1>
+      <p class="subtitle">
+        Convert your circuit designs to LightBurn format
+      </p>
+
+      <div class="error-message" id="errorMessage"></div>
+
+      <div class="drop-area" id="dropArea">
+        <div class="drop-area-icon">=Á</div>
+        <div class="drop-area-text">
+          Drop your Circuit JSON file here or click to browse
+        </div>
+        <div class="drop-area-subtext">Supports .json files</div>
+        <input
+          type="file"
+          id="fileInput"
+          class="file-input"
+          accept=".json,application/json"
+        />
+      </div>
+
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <div>Processing your file...</div>
+      </div>
+
+      <div class="actions">
+        <button class="download-btn" id="downloadBtn" disabled>
+          <span></span>
+          <span>Download LBRN File</span>
+        </button>
+      </div>
+
+      <div class="preview-container" id="previewContainer">
+        <div class="preview-panel">
+          <h3>Circuit JSON Preview</h3>
+          <div class="svg-container" id="circuitSvgContainer">
+            <div style="color: #666">No file loaded</div>
+          </div>
+        </div>
+        <div class="preview-panel">
+          <h3>LBRN Preview</h3>
+          <div class="svg-container" id="lbrnSvgContainer">
+            <div style="color: #666">No file loaded</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="./main.tsx"></script>
+  </body>
+</html>
