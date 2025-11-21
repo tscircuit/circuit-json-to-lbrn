@@ -10,6 +10,8 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.6",
+    "@flatten-js/core": "^1.6.8",
+    "@flatten-js/polygon-offset": "^1.1.4",
     "@tscircuit/circuit-json-util": "^0.0.72",
     "@types/bun": "latest",
     "bun-match-svg": "^0.0.14",
@@ -24,6 +26,6 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "lbrnts": "^0.0.1"
+    "lbrnts": "^0.0.6"
   }
 }
