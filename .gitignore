@@ -37,3 +37,4 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 repomix-output.xml
 debug-output
 site-dist
+.vercel
