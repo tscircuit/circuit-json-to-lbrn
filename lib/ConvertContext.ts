@@ -14,4 +14,6 @@ export interface ConvertContext {
   connMap: ConnectivityMap
 
   netGeoms: Map<ConnectivityMapKey, Array<Polygon | Box>>
+
+  origin: { x: number; y: number }
 }

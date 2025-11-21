@@ -4,7 +4,7 @@ import Flatten, { BooleanOperations } from "@flatten-js/core"
 import { circleToPolygon } from "./circle-to-polygon"
 
 export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
-  const { netGeoms, connMap } = ctx
+  const { netGeoms, connMap, origin } = ctx
 
   const netId = connMap.getNetConnectedToId(
     trace.source_trace_id ?? trace.pcb_trace_id,
@@ -30,7 +30,7 @@ export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
   // Add circles for each vertex
   for (const routePoint of route) {
     const circle = new Flatten.Circle(
-      new Flatten.Point(routePoint.x, routePoint.y),
+      new Flatten.Point(routePoint.x + origin.x, routePoint.y + origin.y),
       traceWidth / 2,
     )
     polygons.push(circleToPolygon(circle))
@@ -46,8 +46,8 @@ export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
     const segmentLength = Math.hypot(p1.x - p2.x, p1.y - p2.y)
     if (segmentLength === 0) continue
 
-    const centerX = (p1.x + p2.x) / 2
-    const centerY = (p1.y + p2.y) / 2
+    const centerX = (p1.x + p2.x) / 2 + origin.x
+    const centerY = (p1.y + p2.y) / 2 + origin.y
     const rotationDeg = (Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180) / Math.PI
 
     const w2 = segmentLength / 2
