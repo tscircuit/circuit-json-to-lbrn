@@ -31,9 +31,9 @@ export function polygonToShapePathData(polygon: Polygon): ShapePathData {
     const type = command[0]
     const coords = command.slice(1).trim()
 
-    if (type === 'M' || type === 'L') {
+    if (type === "M" || type === "L") {
       // Parse coordinates (format: "x,y")
-      const parts = coords.split(',')
+      const parts = coords.split(",")
       const x = Number(parts[0])
       const y = Number(parts[1])
 

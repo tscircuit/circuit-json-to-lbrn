@@ -12,7 +12,10 @@ import { polygonToShapePathData } from "./polygon-to-shape-path"
 
 export const convertCircuitJsonToLbrn = (
   circuitJson: CircuitJson,
-  options: { includeSilkscreen?: boolean; origin?: { x: number; y: number } } = {},
+  options: {
+    includeSilkscreen?: boolean
+    origin?: { x: number; y: number }
+  } = {},
 ): LightBurnProject => {
   const db = cju(circuitJson)
   const project = new LightBurnProject({
