@@ -10,6 +10,7 @@ export interface ConvertContext {
   project: LightBurnProject
 
   copperCutSetting: CutSetting
+  throughBoardCutSetting: CutSetting
 
   connMap: ConnectivityMap
 

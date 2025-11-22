@@ -5,6 +5,7 @@ import type { ConvertContext } from "./ConvertContext"
 import { addPlatedHole } from "./element-handlers/addPlatedHole"
 import { addSmtPad } from "./element-handlers/addSmtPad"
 import { addPcbTrace } from "./element-handlers/addPcbTrace"
+import { addPcbBoard } from "./element-handlers/addPcbBoard"
 import { getFullConnectivityMapFromCircuitJson } from "circuit-json-to-connectivity-map"
 import { Polygon, Box, BooleanOperations } from "@flatten-js/core"
 import { polygonToShapePathData } from "./polygon-to-shape-path"
@@ -36,6 +37,14 @@ export const convertCircuitJsonToLbrn = (
   })
   project.children.push(copperCutSetting)
 
+  const throughBoardCutSetting = new CutSetting({
+    index: 1,
+    name: "Cut Through Board",
+    numPasses: 3,
+    speed: 50,
+  })
+  project.children.push(throughBoardCutSetting)
+
   const connMap = getFullConnectivityMapFromCircuitJson(circuitJson)
 
   // Auto-calculate origin if not provided to ensure all elements are in positive quadrant
@@ -49,6 +58,7 @@ export const convertCircuitJsonToLbrn = (
     db,
     project,
     copperCutSetting,
+    throughBoardCutSetting,
     connMap,
     netGeoms: new Map(),
     origin,
@@ -68,6 +78,10 @@ export const convertCircuitJsonToLbrn = (
 
   for (const trace of db.pcb_trace.list()) {
     addPcbTrace(trace, ctx)
+  }
+
+  for (const board of db.pcb_board.list()) {
+    addPcbBoard(board, ctx)
   }
 
   // Draw each individual shape geometry as a ShapePath
