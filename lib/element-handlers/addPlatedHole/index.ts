@@ -6,6 +6,7 @@ import { addCircularHoleWithRectPad } from "./addCircularHoleWithRectPad"
 import { addPillHoleWithRectPad } from "./addPillHoleWithRectPad"
 import { addRotatedPillHoleWithRectPad } from "./addRotatedPillHoleWithRectPad"
 import { addHoleWithPolygonPad } from "./addHoleWithPolygonPad"
+import { addPcbPlatedHolePill } from "./addPillPlatedHole"
 
 /**
  * Main dispatcher function that routes plated holes to the appropriate handler
@@ -20,8 +21,10 @@ export const addPlatedHole = (
       return addCirclePlatedHole(platedHole, ctx)
 
     case "oval":
-    case "pill":
       return addOvalPlatedHole(platedHole, ctx)
+
+    case "pill":
+      return addPcbPlatedHolePill(platedHole, ctx)
 
     case "circular_hole_with_rect_pad":
       return addCircularHoleWithRectPad(platedHole, ctx)
