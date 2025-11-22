@@ -1,3 +1,5 @@
+import { createPointAdder } from "./pathPointUtils"
+
 export interface Point {
   x: number
   y: number
@@ -27,23 +29,10 @@ export const createPillPath = (
   const radius = Math.min(halfWidth, halfHeight)
   const isVertical = height > width
 
-  // Helper function to rotate a point around the center
-  const rotatePoint = (x: number, y: number, angle: number): Point => {
-    const cos = Math.cos(angle)
-    const sin = Math.sin(angle)
-    const dx = x - centerX
-    const dy = y - centerY
-    return {
-      x: centerX + dx * cos - dy * sin,
-      y: centerY + dx * sin + dy * cos,
-    }
-  }
-
-  const addPoint = (x: number, y: number) => {
-    const rotated = rotation ? rotatePoint(x, y, rotation) : { x, y }
-    verts.push(rotated)
-    prims.push({ type: 0 })
-  }
+  const addPoint = createPointAdder(verts, prims, {
+    rotation,
+    rotationCenter: { x: centerX, y: centerY },
+  })
 
   if (isVertical) {
     // Vertical pill (height > width): semicircles on top & bottom
