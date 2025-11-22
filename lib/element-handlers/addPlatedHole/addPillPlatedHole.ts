@@ -1,25 +1,20 @@
 import type { PcbPlatedHoleOval } from "circuit-json"
 import type { ConvertContext } from "../../ConvertContext"
 import { ShapePath } from "lbrnts"
-import { createOvalPath } from "../../helpers/ovalShape"
+import { createPillPath } from "../../helpers/pillShape"
 
-export const addOvalPlatedHole = (
+export const addPcbPlatedHolePill = (
   platedHole: PcbPlatedHoleOval,
   ctx: ConvertContext,
 ): void => {
   const { project, copperCutSetting, throughBoardCutSetting, origin } = ctx
-
-  if (platedHole.outer_width <= 0 || platedHole.outer_height <= 0) {
-    return
-  }
-
   const centerX = platedHole.x + origin.x
   const centerY = platedHole.y + origin.y
-  const rotation = (platedHole.ccw_rotation ?? 0) * (Math.PI / 180)
+  const rotation = (platedHole.ccw_rotation || 0) * (Math.PI / 180) // Convert degrees to radians
 
-  // Add outer oval (copper)
+  // Add outer pill shape (copper)
   if (platedHole.outer_width > 0 && platedHole.outer_height > 0) {
-    const outer = createOvalPath(
+    const outer = createPillPath(
       centerX,
       centerY,
       platedHole.outer_width,
@@ -36,9 +31,9 @@ export const addOvalPlatedHole = (
     )
   }
 
-  // Add inner oval (hole)
+  // Add inner pill shape (hole)
   if (platedHole.hole_width > 0 && platedHole.hole_height > 0) {
-    const inner = createOvalPath(
+    const inner = createPillPath(
       centerX,
       centerY,
       platedHole.hole_width,
