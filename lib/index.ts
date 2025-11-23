@@ -72,9 +72,9 @@ export const convertCircuitJsonToLbrn = (
     addSmtPad(smtpad, ctx)
   }
 
-  // for (const platedHole of db.pcb_plated_hole.list()) {
-  //   addPlatedHole(platedHole, ctx)
-  // }
+  for (const platedHole of db.pcb_plated_hole.list()) {
+    addPlatedHole(platedHole, ctx)
+  }
 
   for (const trace of db.pcb_trace.list()) {
     addPcbTrace(trace, ctx)
