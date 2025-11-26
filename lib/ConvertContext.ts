@@ -16,5 +16,8 @@ export interface ConvertContext {
 
   netGeoms: Map<ConnectivityMapKey, Array<Polygon | Box>>
 
+  copperLayerPolygons: Polygon[]
+  boardCutPolygons: Polygon[]
+
   origin: { x: number; y: number }
 }

@@ -1,11 +1,9 @@
 import { Polygon, point } from "@flatten-js/core"
 import type { PcbBoard } from "circuit-json"
-import { ShapePath } from "lbrnts"
 import type { ConvertContext } from "../../ConvertContext"
-import { polygonToShapePathData } from "../../polygon-to-shape-path"
 
 export const addPcbBoard = (board: PcbBoard, ctx: ConvertContext) => {
-  const { origin, project, throughBoardCutSetting } = ctx
+  const { origin, boardCutPolygons } = ctx
 
   let polygon: Polygon | null = null
 
@@ -37,14 +35,5 @@ export const addPcbBoard = (board: PcbBoard, ctx: ConvertContext) => {
 
   if (!polygon) return
 
-  const { verts, prims } = polygonToShapePathData(polygon)
-
-  project.children.push(
-    new ShapePath({
-      cutIndex: throughBoardCutSetting.index,
-      verts,
-      prims,
-      isClosed: true,
-    }),
-  )
+  boardCutPolygons.push(polygon)
 }
