@@ -7,7 +7,14 @@ export const addOvalPlatedHole = (
   platedHole: PcbPlatedHoleOval,
   ctx: ConvertContext,
 ): void => {
-  const { project, copperCutSetting, throughBoardCutSetting, origin } = ctx
+  const {
+    project,
+    copperCutSetting,
+    throughBoardCutSetting,
+    origin,
+    includeCopper,
+    includeSoldermask,
+  } = ctx
 
   if (platedHole.outer_width <= 0 || platedHole.outer_height <= 0) {
     return
@@ -17,8 +24,12 @@ export const addOvalPlatedHole = (
   const centerY = platedHole.y + origin.y
   const rotation = (platedHole.ccw_rotation ?? 0) * (Math.PI / 180)
 
-  // Add outer oval (copper)
-  if (platedHole.outer_width > 0 && platedHole.outer_height > 0) {
+  // Add outer oval (copper) if drawing copper
+  if (
+    platedHole.outer_width > 0 &&
+    platedHole.outer_height > 0 &&
+    includeCopper
+  ) {
     const outer = createOvalPath(
       centerX,
       centerY,
@@ -36,7 +47,30 @@ export const addOvalPlatedHole = (
     )
   }
 
-  // Add inner oval (hole)
+  // Add soldermask opening if drawing soldermask
+  if (
+    platedHole.outer_width > 0 &&
+    platedHole.outer_height > 0 &&
+    includeSoldermask
+  ) {
+    const outer = createOvalPath(
+      centerX,
+      centerY,
+      platedHole.outer_width,
+      platedHole.outer_height,
+      rotation,
+    )
+    project.children.push(
+      new ShapePath({
+        cutIndex: copperCutSetting.index,
+        verts: outer.verts,
+        prims: outer.prims,
+        isClosed: true,
+      }),
+    )
+  }
+
+  // Add inner oval (hole) - always cut through the board regardless of mode
   if (platedHole.hole_width > 0 && platedHole.hole_height > 0) {
     const inner = createOvalPath(
       centerX,

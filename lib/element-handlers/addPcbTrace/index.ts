@@ -4,7 +4,13 @@ import Flatten, { BooleanOperations } from "@flatten-js/core"
 import { circleToPolygon } from "./circle-to-polygon"
 
 export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
-  const { netGeoms, connMap, origin } = ctx
+  const { netGeoms, connMap, origin, includeCopper, includeSoldermask } = ctx
+
+  // Only include traces when including copper
+  // Traces are NOT included in soldermask-only mode to prevent accidental bridging
+  if (!includeCopper) {
+    return
+  }
 
   const netId = connMap.getNetConnectedToId(
     trace.source_trace_id ?? trace.pcb_trace_id,
