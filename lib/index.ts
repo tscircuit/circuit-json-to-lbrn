@@ -21,6 +21,8 @@ export const convertCircuitJsonToLbrn = (
     includeSilkscreen?: boolean
     origin?: { x: number; y: number }
     margin?: number
+    includeCopper?: boolean
+    includeSoldermask?: boolean
   } = {},
 ): LightBurnProject => {
   const db = cju(circuitJson)
@@ -62,6 +64,8 @@ export const convertCircuitJsonToLbrn = (
     connMap,
     netGeoms: new Map(),
     origin,
+    includeCopper: options.includeCopper ?? true,
+    includeSoldermask: options.includeSoldermask ?? false,
   }
 
   for (const net of Object.keys(connMap.netMap)) {
@@ -112,42 +116,45 @@ export const convertCircuitJsonToLbrn = (
   // }
 
   // Create a union of all the net geoms, and add to project
-  for (const net of Object.keys(connMap.netMap)) {
-    const netGeoms = ctx.netGeoms.get(net)!
+  // Only do this when including copper
+  if (ctx.includeCopper) {
+    for (const net of Object.keys(connMap.netMap)) {
+      const netGeoms = ctx.netGeoms.get(net)!
 
-    if (netGeoms.length === 0) {
-      continue
-    }
-
-    let union = netGeoms[0]!
-    if (union instanceof Box) {
-      union = new Polygon(union)
-    }
-    for (const geom of netGeoms.slice(1)) {
-      if (geom instanceof Polygon) {
-        union = BooleanOperations.unify(union, geom)
-      } else if (geom instanceof Box) {
-        union = BooleanOperations.unify(union, new Polygon(geom))
+      if (netGeoms.length === 0) {
+        continue
       }
-    }
 
-    // DEBUGGING ONLY!!!
-    // if (netGeoms.length > 1) {
-    //   writeDebugSvg(net, union)
-    // }
+      let union = netGeoms[0]!
+      if (union instanceof Box) {
+        union = new Polygon(union)
+      }
+      for (const geom of netGeoms.slice(1)) {
+        if (geom instanceof Polygon) {
+          union = BooleanOperations.unify(union, geom)
+        } else if (geom instanceof Box) {
+          union = BooleanOperations.unify(union, new Polygon(geom))
+        }
+      }
 
-    for (const island of union.splitToIslands()) {
-      // Convert the polygon to verts and prims
-      const { verts, prims } = polygonToShapePathData(island)
+      // DEBUGGING ONLY!!!
+      // if (netGeoms.length > 1) {
+      //   writeDebugSvg(net, union)
+      // }
 
-      project.children.push(
-        new ShapePath({
-          cutIndex: copperCutSetting.index,
-          verts,
-          prims,
-          isClosed: false,
-        }),
-      )
+      for (const island of union.splitToIslands()) {
+        // Convert the polygon to verts and prims
+        const { verts, prims } = polygonToShapePathData(island)
+
+        project.children.push(
+          new ShapePath({
+            cutIndex: copperCutSetting.index,
+            verts,
+            prims,
+            isClosed: false,
+          }),
+        )
+      }
     }
   }
   return project

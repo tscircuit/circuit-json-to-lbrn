@@ -8,7 +8,14 @@ export const addPillHoleWithRectPad = (
   platedHole: PcbHolePillWithRectPad,
   ctx: ConvertContext,
 ): void => {
-  const { project, copperCutSetting, throughBoardCutSetting, origin } = ctx
+  const {
+    project,
+    copperCutSetting,
+    throughBoardCutSetting,
+    origin,
+    includeCopper,
+    includeSoldermask,
+  } = ctx
   const centerX = platedHole.x + origin.x
   const centerY = platedHole.y + origin.y
 
@@ -25,14 +32,29 @@ export const addPillHoleWithRectPad = (
       borderRadius,
     )
 
-    project.children.push(
-      new ShapePath({
-        cutIndex: copperCutSetting.index,
-        verts: padPath.verts,
-        prims: padPath.prims,
-        isClosed: true,
-      }),
-    )
+    // Add the rectangular pad if drawing copper
+    if (includeCopper) {
+      project.children.push(
+        new ShapePath({
+          cutIndex: copperCutSetting.index,
+          verts: padPath.verts,
+          prims: padPath.prims,
+          isClosed: true,
+        }),
+      )
+    }
+
+    // Add soldermask opening if drawing soldermask
+    if (includeSoldermask) {
+      project.children.push(
+        new ShapePath({
+          cutIndex: copperCutSetting.index,
+          verts: padPath.verts,
+          prims: padPath.prims,
+          isClosed: true,
+        }),
+      )
+    }
   }
 
   const holeWidth = platedHole.hole_width

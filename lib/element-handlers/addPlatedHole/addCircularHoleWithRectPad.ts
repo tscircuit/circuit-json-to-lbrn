@@ -8,7 +8,14 @@ export const addCircularHoleWithRectPad = (
   platedHole: PcbHoleCircularWithRectPad,
   ctx: ConvertContext,
 ): void => {
-  const { project, copperCutSetting, throughBoardCutSetting, origin } = ctx
+  const {
+    project,
+    copperCutSetting,
+    throughBoardCutSetting,
+    origin,
+    includeCopper,
+    includeSoldermask,
+  } = ctx
   const centerX = platedHole.x + origin.x
   const centerY = platedHole.y + origin.y
   const holeRadius = platedHole.hole_diameter / 2
@@ -25,17 +32,31 @@ export const addCircularHoleWithRectPad = (
     borderRadius,
   )
 
-  // Add the rectangular pad
-  project.children.push(
-    new ShapePath({
-      cutIndex: copperCutSetting.index,
-      verts: padPath.verts,
-      prims: padPath.prims,
-      isClosed: true,
-    }),
-  )
+  // Add the rectangular pad if drawing copper
+  if (includeCopper) {
+    project.children.push(
+      new ShapePath({
+        cutIndex: copperCutSetting.index,
+        verts: padPath.verts,
+        prims: padPath.prims,
+        isClosed: true,
+      }),
+    )
+  }
 
-  // Add the circular hole (as a cutout)
+  // Add soldermask opening if drawing soldermask
+  if (includeSoldermask) {
+    project.children.push(
+      new ShapePath({
+        cutIndex: copperCutSetting.index,
+        verts: padPath.verts,
+        prims: padPath.prims,
+        isClosed: true,
+      }),
+    )
+  }
+
+  // Add the circular hole (as a cutout) - always cut through the board regardless of mode
   if (holeRadius > 0) {
     const holeCenterX = centerX + platedHole.hole_offset_x
     const holeCenterY = centerY + platedHole.hole_offset_y
