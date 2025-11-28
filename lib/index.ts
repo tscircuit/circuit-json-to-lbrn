@@ -61,6 +61,8 @@ export const convertCircuitJsonToLbrn = (
     throughBoardCutSetting,
     connMap,
     netGeoms: new Map(),
+    copperLayerPolygons: [],
+    boardCutPolygons: [],
     origin,
   }
 
@@ -111,7 +113,8 @@ export const convertCircuitJsonToLbrn = (
   //   }
   // }
 
-  // Create a union of all the net geoms, and add to project
+  // Phase 1: Construct flattenjs polygons for each cutting layer
+  // Create a union of all the net geoms and collect polygons for the copper layer
   for (const net of Object.keys(connMap.netMap)) {
     const netGeoms = ctx.netGeoms.get(net)!
 
@@ -137,18 +140,47 @@ export const convertCircuitJsonToLbrn = (
     // }
 
     for (const island of union.splitToIslands()) {
-      // Convert the polygon to verts and prims
-      const { verts, prims } = polygonToShapePathData(island)
-
-      project.children.push(
-        new ShapePath({
-          cutIndex: copperCutSetting.index,
-          verts,
-          prims,
-          isClosed: false,
-        }),
-      )
+      ctx.copperLayerPolygons.push(island)
     }
+  }
+  // Phase 2: Construct a single cut path for each cutting layer
+
+  if (ctx.copperLayerPolygons.length > 0) {
+    const [firstCopper, ...restCopper] = ctx.copperLayerPolygons
+    let copperUnion: Polygon = firstCopper!
+    for (const poly of restCopper) {
+      copperUnion = BooleanOperations.unify(copperUnion, poly)
+    }
+
+    const { verts, prims } = polygonToShapePathData(copperUnion)
+
+    project.children.push(
+      new ShapePath({
+        cutIndex: copperCutSetting.index,
+        verts,
+        prims,
+        isClosed: false,
+      }),
+    )
+  }
+
+  if (ctx.boardCutPolygons.length > 0) {
+    const [firstBoard, ...restBoards] = ctx.boardCutPolygons
+    let boardUnion: Polygon = firstBoard!
+    for (const poly of restBoards) {
+      boardUnion = BooleanOperations.unify(boardUnion, poly)
+    }
+
+    const { verts, prims } = polygonToShapePathData(boardUnion)
+
+    project.children.push(
+      new ShapePath({
+        cutIndex: throughBoardCutSetting.index,
+        verts,
+        prims,
+        isClosed: true,
+      }),
+    )
   }
   return project
 }
