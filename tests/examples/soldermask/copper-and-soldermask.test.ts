@@ -75,7 +75,7 @@ const circuitJson: CircuitJson = [
     source_trace_id: "source_trace_1",
     route: [
       { x: -2, y: 0, width: 0.2, route_type: "wire", layer: "top" },
-      { x: 2, y: 1, width: 0.2, route_type: "wire", layer: "top" },
+      { x: 2, y: 0, width: 0.2, route_type: "wire", layer: "top" },
     ],
   },
 ]
