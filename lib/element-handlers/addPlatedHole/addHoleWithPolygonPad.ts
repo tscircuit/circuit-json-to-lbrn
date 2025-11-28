@@ -8,7 +8,14 @@ export const addHoleWithPolygonPad = (
   platedHole: PcbHoleWithPolygonPad,
   ctx: ConvertContext,
 ): void => {
-  const { project, copperCutSetting, throughBoardCutSetting, origin } = ctx
+  const {
+    project,
+    copperCutSetting,
+    throughBoardCutSetting,
+    origin,
+    includeCopper,
+    includeSoldermask,
+  } = ctx
 
   // Create the polygon pad
   if (platedHole.pad_outline.length >= 3) {
@@ -18,14 +25,29 @@ export const addHoleWithPolygonPad = (
       platedHole.y + origin.y,
     )
 
-    project.children.push(
-      new ShapePath({
-        cutIndex: copperCutSetting.index,
-        verts: pad.verts,
-        prims: pad.prims,
-        isClosed: true,
-      }),
-    )
+    // Add the polygon pad if drawing copper
+    if (includeCopper) {
+      project.children.push(
+        new ShapePath({
+          cutIndex: copperCutSetting.index,
+          verts: pad.verts,
+          prims: pad.prims,
+          isClosed: true,
+        }),
+      )
+    }
+
+    // Add soldermask opening if drawing soldermask
+    if (includeSoldermask) {
+      project.children.push(
+        new ShapePath({
+          cutIndex: copperCutSetting.index,
+          verts: pad.verts,
+          prims: pad.prims,
+          isClosed: true,
+        }),
+      )
+    }
   }
 
   if (platedHole.hole_shape === "circle" && platedHole.hole_diameter) {

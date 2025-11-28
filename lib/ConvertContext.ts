@@ -17,4 +17,8 @@ export interface ConvertContext {
   netGeoms: Map<ConnectivityMapKey, Array<Polygon | Box>>
 
   origin: { x: number; y: number }
+
+  // Include flags
+  includeCopper: boolean
+  includeSoldermask: boolean
 }
