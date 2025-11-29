@@ -10,6 +10,7 @@ export const addPcbPlatedHolePill = (
   const {
     project,
     copperCutSetting,
+    soldermaskCutSetting,
     throughBoardCutSetting,
     origin,
     includeCopper,
@@ -57,7 +58,7 @@ export const addPcbPlatedHolePill = (
     )
     project.children.push(
       new ShapePath({
-        cutIndex: copperCutSetting.index,
+        cutIndex: soldermaskCutSetting.index,
         verts: outer.verts,
         prims: outer.prims,
         isClosed: true,
@@ -65,7 +66,7 @@ export const addPcbPlatedHolePill = (
     )
   }
 
-  // Add inner pill shape (hole) - always cut through the board regardless of mode
+  // Add inner pill shape (hole)
   if (platedHole.hole_width > 0 && platedHole.hole_height > 0) {
     const inner = createPillPath(
       centerX,

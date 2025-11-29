@@ -11,6 +11,7 @@ export const addRotatedRectSmtPad = (
   const {
     project,
     copperCutSetting,
+    soldermaskCutSetting,
     origin,
     includeCopper,
     includeSoldermask,
@@ -57,7 +58,7 @@ export const addRotatedRectSmtPad = (
     if (includeSoldermask) {
       project.children.push(
         new ShapePath({
-          cutIndex: copperCutSetting.index,
+          cutIndex: soldermaskCutSetting.index,
           verts: outer.verts,
           prims: outer.prims,
           isClosed: true,

@@ -47,6 +47,14 @@ export const convertCircuitJsonToLbrn = (
   })
   project.children.push(throughBoardCutSetting)
 
+  const soldermaskCutSetting = new CutSetting({
+    index: 2,
+    name: "Cut Soldermask",
+    numPasses: 1,
+    speed: 150,
+  })
+  project.children.push(soldermaskCutSetting)
+
   const connMap = getFullConnectivityMapFromCircuitJson(circuitJson)
 
   // Auto-calculate origin if not provided to ensure all elements are in positive quadrant
@@ -61,6 +69,7 @@ export const convertCircuitJsonToLbrn = (
     project,
     copperCutSetting,
     throughBoardCutSetting,
+    soldermaskCutSetting,
     connMap,
     netGeoms: new Map(),
     origin,

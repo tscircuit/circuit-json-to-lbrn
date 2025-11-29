@@ -12,6 +12,7 @@ export const addCirclePlatedHole = (
   const {
     project,
     copperCutSetting,
+    soldermaskCutSetting,
     throughBoardCutSetting,
     origin,
     includeCopper,
@@ -51,7 +52,7 @@ export const addCirclePlatedHole = (
     const outer = createCirclePath(centerX, centerY, outerRadius)
     project.children.push(
       new ShapePath({
-        cutIndex: copperCutSetting.index,
+        cutIndex: soldermaskCutSetting.index,
         verts: outer.verts,
         prims: outer.prims,
         isClosed: true,

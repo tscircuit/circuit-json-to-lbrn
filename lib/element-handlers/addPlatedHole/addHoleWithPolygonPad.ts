@@ -11,6 +11,7 @@ export const addHoleWithPolygonPad = (
   const {
     project,
     copperCutSetting,
+    soldermaskCutSetting,
     throughBoardCutSetting,
     origin,
     includeCopper,
@@ -41,7 +42,7 @@ export const addHoleWithPolygonPad = (
     if (includeSoldermask) {
       project.children.push(
         new ShapePath({
-          cutIndex: copperCutSetting.index,
+          cutIndex: soldermaskCutSetting.index,
           verts: pad.verts,
           prims: pad.prims,
           isClosed: true,

@@ -7,6 +7,7 @@ export const addRectSmtPad = (smtPad: PcbSmtPadRect, ctx: ConvertContext) => {
   const {
     project,
     copperCutSetting,
+    soldermaskCutSetting,
     connMap,
     netGeoms,
     origin,
@@ -84,7 +85,7 @@ export const addRectSmtPad = (smtPad: PcbSmtPadRect, ctx: ConvertContext) => {
 
     project.children.push(
       new ShapePath({
-        cutIndex: copperCutSetting.index,
+        cutIndex: soldermaskCutSetting.index,
         verts,
         prims,
         isClosed: true,

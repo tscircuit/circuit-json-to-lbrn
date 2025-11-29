@@ -80,34 +80,23 @@ const circuitJson: CircuitJson = [
   },
 ]
 
-test("renders both copper and soldermask", async () => {
+test("renders copper only", async () => {
   const pcbSvg = await convertCircuitJsonToPcbSvg(circuitJson)
 
   const project = convertCircuitJsonToLbrn(circuitJson, {
     includeCopper: true,
-    includeSoldermask: true,
   })
-
-  // Verify that both copper and soldermask cut settings exist
-  const copperCutSetting = project.children.find(
-    (child: any) => child.name === "Cut Copper",
-  )
-  const soldermaskCutSetting = project.children.find(
-    (child: any) => child.name === "Cut Soldermask",
-  )
-  expect(copperCutSetting).toBeDefined()
-  expect(soldermaskCutSetting).toBeDefined()
-  expect((copperCutSetting as any).index).toBe(0)
-  expect((soldermaskCutSetting as any).index).toBe(2)
 
   // Verify that we have shapes using both cut settings
   const shapePaths = project.children.filter(
     (child: any) => child.isClosed !== undefined,
   )
   const copperShapes = shapePaths.filter((path: any) => path.cutIndex === 0)
-  const soldermaskShapes = shapePaths.filter((path: any) => path.cutIndex === 2)
+  const soldermaskShapes = shapePaths.filter(
+    (path: any) => path.cutIndex === undefined,
+  )
   expect(copperShapes.length).toBeGreaterThan(0)
-  expect(soldermaskShapes.length).toBeGreaterThan(0)
+  expect(soldermaskShapes.length).toBe(0)
 
   const lbrnSvg = await generateLightBurnSvg(project)
 

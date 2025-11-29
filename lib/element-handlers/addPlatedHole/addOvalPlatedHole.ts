@@ -10,6 +10,7 @@ export const addOvalPlatedHole = (
   const {
     project,
     copperCutSetting,
+    soldermaskCutSetting,
     throughBoardCutSetting,
     origin,
     includeCopper,
@@ -62,7 +63,7 @@ export const addOvalPlatedHole = (
     )
     project.children.push(
       new ShapePath({
-        cutIndex: copperCutSetting.index,
+        cutIndex: soldermaskCutSetting.index,
         verts: outer.verts,
         prims: outer.prims,
         isClosed: true,
