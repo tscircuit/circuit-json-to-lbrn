@@ -11,6 +11,7 @@ export const addPolygonSmtPad = (
   const {
     project,
     copperCutSetting,
+    soldermaskCutSetting,
     origin,
     includeCopper,
     includeSoldermask,
@@ -46,7 +47,7 @@ export const addPolygonSmtPad = (
     if (includeSoldermask) {
       project.children.push(
         new ShapePath({
-          cutIndex: copperCutSetting.index,
+          cutIndex: soldermaskCutSetting.index,
           verts: pad.verts,
           prims: pad.prims,
           isClosed: true,

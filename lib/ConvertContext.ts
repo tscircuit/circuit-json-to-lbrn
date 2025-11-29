@@ -1,6 +1,6 @@
 import type { CircuitJsonUtilObjects } from "@tscircuit/circuit-json-util"
 import type { CutSetting, LightBurnProject } from "lbrnts"
-import type { AnyShape, Box, Polygon } from "@flatten-js/core"
+import type { Box, Polygon } from "@flatten-js/core"
 import type { ConnectivityMap } from "circuit-json-to-connectivity-map"
 
 export type ConnectivityMapKey = string
@@ -11,6 +11,7 @@ export interface ConvertContext {
 
   copperCutSetting: CutSetting
   throughBoardCutSetting: CutSetting
+  soldermaskCutSetting: CutSetting
 
   connMap: ConnectivityMap
 

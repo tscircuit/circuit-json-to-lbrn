@@ -11,6 +11,7 @@ export const addPillHoleWithRectPad = (
   const {
     project,
     copperCutSetting,
+    soldermaskCutSetting,
     throughBoardCutSetting,
     origin,
     includeCopper,
@@ -48,7 +49,7 @@ export const addPillHoleWithRectPad = (
     if (includeSoldermask) {
       project.children.push(
         new ShapePath({
-          cutIndex: copperCutSetting.index,
+          cutIndex: soldermaskCutSetting.index,
           verts: padPath.verts,
           prims: padPath.prims,
           isClosed: true,
