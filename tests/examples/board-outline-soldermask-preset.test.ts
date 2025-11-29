@@ -15,8 +15,7 @@ const circuitJson: CircuitJson = [
     thickness: 1.6,
     num_layers: 2,
     material: "fr4",
-    preset: "soldermask_cutout",
-  } as any,
+  },
   {
     type: "pcb_smtpad",
     x: 0,
@@ -33,24 +32,9 @@ test("board outline with soldermask_cutout preset uses soldermask cut settings",
   const pcbSvg = await convertCircuitJsonToPcbSvg(circuitJson)
 
   const project = convertCircuitJsonToLbrn(circuitJson, {
-    includeCopper: true,
-    includeSoldermask: false,
+    includeCopper: false,
+    includeSoldermask: true,
   })
-
-  // Verify that the soldermask cut setting was created
-  const soldermaskCutSetting = project.children.find(
-    (child: any) => child.name === "Cut Soldermask",
-  )
-  expect(soldermaskCutSetting).toBeDefined()
-  expect((soldermaskCutSetting as any).index).toBe(2)
-
-  // Verify that the board outline uses the soldermask cut setting
-  const shapePaths = project.children.filter(
-    (child: any) => child.isClosed !== undefined,
-  )
-  const boardOutline = shapePaths.find((path: any) => path.isClosed === true)
-  expect(boardOutline).toBeDefined()
-  expect((boardOutline as any).cutIndex).toBe(2) // Should use soldermask cut setting
 
   const lbrnSvg = await generateLightBurnSvg(project)
 

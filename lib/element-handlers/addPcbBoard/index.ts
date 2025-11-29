@@ -5,7 +5,14 @@ import type { ConvertContext } from "../../ConvertContext"
 import { polygonToShapePathData } from "../../polygon-to-shape-path"
 
 export const addPcbBoard = (board: PcbBoard, ctx: ConvertContext) => {
-  const { origin, project, throughBoardCutSetting, soldermaskCutSetting } = ctx
+  const {
+    origin,
+    project,
+    throughBoardCutSetting,
+    soldermaskCutSetting,
+    includeCopper,
+    includeSoldermask,
+  } = ctx
 
   let polygon: Polygon | null = null
 
@@ -39,18 +46,24 @@ export const addPcbBoard = (board: PcbBoard, ctx: ConvertContext) => {
 
   const { verts, prims } = polygonToShapePathData(polygon)
 
-  // Determine which cut setting to use based on the preset field
-  const cutSetting =
-    (board as any).preset === "soldermask_cutout"
-      ? soldermaskCutSetting
-      : throughBoardCutSetting
-
-  project.children.push(
-    new ShapePath({
-      cutIndex: cutSetting.index,
-      verts,
-      prims,
-      isClosed: true,
-    }),
-  )
+  if (includeCopper) {
+    project.children.push(
+      new ShapePath({
+        cutIndex: throughBoardCutSetting.index,
+        verts,
+        prims,
+        isClosed: true,
+      }),
+    )
+  }
+  if (includeSoldermask) {
+    project.children.push(
+      new ShapePath({
+        cutIndex: soldermaskCutSetting.index,
+        verts,
+        prims,
+        isClosed: true,
+      }),
+    )
+  }
 }
