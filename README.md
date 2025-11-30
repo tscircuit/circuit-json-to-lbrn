@@ -39,12 +39,21 @@ const defaultLbrn = convertCircuitJsonToLbrn(circuitJson)
 
 ## Soldermask Support
 
-The `includeSoldermask` flag enables generation of soldermask openings for cutting polyimide sheet. When enabled:
+The `includeSoldermask` flag enables generation of soldermask openings for cutting Kapton tape (polyimide sheet). When enabled:
 - SMT pads and plated holes will have soldermask openings
 - Traces are NOT included in the soldermask layer (to avoid accidental bridging during soldering)
 - Holes are always cut through the board regardless of the mode
+- **Soldermask shapes are filled (Scan mode)** instead of outlined, which is required for laser-cutting Kapton tape masks where the laser needs to remove material from the pad areas
+
+### Laser Cutting Workflow
+
+The soldermask layer uses LightBurn's "Scan" mode with filled shapes. This is designed for the following workflow:
+
+1. **Generate LBRN file**: Use `includeSoldermask: true` to export filled pad shapes
+2. **Laser cut Kapton tape**: The laser will fill/ablate the pad areas.
+
 
 You can generate:
 - **Copper only**: `{ includeCopper: true, includeSoldermask: false }` - Traditional copper cutting
-- **Soldermask only**: `{ includeCopper: false, includeSoldermask: true }` - Just polyimide cutting patterns
+- **Soldermask only**: `{ includeCopper: false, includeSoldermask: true }` - Just Kapton tape (polyimide) cutting patterns (filled shapes)
 - **Both**: `{ includeCopper: true, includeSoldermask: true }` - Complete fabrication file with both layers

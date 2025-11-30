@@ -48,10 +48,12 @@ export const convertCircuitJsonToLbrn = (
   project.children.push(throughBoardCutSetting)
 
   const soldermaskCutSetting = new CutSetting({
+    type: "Scan", // Use Scan mode to fill the pad shapes for Kapton tape cutting
     index: 2,
     name: "Cut Soldermask",
     numPasses: 1,
     speed: 150,
+    scanOpt: "individual", // Scan each shape individually
   })
   project.children.push(soldermaskCutSetting)
 
