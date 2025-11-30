@@ -39,12 +39,22 @@ const defaultLbrn = convertCircuitJsonToLbrn(circuitJson)
 
 ## Soldermask Support
 
-The `includeSoldermask` flag enables generation of soldermask openings for cutting polyimide sheet. When enabled:
+The `includeSoldermask` flag enables generation of soldermask openings for cutting Kapton tape (polyimide sheet). When enabled:
 - SMT pads and plated holes will have soldermask openings
 - Traces are NOT included in the soldermask layer (to avoid accidental bridging during soldering)
 - Holes are always cut through the board regardless of the mode
+- **Soldermask shapes are filled (Scan mode)** instead of outlined, which is required for laser-cutting Kapton tape masks where the laser needs to remove material from the pad areas
+
+### Laser Cutting Workflow
+
+The soldermask layer uses LightBurn's "Scan" mode with filled shapes. This is designed for the following workflow:
+
+1. **Prepare mask in EAGLE CAD**: Configure tStop and tCream layers with appropriate pullback
+2. **Generate LBRN file**: Use `includeSoldermask: true` to export filled pad shapes
+3. **Laser cut Kapton tape**: The laser will fill/ablate the pad areas, creating windows in the mask
+4. **Apply to PCB**: Transfer the cut Kapton mask to your PCB, exposing only the pads for soldering
 
 You can generate:
 - **Copper only**: `{ includeCopper: true, includeSoldermask: false }` - Traditional copper cutting
-- **Soldermask only**: `{ includeCopper: false, includeSoldermask: true }` - Just polyimide cutting patterns
+- **Soldermask only**: `{ includeCopper: false, includeSoldermask: true }` - Just Kapton tape (polyimide) cutting patterns (filled shapes)
 - **Both**: `{ includeCopper: true, includeSoldermask: true }` - Complete fabrication file with both layers
