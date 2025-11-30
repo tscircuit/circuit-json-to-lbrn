@@ -49,10 +49,9 @@ The `includeSoldermask` flag enables generation of soldermask openings for cutti
 
 The soldermask layer uses LightBurn's "Scan" mode with filled shapes. This is designed for the following workflow:
 
-1. **Prepare mask in EAGLE CAD**: Configure tStop and tCream layers with appropriate pullback
-2. **Generate LBRN file**: Use `includeSoldermask: true` to export filled pad shapes
-3. **Laser cut Kapton tape**: The laser will fill/ablate the pad areas, creating windows in the mask
-4. **Apply to PCB**: Transfer the cut Kapton mask to your PCB, exposing only the pads for soldering
+1. **Generate LBRN file**: Use `includeSoldermask: true` to export filled pad shapes
+2. **Laser cut Kapton tape**: The laser will fill/ablate the pad areas.
+
 
 You can generate:
 - **Copper only**: `{ includeCopper: true, includeSoldermask: false }` - Traditional copper cutting
