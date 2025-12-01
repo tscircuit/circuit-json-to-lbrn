@@ -16,6 +16,7 @@ export const addRotatedRectSmtPad = (
     includeCopper,
     includeSoldermask,
     connMap,
+    soldermaskMargin,
   } = ctx
   const centerX = smtPad.x + origin.x
   const centerY = smtPad.y + origin.y
@@ -56,11 +57,23 @@ export const addRotatedRectSmtPad = (
 
     // Add soldermask opening if drawing soldermask
     if (includeSoldermask) {
+      const smWidth = smtPad.width + 2 * soldermaskMargin
+      const smHeight = smtPad.height + 2 * soldermaskMargin
+      const smOuter = createRoundedRectPath(
+        centerX,
+        centerY,
+        smWidth,
+        smHeight,
+        borderRadius,
+        4,
+        rotation,
+      )
+
       project.children.push(
         new ShapePath({
           cutIndex: soldermaskCutSetting.index,
-          verts: outer.verts,
-          prims: outer.prims,
+          verts: smOuter.verts,
+          prims: smOuter.prims,
           isClosed: true,
         }),
       )

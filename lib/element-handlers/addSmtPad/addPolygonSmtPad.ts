@@ -3,6 +3,7 @@ import type { ConvertContext } from "../../ConvertContext"
 import { ShapePath } from "lbrnts"
 import { createPolygonPathFromOutline } from "../../helpers/polygonShape"
 import { pathToPolygon } from "../../helpers/pathToPolygon"
+import { polygonToShapePathData } from "../../polygon-to-shape-path"
 
 export const addPolygonSmtPad = (
   smtPad: PcbSmtPadPolygon,
@@ -16,6 +17,7 @@ export const addPolygonSmtPad = (
     includeCopper,
     includeSoldermask,
     connMap,
+    soldermaskMargin,
   } = ctx
 
   // Create the polygon pad
@@ -45,6 +47,10 @@ export const addPolygonSmtPad = (
 
     // Add soldermask opening if drawing soldermask
     if (includeSoldermask) {
+      // TODO: For polygon pads with soldermask margin, we need to implement proper
+      // polygon offsetting. For now, we use the pad vertices directly.
+      // Consider using a polygon offsetting library like polygon-offset or
+      // implementing offset using @flatten-js/core buffer operations
       project.children.push(
         new ShapePath({
           cutIndex: soldermaskCutSetting.index,

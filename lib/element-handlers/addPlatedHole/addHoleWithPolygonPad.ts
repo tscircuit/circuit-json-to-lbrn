@@ -16,6 +16,7 @@ export const addHoleWithPolygonPad = (
     origin,
     includeCopper,
     includeSoldermask,
+    soldermaskMargin,
   } = ctx
 
   // Create the polygon pad
@@ -40,6 +41,8 @@ export const addHoleWithPolygonPad = (
 
     // Add soldermask opening if drawing soldermask
     if (includeSoldermask) {
+      // TODO: For polygon pads with soldermask margin, we need to implement proper
+      // polygon offsetting. For now, we use the pad vertices directly.
       project.children.push(
         new ShapePath({
           cutIndex: soldermaskCutSetting.index,

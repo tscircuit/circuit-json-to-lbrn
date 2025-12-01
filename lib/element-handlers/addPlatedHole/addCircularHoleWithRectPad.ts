@@ -16,6 +16,7 @@ export const addCircularHoleWithRectPad = (
     origin,
     includeCopper,
     includeSoldermask,
+    soldermaskMargin,
   } = ctx
   const centerX = platedHole.x + origin.x
   const centerY = platedHole.y + origin.y
@@ -47,11 +48,21 @@ export const addCircularHoleWithRectPad = (
 
   // Add soldermask opening if drawing soldermask
   if (includeSoldermask) {
+    const smPadWidth = padWidth + 2 * soldermaskMargin
+    const smPadHeight = padHeight + 2 * soldermaskMargin
+    const smPadPath = createRoundedRectPath(
+      centerX,
+      centerY,
+      smPadWidth,
+      smPadHeight,
+      borderRadius,
+    )
+
     project.children.push(
       new ShapePath({
         cutIndex: soldermaskCutSetting.index,
-        verts: padPath.verts,
-        prims: padPath.prims,
+        verts: smPadPath.verts,
+        prims: smPadPath.prims,
         isClosed: true,
       }),
     )

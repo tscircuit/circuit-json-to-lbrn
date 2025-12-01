@@ -22,4 +22,7 @@ export interface ConvertContext {
   // Include flags
   includeCopper: boolean
   includeSoldermask: boolean
+
+  // Soldermask margin (can be negative)
+  soldermaskMargin: number
 }

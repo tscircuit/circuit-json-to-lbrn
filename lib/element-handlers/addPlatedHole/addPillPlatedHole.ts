@@ -15,6 +15,7 @@ export const addPcbPlatedHolePill = (
     origin,
     includeCopper,
     includeSoldermask,
+    soldermaskMargin,
   } = ctx
   const centerX = platedHole.x + origin.x
   const centerY = platedHole.y + origin.y
@@ -49,13 +50,9 @@ export const addPcbPlatedHolePill = (
     platedHole.outer_height > 0 &&
     includeSoldermask
   ) {
-    const outer = createPillPath(
-      centerX,
-      centerY,
-      platedHole.outer_width,
-      platedHole.outer_height,
-      rotation,
-    )
+    const smWidth = platedHole.outer_width + 2 * soldermaskMargin
+    const smHeight = platedHole.outer_height + 2 * soldermaskMargin
+    const outer = createPillPath(centerX, centerY, smWidth, smHeight, rotation)
     project.children.push(
       new ShapePath({
         cutIndex: soldermaskCutSetting.index,
