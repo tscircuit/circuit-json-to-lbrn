@@ -1,0 +1,8 @@
+<svg width="800" height="1400" viewBox="0 0 800 1400" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(0, 0)">
+    <style></style><rect class="boundary" x="0" y="0" fill="#000" width="800" height="600" data-type="pcb_background" data-pcb-layer="global"/><rect class="pcb-boundary" fill="none" stroke="#fff" stroke-width="0.3" x="127.27272727272725" y="27.272727272727252" width="545.4545454545455" height="545.4545454545455" data-type="pcb_boundary" data-pcb-layer="global"/><path class="pcb-board" d="M 127.27272727272725 572.7272727272727 L 672.7272727272727 572.7272727272727 L 672.7272727272727 27.272727272727252 L 127.27272727272725 27.272727272727252 Z" fill="none" stroke="rgba(255, 255, 255, 0.5)" stroke-width="2.7272727272727275" data-type="pcb_board" data-pcb-layer="board"/>
+  </g>
+  <g transform="translate(0, 600) scale(20, 20) translate(19.9, 19.9)">
+    <rect x="-19.9" y="-19.9" width="40" height="40" fill="white"/><g transform="matrix(1 0 0 -1 0 0.20000000000000284)"><g transform="matrix(1,0,0,1,0,0)"><path d="M -9.9 -9.9 L 10.1 -9.9 L 10.1 10.1 L -9.9 10.1 L -9.9 -9.9 L -9.9 -9.9 Z" fill="none" stroke="#0000FF" stroke-width="0.1"/></g><g transform="matrix(1,0,0,1,0,0)"><path d="M -7.9 0.1 L -3.9 4.1 L 0.1 0.1 L -3.9 -3.9 L -7.9 0.1 L -7.9 0.1" fill="none" stroke="#0000FF" stroke-width="0.1"/></g></g>
+  </g>
+</svg>

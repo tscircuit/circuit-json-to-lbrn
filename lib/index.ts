@@ -15,6 +15,7 @@ import {
 } from "./calculateBounds"
 import { addPcbVia } from "./element-handlers/addPcbVia"
 import { addPcbHole } from "./element-handlers/addPcbHole"
+import { addPcbCutout } from "./element-handlers/addPcbCutout"
 // import { writeDebugSvg } from "./writeDebugSvg"
 
 export const convertCircuitJsonToLbrn = (
@@ -112,6 +113,10 @@ export const convertCircuitJsonToLbrn = (
 
   for (const hole of db.pcb_hole.list()) {
     addPcbHole(hole, ctx)
+  }
+
+  for (const cutout of db.pcb_cutout.list()) {
+    addPcbCutout(cutout, ctx)
   }
 
   // Draw each individual shape geometry as a ShapePath
