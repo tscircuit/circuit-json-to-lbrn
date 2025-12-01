@@ -23,6 +23,7 @@ export const convertCircuitJsonToLbrn = (
     margin?: number
     includeCopper?: boolean
     includeSoldermask?: boolean
+    soldermaskMargin?: number
   } = {},
 ): LightBurnProject => {
   const db = cju(circuitJson)
@@ -80,6 +81,7 @@ export const convertCircuitJsonToLbrn = (
     origin,
     includeCopper: options.includeCopper ?? true,
     includeSoldermask: options.includeSoldermask ?? false,
+    soldermaskMargin: options.soldermaskMargin ?? 0,
   }
 
   for (const net of Object.keys(connMap.netMap)) {

@@ -13,6 +13,7 @@ export const addRectSmtPad = (smtPad: PcbSmtPadRect, ctx: ConvertContext) => {
     origin,
     includeCopper,
     includeSoldermask,
+    soldermaskMargin,
   } = ctx
 
   const centerX = smtPad.x + origin.x
@@ -67,12 +68,15 @@ export const addRectSmtPad = (smtPad: PcbSmtPadRect, ctx: ConvertContext) => {
 
   // Add soldermask opening if drawing soldermask
   if (includeSoldermask) {
+    const smHalfWidth = halfWidth + soldermaskMargin
+    const smHalfHeight = halfHeight + soldermaskMargin
+
     const verts = [
-      { x: centerX - halfWidth, y: centerY - halfHeight },
-      { x: centerX + halfWidth, y: centerY - halfHeight },
-      { x: centerX + halfWidth, y: centerY + halfHeight },
-      { x: centerX - halfWidth, y: centerY + halfHeight },
-      { x: centerX - halfWidth, y: centerY - halfHeight }, // Close the path
+      { x: centerX - smHalfWidth, y: centerY - smHalfHeight },
+      { x: centerX + smHalfWidth, y: centerY - smHalfHeight },
+      { x: centerX + smHalfWidth, y: centerY + smHalfHeight },
+      { x: centerX - smHalfWidth, y: centerY + smHalfHeight },
+      { x: centerX - smHalfWidth, y: centerY - smHalfHeight }, // Close the path
     ]
 
     const prims = [

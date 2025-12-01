@@ -16,6 +16,7 @@ export const addRotatedPillSmtPad = (
     includeCopper,
     includeSoldermask,
     connMap,
+    soldermaskMargin,
   } = ctx
   const centerX = smtPad.x + origin.x
   const centerY = smtPad.y + origin.y
@@ -52,11 +53,21 @@ export const addRotatedPillSmtPad = (
 
     // Add soldermask opening if drawing soldermask
     if (includeSoldermask) {
+      const smWidth = smtPad.width + 2 * soldermaskMargin
+      const smHeight = smtPad.height + 2 * soldermaskMargin
+      const smOuter = createPillPath(
+        centerX,
+        centerY,
+        smWidth,
+        smHeight,
+        (smtPad.ccw_rotation ?? 0) * (Math.PI / 180),
+      )
+
       project.children.push(
         new ShapePath({
           cutIndex: soldermaskCutSetting.index,
-          verts: outer.verts,
-          prims: outer.prims,
+          verts: smOuter.verts,
+          prims: smOuter.prims,
           isClosed: true,
         }),
       )

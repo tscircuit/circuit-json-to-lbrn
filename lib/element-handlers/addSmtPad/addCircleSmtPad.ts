@@ -17,6 +17,7 @@ export const addCircleSmtPad = (
     includeCopper,
     includeSoldermask,
     connMap,
+    soldermaskMargin,
   } = ctx
   const centerX = smtPad.x + origin.x
   const centerY = smtPad.y + origin.y
@@ -49,7 +50,8 @@ export const addCircleSmtPad = (
 
     // Add soldermask opening if drawing soldermask
     if (includeSoldermask) {
-      const outer = createCirclePath(centerX, centerY, outerRadius)
+      const smRadius = outerRadius + soldermaskMargin
+      const outer = createCirclePath(centerX, centerY, smRadius)
       project.children.push(
         new ShapePath({
           cutIndex: soldermaskCutSetting.index,
