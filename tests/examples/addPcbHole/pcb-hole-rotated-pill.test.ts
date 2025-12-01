@@ -32,7 +32,17 @@ const circuitJson: CircuitJson = [
     hole_shape: "rotated_pill",
     hole_width: 1.5,
     hole_height: 3,
-    ccw_rotation: 90, // 90 degrees
+    ccw_rotation: 90,
+    x: 1,
+    y: -1,
+  },
+  {
+    type: "pcb_hole",
+    pcb_hole_id: "pcb_hole_2",
+    hole_shape: "rotated_pill",
+    hole_width: 1.5,
+    hole_height: 3,
+    ccw_rotation: 90,
     x: 1,
     y: -1,
   },

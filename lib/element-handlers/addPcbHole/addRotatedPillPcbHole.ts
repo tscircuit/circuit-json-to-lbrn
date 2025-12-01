@@ -20,7 +20,7 @@ export const addRotatedPillPcbHole = (
   } = ctx
   const centerX = hole.x + origin.x
   const centerY = hole.y + origin.y
-  const rotation = hole.ccw_rotation || 0
+  const rotation = (hole.ccw_rotation || 0) * (Math.PI / 180) // Convert degrees to radians
 
   // Add soldermask opening if drawing soldermask
   if (hole.hole_width > 0 && hole.hole_height > 0 && includeSoldermask) {
