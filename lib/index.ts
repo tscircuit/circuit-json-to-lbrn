@@ -54,6 +54,9 @@ export const convertCircuitJsonToLbrn = (
     numPasses: 1,
     speed: 150,
     scanOpt: "individual", // Scan each shape individually
+    interval: 0.18, // Distance between cross-hatch lines
+    angle: 45, // Angle of the cross-hatch lines
+    crossHatch: true,
   })
   project.children.push(soldermaskCutSetting)
 
