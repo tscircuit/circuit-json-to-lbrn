@@ -62,7 +62,7 @@ export const addPcbBoard = (board: PcbBoard, ctx: ConvertContext) => {
         cutIndex: soldermaskCutSetting.index,
         verts,
         prims,
-        isClosed: true,
+        isClosed: false,
       }),
     )
   }
