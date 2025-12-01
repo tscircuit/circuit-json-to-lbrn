@@ -22,7 +22,7 @@ const circuitJson: CircuitJson = [
     hole_shape: "rotated_pill",
     hole_width: 3,
     hole_height: 1.5,
-    ccw_rotation: 0.785398, // 45 degrees
+    ccw_rotation: 45, // 45 degrees
     x: -1,
     y: 2,
   },
@@ -32,7 +32,7 @@ const circuitJson: CircuitJson = [
     hole_shape: "rotated_pill",
     hole_width: 1.5,
     hole_height: 3,
-    ccw_rotation: 1.5708, // 90 degrees
+    ccw_rotation: 90, // 90 degrees
     x: 1,
     y: -1,
   },
