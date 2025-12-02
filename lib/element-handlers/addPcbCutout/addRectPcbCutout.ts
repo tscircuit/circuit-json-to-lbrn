@@ -26,15 +26,15 @@ export const addRectPcbCutout = (
   // Add the cutout - cut through the board
   if (cutout.width > 0 && cutout.height > 0 && includeCopper) {
     const rotation = (cutout.rotation ?? 0) * (Math.PI / 180) // Convert degrees to radians
-    const rectPath = createRoundedRectPath(
+    const rectPath = createRoundedRectPath({
       centerX,
       centerY,
-      cutout.width,
-      cutout.height,
-      0, // no border radius for cutouts
-      4, // segments
+      width: cutout.width,
+      height: cutout.height,
+      borderRadius: 0, // no border radius for cutouts
+      segments: 4, // segments
       rotation,
-    )
+    })
     project.children.push(
       new ShapePath({
         cutIndex: throughBoardCutSetting.index,
@@ -50,15 +50,15 @@ export const addRectPcbCutout = (
     const rotation = (cutout.rotation ?? 0) * (Math.PI / 180) // Convert degrees to radians
     const smWidth = cutout.width + 2 * soldermaskMargin
     const smHeight = cutout.height + 2 * soldermaskMargin
-    const rectPath = createRoundedRectPath(
+    const rectPath = createRoundedRectPath({
       centerX,
       centerY,
-      smWidth,
-      smHeight,
-      0, // no border radius for cutouts
-      4, // segments
+      width: smWidth,
+      height: smHeight,
+      borderRadius: 0, // no border radius for cutouts
+      segments: 4, // segments
       rotation,
-    )
+    })
     project.children.push(
       new ShapePath({
         cutIndex: soldermaskCutSetting.index,

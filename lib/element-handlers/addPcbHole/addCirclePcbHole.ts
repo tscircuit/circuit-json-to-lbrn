@@ -25,7 +25,11 @@ export const addCirclePcbHole = (
   // Add soldermask opening if drawing soldermask
   if (hole.hole_diameter > 0 && includeSoldermask) {
     const smRadius = hole.hole_diameter / 2 + soldermaskMargin
-    const soldermaskPath = createCirclePath(centerX, centerY, smRadius)
+    const soldermaskPath = createCirclePath({
+      centerX,
+      centerY,
+      radius: smRadius,
+    })
     project.children.push(
       new ShapePath({
         cutIndex: soldermaskCutSetting.index,
@@ -39,7 +43,11 @@ export const addCirclePcbHole = (
   // Add the hole - cut through the board
   if (hole.hole_diameter > 0 && includeCopper) {
     const radius = hole.hole_diameter / 2
-    const circlePath = createCirclePath(centerX, centerY, radius)
+    const circlePath = createCirclePath({
+      centerX,
+      centerY,
+      radius,
+    })
     project.children.push(
       new ShapePath({
         cutIndex: throughBoardCutSetting.index,

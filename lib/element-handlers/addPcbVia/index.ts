@@ -42,7 +42,11 @@ export const addPcbVia = (via: PcbVia, ctx: ConvertContext): void => {
       ctx.netGeoms.get(netId)?.push(polygon)
     } else {
       // No net connection - draw directly
-      const outer = createCirclePath(centerX, centerY, outerRadius)
+      const outer = createCirclePath({
+        centerX,
+        centerY,
+        radius: outerRadius,
+      })
       project.children.push(
         new ShapePath({
           cutIndex: copperCutSetting.index,
@@ -57,7 +61,11 @@ export const addPcbVia = (via: PcbVia, ctx: ConvertContext): void => {
   // Add soldermask opening if drawing soldermask
   if (via.outer_diameter > 0 && includeSoldermask) {
     const smRadius = via.outer_diameter / 2 + soldermaskMargin
-    const outer = createCirclePath(centerX, centerY, smRadius)
+    const outer = createCirclePath({
+      centerX,
+      centerY,
+      radius: smRadius,
+    })
     project.children.push(
       new ShapePath({
         cutIndex: soldermaskCutSetting.index,
@@ -71,7 +79,11 @@ export const addPcbVia = (via: PcbVia, ctx: ConvertContext): void => {
   // Add inner circle (hole) - always cut through the board regardless of mode
   if (via.hole_diameter > 0 && includeCopper) {
     const innerRadius = via.hole_diameter / 2
-    const inner = createCirclePath(centerX, centerY, innerRadius)
+    const inner = createCirclePath({
+      centerX,
+      centerY,
+      radius: innerRadius,
+    })
     project.children.push(
       new ShapePath({
         cutIndex: throughBoardCutSetting.index,

@@ -12,12 +12,19 @@ export interface CirclePath {
   prims: Prim[]
 }
 
-export const createCirclePath = (
-  centerX: number,
-  centerY: number,
-  radius: number,
-  segments: number = 64,
-): CirclePath => {
+export interface CreateCirclePathParams {
+  centerX: number
+  centerY: number
+  radius: number
+  segments?: number
+}
+
+export const createCirclePath = ({
+  centerX,
+  centerY,
+  radius,
+  segments = 64,
+}: CreateCirclePathParams): CirclePath => {
   const verts: Point[] = []
   const prims: Prim[] = []
 

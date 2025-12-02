@@ -12,14 +12,23 @@ export interface OvalPath {
   prims: Prim[]
 }
 
-export const createOvalPath = (
-  centerX: number,
-  centerY: number,
-  width: number,
-  height: number,
-  rotation: number = 0,
-  segments: number = 64,
-): OvalPath => {
+export interface CreateOvalPathParams {
+  centerX: number
+  centerY: number
+  width: number
+  height: number
+  rotation?: number
+  segments?: number
+}
+
+export const createOvalPath = ({
+  centerX,
+  centerY,
+  width,
+  height,
+  rotation = 0,
+  segments = 64,
+}: CreateOvalPathParams): OvalPath => {
   const verts: Point[] = []
   const prims: Prim[] = []
   const radiusX = width / 2

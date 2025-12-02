@@ -32,13 +32,13 @@ export const addOvalPlatedHole = (
     platedHole.outer_height > 0 &&
     includeCopper
   ) {
-    const outer = createOvalPath(
+    const outer = createOvalPath({
       centerX,
       centerY,
-      platedHole.outer_width,
-      platedHole.outer_height,
+      width: platedHole.outer_width,
+      height: platedHole.outer_height,
       rotation,
-    )
+    })
     project.children.push(
       new ShapePath({
         cutIndex: copperCutSetting.index,
@@ -57,7 +57,13 @@ export const addOvalPlatedHole = (
   ) {
     const smWidth = platedHole.outer_width + 2 * soldermaskMargin
     const smHeight = platedHole.outer_height + 2 * soldermaskMargin
-    const outer = createOvalPath(centerX, centerY, smWidth, smHeight, rotation)
+    const outer = createOvalPath({
+      centerX,
+      centerY,
+      width: smWidth,
+      height: smHeight,
+      rotation,
+    })
     project.children.push(
       new ShapePath({
         cutIndex: soldermaskCutSetting.index,
@@ -74,13 +80,13 @@ export const addOvalPlatedHole = (
     platedHole.hole_height > 0 &&
     includeCopper
   ) {
-    const inner = createOvalPath(
+    const inner = createOvalPath({
       centerX,
       centerY,
-      platedHole.hole_width,
-      platedHole.hole_height,
+      width: platedHole.hole_width,
+      height: platedHole.hole_height,
       rotation,
-    )
+    })
     project.children.push(
       new ShapePath({
         cutIndex: throughBoardCutSetting.index,
