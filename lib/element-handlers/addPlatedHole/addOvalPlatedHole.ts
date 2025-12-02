@@ -68,8 +68,12 @@ export const addOvalPlatedHole = (
     )
   }
 
-  // Add inner oval (hole) - always cut through the board regardless of mode
-  if (platedHole.hole_width > 0 && platedHole.hole_height > 0) {
+  // Add inner oval (hole)
+  if (
+    platedHole.hole_width > 0 &&
+    platedHole.hole_height > 0 &&
+    includeCopper
+  ) {
     const inner = createOvalPath(
       centerX,
       centerY,

@@ -78,7 +78,7 @@ export const addRotatedPillHoleWithRectPad = (
   const holeHeight = platedHole.hole_height
   const holeRotation = (platedHole.hole_ccw_rotation ?? 0) * (Math.PI / 180)
 
-  if (holeWidth > 0 && holeHeight > 0) {
+  if (holeWidth > 0 && holeHeight > 0 && includeCopper) {
     const holeCenterX = centerX + platedHole.hole_offset_x
     const holeCenterY = centerY + platedHole.hole_offset_y
     const holePath = createPillPath(

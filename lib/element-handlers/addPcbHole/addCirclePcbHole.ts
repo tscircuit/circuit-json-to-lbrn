@@ -17,6 +17,7 @@ export const addCirclePcbHole = (
     origin,
     includeSoldermask,
     soldermaskMargin,
+    includeCopper,
   } = ctx
   const centerX = hole.x + origin.x
   const centerY = hole.y + origin.y
@@ -36,7 +37,7 @@ export const addCirclePcbHole = (
   }
 
   // Add the hole - cut through the board
-  if (hole.hole_diameter > 0) {
+  if (hole.hole_diameter > 0 && includeCopper) {
     const radius = hole.hole_diameter / 2
     const circlePath = createCirclePath(centerX, centerY, radius)
     project.children.push(
