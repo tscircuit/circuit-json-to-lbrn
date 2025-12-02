@@ -13,11 +13,17 @@ export interface PointAdderOptions {
   translation?: PathPoint
 }
 
-export const createPointAdder = (
-  verts: PathPoint[],
-  prims: PathPrim[],
-  options: PointAdderOptions = {},
-): ((x: number, y: number) => void) => {
+export interface CreatePointAdderParams {
+  verts: PathPoint[]
+  prims: PathPrim[]
+  options?: PointAdderOptions
+}
+
+export const createPointAdder = ({
+  verts,
+  prims,
+  options = {},
+}: CreatePointAdderParams): ((x: number, y: number) => void) => {
   const { rotation = 0, rotationCenter, translation } = options
   const cos = Math.cos(rotation)
   const sin = Math.sin(rotation)

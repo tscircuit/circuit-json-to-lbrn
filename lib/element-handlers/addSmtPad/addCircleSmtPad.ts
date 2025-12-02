@@ -36,7 +36,11 @@ export const addCircleSmtPad = (
         ctx.netGeoms.get(netId)?.push(polygon)
       } else {
         // No net connection - draw directly
-        const outer = createCirclePath(centerX, centerY, outerRadius)
+        const outer = createCirclePath({
+          centerX,
+          centerY,
+          radius: outerRadius,
+        })
         project.children.push(
           new ShapePath({
             cutIndex: copperCutSetting.index,
@@ -51,7 +55,11 @@ export const addCircleSmtPad = (
     // Add soldermask opening if drawing soldermask
     if (includeSoldermask) {
       const smRadius = outerRadius + soldermaskMargin
-      const outer = createCirclePath(centerX, centerY, smRadius)
+      const outer = createCirclePath({
+        centerX,
+        centerY,
+        radius: smRadius,
+      })
       project.children.push(
         new ShapePath({
           cutIndex: soldermaskCutSetting.index,

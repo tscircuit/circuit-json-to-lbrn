@@ -22,13 +22,13 @@ export const addRotatedPillSmtPad = (
   const centerY = smtPad.y + origin.y
 
   if (smtPad.width > 0 && smtPad.height > 0) {
-    const outer = createPillPath(
+    const outer = createPillPath({
       centerX,
       centerY,
-      smtPad.width,
-      smtPad.height,
-      (smtPad.ccw_rotation ?? 0) * (Math.PI / 180),
-    )
+      width: smtPad.width,
+      height: smtPad.height,
+      rotation: (smtPad.ccw_rotation ?? 0) * (Math.PI / 180),
+    })
 
     // Add to netGeoms for copper (will be merged with traces)
     if (includeCopper) {
@@ -55,13 +55,13 @@ export const addRotatedPillSmtPad = (
     if (includeSoldermask) {
       const smWidth = smtPad.width + 2 * soldermaskMargin
       const smHeight = smtPad.height + 2 * soldermaskMargin
-      const smOuter = createPillPath(
+      const smOuter = createPillPath({
         centerX,
         centerY,
-        smWidth,
-        smHeight,
-        (smtPad.ccw_rotation ?? 0) * (Math.PI / 180),
-      )
+        width: smWidth,
+        height: smHeight,
+        rotation: (smtPad.ccw_rotation ?? 0) * (Math.PI / 180),
+      })
 
       project.children.push(
         new ShapePath({
