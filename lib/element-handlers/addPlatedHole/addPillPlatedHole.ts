@@ -64,7 +64,11 @@ export const addPcbPlatedHolePill = (
   }
 
   // Add inner pill shape (hole)
-  if (platedHole.hole_width > 0 && platedHole.hole_height > 0) {
+  if (
+    platedHole.hole_width > 0 &&
+    platedHole.hole_height > 0 &&
+    includeCopper
+  ) {
     const inner = createPillPath(
       centerX,
       centerY,

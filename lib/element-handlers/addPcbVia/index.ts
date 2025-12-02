@@ -69,7 +69,7 @@ export const addPcbVia = (via: PcbVia, ctx: ConvertContext): void => {
   }
 
   // Add inner circle (hole) - always cut through the board regardless of mode
-  if (via.hole_diameter > 0) {
+  if (via.hole_diameter > 0 && includeCopper) {
     const innerRadius = via.hole_diameter / 2
     const inner = createCirclePath(centerX, centerY, innerRadius)
     project.children.push(
