@@ -20,7 +20,7 @@ export const addRotatedRectSmtPad = (
   } = ctx
   const centerX = smtPad.x + origin.x
   const centerY = smtPad.y + origin.y
-  const rotation = smtPad.ccw_rotation ?? 0
+  const rotation = (smtPad.ccw_rotation ?? 0) * (Math.PI / 180)
   const borderRadius = smtPad.rect_border_radius ?? 0
 
   if (smtPad.width > 0 && smtPad.height > 0) {
