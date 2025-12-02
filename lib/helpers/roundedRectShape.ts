@@ -12,15 +12,25 @@ export interface RoundedRectPath {
   prims: Prim[]
 }
 
-export const createRoundedRectPath = (
-  centerX: number,
-  centerY: number,
-  width: number,
-  height: number,
-  borderRadius: number = 0,
-  segments: number = 4,
-  rotation: number = 0,
-): RoundedRectPath => {
+export interface CreateRoundedRectPathParams {
+  centerX: number
+  centerY: number
+  width: number
+  height: number
+  borderRadius?: number
+  segments?: number
+  rotation?: number
+}
+
+export const createRoundedRectPath = ({
+  centerX,
+  centerY,
+  width,
+  height,
+  borderRadius = 0,
+  segments = 4,
+  rotation = 0,
+}: CreateRoundedRectPathParams): RoundedRectPath => {
   const verts: Point[] = []
   const prims: Prim[] = []
   const halfWidth = width / 2

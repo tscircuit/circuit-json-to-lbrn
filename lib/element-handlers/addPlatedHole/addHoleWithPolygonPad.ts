@@ -21,11 +21,11 @@ export const addHoleWithPolygonPad = (
 
   // Create the polygon pad
   if (platedHole.pad_outline.length >= 3 && includeCopper) {
-    const pad = createPolygonPathFromOutline(
-      platedHole.pad_outline,
-      platedHole.x + origin.x,
-      platedHole.y + origin.y,
-    )
+    const pad = createPolygonPathFromOutline({
+      outline: platedHole.pad_outline,
+      offsetX: platedHole.x + origin.x,
+      offsetY: platedHole.y + origin.y,
+    })
 
     // Add the polygon pad if drawing copper
     if (includeCopper) {
@@ -62,7 +62,12 @@ export const addHoleWithPolygonPad = (
     const centerX = platedHole.x + platedHole.hole_offset_x + origin.x
     const centerY = platedHole.y + platedHole.hole_offset_y + origin.y
     const radius = platedHole.hole_diameter / 2
-    const hole = createCirclePath(centerX, centerY, radius, 64)
+    const hole = createCirclePath({
+      centerX,
+      centerY,
+      radius,
+      segments: 64,
+    })
 
     project.children.push(
       new ShapePath({
@@ -81,7 +86,12 @@ export const addHoleWithPolygonPad = (
     const centerX = platedHole.x + platedHole.hole_offset_x + origin.x
     const centerY = platedHole.y + platedHole.hole_offset_y + origin.y
     const radius = platedHole.hole_diameter / 2
-    const hole = createCirclePath(centerX, centerY, radius, 64)
+    const hole = createCirclePath({
+      centerX,
+      centerY,
+      radius,
+      segments: 64,
+    })
 
     // Note: rotation is not supported for holes with polygon pad
 

@@ -26,13 +26,13 @@ export const addPillHoleWithRectPad = (
   const borderRadius = platedHole.rect_border_radius ?? 0
 
   if (padWidth > 0 && padHeight > 0) {
-    const padPath = createRoundedRectPath(
+    const padPath = createRoundedRectPath({
       centerX,
       centerY,
-      padWidth,
-      padHeight,
+      width: padWidth,
+      height: padHeight,
       borderRadius,
-    )
+    })
 
     // Add the rectangular pad if drawing copper
     if (includeCopper) {
@@ -50,13 +50,13 @@ export const addPillHoleWithRectPad = (
     if (includeSoldermask) {
       const smPadWidth = padWidth + 2 * soldermaskMargin
       const smPadHeight = padHeight + 2 * soldermaskMargin
-      const smPadPath = createRoundedRectPath(
+      const smPadPath = createRoundedRectPath({
         centerX,
         centerY,
-        smPadWidth,
-        smPadHeight,
+        width: smPadWidth,
+        height: smPadHeight,
         borderRadius,
-      )
+      })
 
       project.children.push(
         new ShapePath({
@@ -75,12 +75,12 @@ export const addPillHoleWithRectPad = (
   if (holeWidth > 0 && holeHeight > 0 && includeCopper) {
     const holeCenterX = centerX + platedHole.hole_offset_x
     const holeCenterY = centerY + platedHole.hole_offset_y
-    const holePath = createPillPath(
-      holeCenterX,
-      holeCenterY,
-      holeWidth,
-      holeHeight,
-    )
+    const holePath = createPillPath({
+      centerX: holeCenterX,
+      centerY: holeCenterY,
+      width: holeWidth,
+      height: holeHeight,
+    })
 
     project.children.push(
       new ShapePath({

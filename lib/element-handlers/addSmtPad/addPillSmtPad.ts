@@ -22,7 +22,12 @@ export const addPillSmtPad = (
   const centerY = smtPad.y + origin.y
 
   if (smtPad.width > 0 && smtPad.height > 0) {
-    const outer = createPillPath(centerX, centerY, smtPad.width, smtPad.height)
+    const outer = createPillPath({
+      centerX,
+      centerY,
+      width: smtPad.width,
+      height: smtPad.height,
+    })
 
     // Add to netGeoms for copper (will be merged with traces)
     if (includeCopper) {
@@ -49,7 +54,12 @@ export const addPillSmtPad = (
     if (includeSoldermask) {
       const smWidth = smtPad.width + 2 * soldermaskMargin
       const smHeight = smtPad.height + 2 * soldermaskMargin
-      const smOuter = createPillPath(centerX, centerY, smWidth, smHeight)
+      const smOuter = createPillPath({
+        centerX,
+        centerY,
+        width: smWidth,
+        height: smHeight,
+      })
 
       project.children.push(
         new ShapePath({

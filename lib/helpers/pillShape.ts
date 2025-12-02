@@ -14,14 +14,23 @@ export interface PillPath {
   prims: Prim[]
 }
 
-export const createPillPath = (
-  centerX: number,
-  centerY: number,
-  width: number,
-  height: number,
-  rotation: number = 0,
-  segments: number = 32,
-): PillPath => {
+export interface CreatePillPathParams {
+  centerX: number
+  centerY: number
+  width: number
+  height: number
+  rotation?: number
+  segments?: number
+}
+
+export const createPillPath = ({
+  centerX,
+  centerY,
+  width,
+  height,
+  rotation = 0,
+  segments = 32,
+}: CreatePillPathParams): PillPath => {
   const verts: Point[] = []
   const prims: Prim[] = []
   const halfWidth = width / 2
@@ -29,9 +38,13 @@ export const createPillPath = (
   const radius = Math.min(halfWidth, halfHeight)
   const isVertical = height > width
 
-  const addPoint = createPointAdder(verts, prims, {
-    rotation,
-    rotationCenter: { x: centerX, y: centerY },
+  const addPoint = createPointAdder({
+    verts,
+    prims,
+    options: {
+      rotation,
+      rotationCenter: { x: centerX, y: centerY },
+    },
   })
 
   if (isVertical) {

@@ -12,11 +12,17 @@ export interface PolygonPath {
   prims: Prim[]
 }
 
-export const createPolygonPathFromOutline = (
-  outline: Array<{ x?: number | null; y?: number | null }>,
-  offsetX: number,
-  offsetY: number,
-): PolygonPath => {
+export interface CreatePolygonPathFromOutlineParams {
+  outline: Array<{ x?: number | null; y?: number | null }>
+  offsetX: number
+  offsetY: number
+}
+
+export const createPolygonPathFromOutline = ({
+  outline,
+  offsetX,
+  offsetY,
+}: CreatePolygonPathFromOutlineParams): PolygonPath => {
   const verts: Point[] = []
 
   for (const point of outline) {

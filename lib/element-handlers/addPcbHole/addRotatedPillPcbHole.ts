@@ -25,13 +25,13 @@ export const addRotatedPillPcbHole = (
 
   // Add soldermask opening if drawing soldermask
   if (hole.hole_width > 0 && hole.hole_height > 0 && includeSoldermask) {
-    const soldermaskPath = createPillPath(
+    const soldermaskPath = createPillPath({
       centerX,
       centerY,
-      hole.hole_width + soldermaskMargin * 2,
-      hole.hole_height + soldermaskMargin * 2,
+      width: hole.hole_width + soldermaskMargin * 2,
+      height: hole.hole_height + soldermaskMargin * 2,
       rotation,
-    )
+    })
     project.children.push(
       new ShapePath({
         cutIndex: soldermaskCutSetting.index,
@@ -44,13 +44,13 @@ export const addRotatedPillPcbHole = (
 
   // Add the hole - cut through the board
   if (hole.hole_width > 0 && hole.hole_height > 0 && includeCopper) {
-    const pillPath = createPillPath(
+    const pillPath = createPillPath({
       centerX,
       centerY,
-      hole.hole_width,
-      hole.hole_height,
+      width: hole.hole_width,
+      height: hole.hole_height,
       rotation,
-    )
+    })
     project.children.push(
       new ShapePath({
         cutIndex: throughBoardCutSetting.index,

@@ -23,11 +23,11 @@ export const addPolygonPcbCutout = (
 
   // Add the cutout - cut through the board
   if (cutout.points.length >= 3 && includeCopper) {
-    const polygonPath = createPolygonPathFromOutline(
-      cutout.points,
-      origin.x,
-      origin.y,
-    )
+    const polygonPath = createPolygonPathFromOutline({
+      outline: cutout.points,
+      offsetX: origin.x,
+      offsetY: origin.y,
+    })
     project.children.push(
       new ShapePath({
         cutIndex: throughBoardCutSetting.index,
@@ -55,7 +55,11 @@ export const addPolygonPcbCutout = (
           }))
         : cutout.points
 
-    const polygonPath = createPolygonPathFromOutline(points, origin.x, origin.y)
+    const polygonPath = createPolygonPathFromOutline({
+      outline: points,
+      offsetX: origin.x,
+      offsetY: origin.y,
+    })
     project.children.push(
       new ShapePath({
         cutIndex: soldermaskCutSetting.index,

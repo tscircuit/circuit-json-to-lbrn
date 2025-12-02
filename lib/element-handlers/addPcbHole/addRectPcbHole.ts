@@ -24,13 +24,13 @@ export const addRectPcbHole = (
 
   // Add soldermask opening if drawing soldermask
   if (hole.hole_width > 0 && hole.hole_height > 0 && includeSoldermask) {
-    const soldermaskPath = createRoundedRectPath(
+    const soldermaskPath = createRoundedRectPath({
       centerX,
       centerY,
-      hole.hole_width + soldermaskMargin * 2,
-      hole.hole_height + soldermaskMargin * 2,
-      0, // no border radius for rect holes
-    )
+      width: hole.hole_width + soldermaskMargin * 2,
+      height: hole.hole_height + soldermaskMargin * 2,
+      borderRadius: 0, // no border radius for rect holes
+    })
     project.children.push(
       new ShapePath({
         cutIndex: soldermaskCutSetting.index,
@@ -43,13 +43,13 @@ export const addRectPcbHole = (
 
   // Add the hole - cut through the board
   if (hole.hole_width > 0 && hole.hole_height > 0 && includeCopper) {
-    const rectPath = createRoundedRectPath(
+    const rectPath = createRoundedRectPath({
       centerX,
       centerY,
-      hole.hole_width,
-      hole.hole_height,
-      0, // no border radius for rect holes
-    )
+      width: hole.hole_width,
+      height: hole.hole_height,
+      borderRadius: 0, // no border radius for rect holes
+    })
     project.children.push(
       new ShapePath({
         cutIndex: throughBoardCutSetting.index,

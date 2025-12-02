@@ -35,7 +35,11 @@ export const addCirclePlatedHole = (
       ctx.netGeoms.get(netId)?.push(polygon)
     } else {
       // No net connection - draw directly
-      const outer = createCirclePath(centerX, centerY, outerRadius)
+      const outer = createCirclePath({
+        centerX,
+        centerY,
+        radius: outerRadius,
+      })
       project.children.push(
         new ShapePath({
           cutIndex: copperCutSetting.index,
@@ -50,7 +54,11 @@ export const addCirclePlatedHole = (
   // Add soldermask opening if drawing soldermask
   if (platedHole.outer_diameter > 0 && includeSoldermask) {
     const smRadius = platedHole.outer_diameter / 2 + soldermaskMargin
-    const outer = createCirclePath(centerX, centerY, smRadius)
+    const outer = createCirclePath({
+      centerX,
+      centerY,
+      radius: smRadius,
+    })
     project.children.push(
       new ShapePath({
         cutIndex: soldermaskCutSetting.index,
@@ -63,7 +71,11 @@ export const addCirclePlatedHole = (
 
   if (platedHole.hole_diameter > 0 && includeCopper) {
     const innerRadius = platedHole.hole_diameter / 2
-    const inner = createCirclePath(centerX, centerY, innerRadius)
+    const inner = createCirclePath({
+      centerX,
+      centerY,
+      radius: innerRadius,
+    })
     project.children.push(
       new ShapePath({
         cutIndex: throughBoardCutSetting.index,
