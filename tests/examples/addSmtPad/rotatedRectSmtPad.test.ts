@@ -14,7 +14,7 @@ const circuitJson: CircuitJson = [
   {
     type: "pcb_board",
     pcb_board_id: "board",
-    width: 10,
+    width: 12,
     height: 10,
     center: { x: 0, y: 0 },
     thickness: 1.6,
@@ -23,7 +23,7 @@ const circuitJson: CircuitJson = [
   },
   {
     type: "pcb_smtpad",
-    x: -2,
+    x: -4,
     y: 0,
     layer: "top",
     shape: "rotated_rect",
@@ -35,7 +35,19 @@ const circuitJson: CircuitJson = [
   },
   {
     type: "pcb_smtpad",
-    x: 2,
+    x: 0,
+    y: 0,
+    layer: "top",
+    shape: "rotated_rect",
+    pcb_smtpad_id: "pcb_smt_pad_1",
+    width: 2,
+    height: 2,
+    ccw_rotation: 30,
+    rect_border_radius: 0.5,
+  },
+  {
+    type: "pcb_smtpad",
+    x: 4,
     y: 0,
     layer: "top",
     shape: "rotated_rect",
