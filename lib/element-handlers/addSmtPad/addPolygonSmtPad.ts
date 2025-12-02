@@ -22,7 +22,11 @@ export const addPolygonSmtPad = (
 
   // Create the polygon pad
   if (smtPad.points.length >= 3) {
-    const pad = createPolygonPathFromOutline(smtPad.points, origin.x, origin.y)
+    const pad = createPolygonPathFromOutline({
+      outline: smtPad.points,
+      offsetX: origin.x,
+      offsetY: origin.y,
+    })
 
     // Add to netGeoms for copper (will be merged with traces)
     if (includeCopper) {

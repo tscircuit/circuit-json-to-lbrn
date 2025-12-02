@@ -24,15 +24,15 @@ export const addRotatedRectSmtPad = (
   const borderRadius = smtPad.rect_border_radius ?? 0
 
   if (smtPad.width > 0 && smtPad.height > 0) {
-    const outer = createRoundedRectPath(
+    const outer = createRoundedRectPath({
       centerX,
       centerY,
-      smtPad.width,
-      smtPad.height,
+      width: smtPad.width,
+      height: smtPad.height,
       borderRadius,
-      4,
+      segments: 4,
       rotation,
-    )
+    })
 
     // Add to netGeoms for copper (will be merged with traces)
     if (includeCopper) {
@@ -59,15 +59,15 @@ export const addRotatedRectSmtPad = (
     if (includeSoldermask) {
       const smWidth = smtPad.width + 2 * soldermaskMargin
       const smHeight = smtPad.height + 2 * soldermaskMargin
-      const smOuter = createRoundedRectPath(
+      const smOuter = createRoundedRectPath({
         centerX,
         centerY,
-        smWidth,
-        smHeight,
+        width: smWidth,
+        height: smHeight,
         borderRadius,
-        4,
+        segments: 4,
         rotation,
-      )
+      })
 
       project.children.push(
         new ShapePath({
