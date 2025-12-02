@@ -61,8 +61,7 @@ export const addCirclePlatedHole = (
     )
   }
 
-  // Add inner circle (hole) - always cut through the board regardless of mode
-  if (platedHole.hole_diameter > 0) {
+  if (platedHole.hole_diameter > 0 && includeCopper) {
     const innerRadius = platedHole.hole_diameter / 2
     const inner = createCirclePath(centerX, centerY, innerRadius)
     project.children.push(

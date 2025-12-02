@@ -17,6 +17,7 @@ export const addOvalPcbHole = (
     origin,
     includeSoldermask,
     soldermaskMargin,
+    includeCopper,
   } = ctx
   const centerX = hole.x + origin.x
   const centerY = hole.y + origin.y
@@ -40,7 +41,7 @@ export const addOvalPcbHole = (
   }
 
   // Add the hole - cut through the board
-  if (hole.hole_width > 0 && hole.hole_height > 0) {
+  if (hole.hole_width > 0 && hole.hole_height > 0 && includeCopper) {
     const ovalPath = createOvalPath(
       centerX,
       centerY,

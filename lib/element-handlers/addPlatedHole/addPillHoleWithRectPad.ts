@@ -72,7 +72,7 @@ export const addPillHoleWithRectPad = (
   const holeWidth = platedHole.hole_width
   const holeHeight = platedHole.hole_height
 
-  if (holeWidth > 0 && holeHeight > 0) {
+  if (holeWidth > 0 && holeHeight > 0 && includeCopper) {
     const holeCenterX = centerX + platedHole.hole_offset_x
     const holeCenterY = centerY + platedHole.hole_offset_y
     const holePath = createPillPath(
