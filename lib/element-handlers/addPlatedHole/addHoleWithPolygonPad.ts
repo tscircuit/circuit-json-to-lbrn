@@ -20,7 +20,7 @@ export const addHoleWithPolygonPad = (
   } = ctx
 
   // Create the polygon pad
-  if (platedHole.pad_outline.length >= 3) {
+  if (platedHole.pad_outline.length >= 3 && includeCopper) {
     const pad = createPolygonPathFromOutline(
       platedHole.pad_outline,
       platedHole.x + origin.x,
@@ -54,7 +54,11 @@ export const addHoleWithPolygonPad = (
     }
   }
 
-  if (platedHole.hole_shape === "circle" && platedHole.hole_diameter) {
+  if (
+    platedHole.hole_shape === "circle" &&
+    platedHole.hole_diameter &&
+    includeCopper
+  ) {
     const centerX = platedHole.x + platedHole.hole_offset_x + origin.x
     const centerY = platedHole.y + platedHole.hole_offset_y + origin.y
     const radius = platedHole.hole_diameter / 2
@@ -69,7 +73,11 @@ export const addHoleWithPolygonPad = (
       }),
     )
   }
-  if (platedHole.hole_shape === "pill" && platedHole.hole_diameter) {
+  if (
+    platedHole.hole_shape === "pill" &&
+    platedHole.hole_diameter &&
+    includeCopper
+  ) {
     const centerX = platedHole.x + platedHole.hole_offset_x + origin.x
     const centerY = platedHole.y + platedHole.hole_offset_y + origin.y
     const radius = platedHole.hole_diameter / 2
