@@ -70,6 +70,16 @@ const circuitJson: CircuitJson = [
     layers: ["top"],
   },
   {
+    type: "pcb_plated_hole",
+    pcb_plated_hole_id: "pcb_plated_hole_1",
+    shape: "circle",
+    x: 0,
+    y: -3,
+    hole_diameter: 1,
+    outer_diameter: 2,
+    layers: ["top"],
+  },
+  {
     type: "pcb_trace",
     pcb_trace_id: "trace_1",
     source_trace_id: "source_trace_1",
