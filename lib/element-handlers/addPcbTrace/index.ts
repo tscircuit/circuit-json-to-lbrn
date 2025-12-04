@@ -1,4 +1,4 @@
-import type { PcbTrace } from "circuit-json"
+import type { PcbTrace, PcbTraceRoutePoint } from "circuit-json"
 import type { ConvertContext } from "../../ConvertContext"
 import Flatten, { BooleanOperations } from "@flatten-js/core"
 import { circleToPolygon } from "./circle-to-polygon"
@@ -34,10 +34,11 @@ export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
   }
 
   const { route } = trace
-  // @ts-ignore - route_type may not exist on all point types
-  const traceWidth =
-    route.find((point) => point.route_type === "wire" || !point.route_type)
-      ?.width ?? 0.15
+  const wirePoint = route.find((point) => {
+    if (!("route_type" in point)) return true
+    return point.route_type === "wire"
+  })
+  const traceWidth = (wirePoint as any)?.width ?? 0.15
 
   // Group consecutive wire segments by layer
   // When we hit a via, we start a new segment on the new layer
@@ -50,8 +51,7 @@ export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
   let currentLayer: "top" | "bottom" | null = null
 
   for (const point of route) {
-    // @ts-ignore - Handle both wire points and via points
-    if (point.route_type === "via") {
+    if ("route_type" in point && point.route_type === "via") {
       // Via marks end of current segment - save it
       if (currentLayer && currentSegment.length > 0) {
         if (!layerSegments.has(currentLayer)) {
@@ -66,8 +66,8 @@ export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
     }
 
     // Treat points without route_type as wire points (default behavior)
-    // @ts-ignore - route_type may not exist on all point types
-    if ((point.route_type === "wire" || !point.route_type) && point.layer) {
+    const isWirePoint = !("route_type" in point) || point.route_type === "wire"
+    if (isWirePoint && "layer" in point && point.layer) {
       const pointLayer = point.layer as "top" | "bottom" | string
       if (pointLayer !== "top" && pointLayer !== "bottom") {
         continue // Skip inner layers
