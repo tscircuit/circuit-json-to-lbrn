@@ -27,6 +27,7 @@ export const convertCircuitJsonToLbrn = (
     includeCopper?: boolean
     includeSoldermask?: boolean
     soldermaskMargin?: number
+    includeLayers?: Array<"top" | "bottom">
   } = {},
 ): LightBurnProject => {
   const db = cju(circuitJson)
@@ -35,16 +36,27 @@ export const convertCircuitJsonToLbrn = (
     formatVersion: "1",
   })
 
-  const copperCutSetting = new CutSetting({
+  // Default to all layers if not specified
+  const includeLayers = options.includeLayers ?? ["top", "bottom"]
+
+  const topCopperCutSetting = new CutSetting({
     index: 0,
-    name: "Cut Copper",
+    name: "Cut Top Copper",
     numPasses: 12,
     speed: 100,
   })
-  project.children.push(copperCutSetting)
+  project.children.push(topCopperCutSetting)
+
+  const bottomCopperCutSetting = new CutSetting({
+    index: 1,
+    name: "Cut Bottom Copper",
+    numPasses: 12,
+    speed: 100,
+  })
+  project.children.push(bottomCopperCutSetting)
 
   const throughBoardCutSetting = new CutSetting({
-    index: 1,
+    index: 2,
     name: "Cut Through Board",
     numPasses: 3,
     speed: 50,
@@ -52,14 +64,14 @@ export const convertCircuitJsonToLbrn = (
   project.children.push(throughBoardCutSetting)
 
   const soldermaskCutSetting = new CutSetting({
-    type: "Scan", // Use Scan mode to fill the pad shapes for Kapton tape cutting
-    index: 2,
+    type: "Scan", // Use Scan mode to fill pad shapes for Kapton tape cutting
+    index: 3,
     name: "Cut Soldermask",
     numPasses: 1,
     speed: 150,
     scanOpt: "individual", // Scan each shape individually
     interval: 0.18, // Distance between cross-hatch lines
-    angle: 45, // Angle of the cross-hatch lines
+    angle: 45, // Angle of cross-hatch lines
     crossHatch: true,
   })
   project.children.push(soldermaskCutSetting)
@@ -76,19 +88,23 @@ export const convertCircuitJsonToLbrn = (
   const ctx: ConvertContext = {
     db,
     project,
-    copperCutSetting,
+    topCopperCutSetting,
+    bottomCopperCutSetting,
     throughBoardCutSetting,
     soldermaskCutSetting,
     connMap,
-    netGeoms: new Map(),
+    topNetGeoms: new Map(),
+    bottomNetGeoms: new Map(),
     origin,
     includeCopper: options.includeCopper ?? true,
     includeSoldermask: options.includeSoldermask ?? false,
     soldermaskMargin: options.soldermaskMargin ?? 0,
+    includeLayers,
   }
 
   for (const net of Object.keys(connMap.netMap)) {
-    ctx.netGeoms.set(net, [])
+    ctx.topNetGeoms.set(net, [])
+    ctx.bottomNetGeoms.set(net, [])
   }
 
   for (const smtpad of db.pcb_smtpad.list()) {
@@ -149,42 +165,77 @@ export const convertCircuitJsonToLbrn = (
   // Create a union of all the net geoms, and add to project
   // Only do this when including copper
   if (ctx.includeCopper) {
-    for (const net of Object.keys(connMap.netMap)) {
-      const netGeoms = ctx.netGeoms.get(net)!
+    // Process top layer
+    if (includeLayers.includes("top")) {
+      for (const net of Object.keys(connMap.netMap)) {
+        const netGeoms = ctx.topNetGeoms.get(net)!
 
-      if (netGeoms.length === 0) {
-        continue
-      }
+        if (netGeoms.length === 0) {
+          continue
+        }
 
-      let union = netGeoms[0]!
-      if (union instanceof Box) {
-        union = new Polygon(union)
-      }
-      for (const geom of netGeoms.slice(1)) {
-        if (geom instanceof Polygon) {
-          union = BooleanOperations.unify(union, geom)
-        } else if (geom instanceof Box) {
-          union = BooleanOperations.unify(union, new Polygon(geom))
+        let union = netGeoms[0]!
+        if (union instanceof Box) {
+          union = new Polygon(union)
+        }
+        for (const geom of netGeoms.slice(1)) {
+          if (geom instanceof Polygon) {
+            union = BooleanOperations.unify(union, geom)
+          } else if (geom instanceof Box) {
+            union = BooleanOperations.unify(union, new Polygon(geom))
+          }
+        }
+
+        for (const island of union.splitToIslands()) {
+          // Convert the polygon to verts and prims
+          const { verts, prims } = polygonToShapePathData(island)
+
+          project.children.push(
+            new ShapePath({
+              cutIndex: topCopperCutSetting.index,
+              verts,
+              prims,
+              isClosed: false,
+            }),
+          )
         }
       }
+    }
 
-      // DEBUGGING ONLY!!!
-      // if (netGeoms.length > 1) {
-      //   writeDebugSvg(net, union)
-      // }
+    // Process bottom layer
+    if (includeLayers.includes("bottom")) {
+      for (const net of Object.keys(connMap.netMap)) {
+        const netGeoms = ctx.bottomNetGeoms.get(net)!
 
-      for (const island of union.splitToIslands()) {
-        // Convert the polygon to verts and prims
-        const { verts, prims } = polygonToShapePathData(island)
+        if (netGeoms.length === 0) {
+          continue
+        }
 
-        project.children.push(
-          new ShapePath({
-            cutIndex: copperCutSetting.index,
-            verts,
-            prims,
-            isClosed: false,
-          }),
-        )
+        let union = netGeoms[0]!
+        if (union instanceof Box) {
+          union = new Polygon(union)
+        }
+        for (const geom of netGeoms.slice(1)) {
+          if (geom instanceof Polygon) {
+            union = BooleanOperations.unify(union, geom)
+          } else if (geom instanceof Box) {
+            union = BooleanOperations.unify(union, new Polygon(geom))
+          }
+        }
+
+        for (const island of union.splitToIslands()) {
+          // Convert the polygon to verts and prims
+          const { verts, prims } = polygonToShapePathData(island)
+
+          project.children.push(
+            new ShapePath({
+              cutIndex: bottomCopperCutSetting.index,
+              verts,
+              prims,
+              isClosed: false,
+            }),
+          )
+        }
       }
     }
   }

@@ -9,7 +9,8 @@
     "allowJs": true,
     "types": ["bun-types", "./types.d.ts"],
 
-    "resolveJsonModule": false,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
 
     // Bundler mode
     "moduleResolution": "bundler",

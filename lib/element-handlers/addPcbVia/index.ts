@@ -9,19 +9,24 @@ export const addPcbVia = (via: PcbVia, ctx: ConvertContext): void => {
   const {
     db,
     project,
-    copperCutSetting,
+    topCopperCutSetting,
+    bottomCopperCutSetting,
     soldermaskCutSetting,
     throughBoardCutSetting,
+    topNetGeoms,
+    bottomNetGeoms,
     origin,
     includeCopper,
     includeSoldermask,
     connMap,
     soldermaskMargin,
+    includeLayers,
   } = ctx
   const centerX = via.x + origin.x
   const centerY = via.y + origin.y
 
   // Add outer circle (copper annulus) if drawing copper - add to netGeoms for merging
+  // Vias go through all layers, so add to both top and bottom
   if (via.outer_diameter > 0 && includeCopper) {
     // Find the pcb_port associated with this via (vias don't have pcb_port_id property)
     // We need to find a port at the same location as the via
@@ -38,23 +43,40 @@ export const addPcbVia = (via: PcbVia, ctx: ConvertContext): void => {
     const polygon = circleToPolygon(circle)
 
     if (netId) {
-      // Add to netGeoms to be merged with other elements on the same net
-      ctx.netGeoms.get(netId)?.push(polygon)
+      // Add to both top and bottom netGeoms since vias go through the board
+      if (includeLayers.includes("top")) {
+        topNetGeoms.get(netId)?.push(polygon.clone())
+      }
+      if (includeLayers.includes("bottom")) {
+        bottomNetGeoms.get(netId)?.push(polygon.clone())
+      }
     } else {
-      // No net connection - draw directly
+      // No net connection - draw directly for each included layer
       const outer = createCirclePath({
         centerX,
         centerY,
         radius: outerRadius,
       })
-      project.children.push(
-        new ShapePath({
-          cutIndex: copperCutSetting.index,
-          verts: outer.verts,
-          prims: outer.prims,
-          isClosed: true,
-        }),
-      )
+      if (includeLayers.includes("top")) {
+        project.children.push(
+          new ShapePath({
+            cutIndex: topCopperCutSetting.index,
+            verts: outer.verts,
+            prims: outer.prims,
+            isClosed: true,
+          }),
+        )
+      }
+      if (includeLayers.includes("bottom")) {
+        project.children.push(
+          new ShapePath({
+            cutIndex: bottomCopperCutSetting.index,
+            verts: outer.verts,
+            prims: outer.prims,
+            isClosed: true,
+          }),
+        )
+      }
     }
   }
 

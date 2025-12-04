@@ -10,13 +10,15 @@ export const addHoleWithPolygonPad = (
 ): void => {
   const {
     project,
-    copperCutSetting,
+    topCopperCutSetting,
+    bottomCopperCutSetting,
     soldermaskCutSetting,
     throughBoardCutSetting,
     origin,
     includeCopper,
     includeSoldermask,
     soldermaskMargin,
+    includeLayers,
   } = ctx
 
   // Create the polygon pad
@@ -28,15 +30,28 @@ export const addHoleWithPolygonPad = (
     })
 
     // Add the polygon pad if drawing copper
+    // Plated holes go through all layers, so add to both top and bottom
     if (includeCopper) {
-      project.children.push(
-        new ShapePath({
-          cutIndex: copperCutSetting.index,
-          verts: pad.verts,
-          prims: pad.prims,
-          isClosed: true,
-        }),
-      )
+      if (includeLayers.includes("top")) {
+        project.children.push(
+          new ShapePath({
+            cutIndex: topCopperCutSetting.index,
+            verts: pad.verts,
+            prims: pad.prims,
+            isClosed: true,
+          }),
+        )
+      }
+      if (includeLayers.includes("bottom")) {
+        project.children.push(
+          new ShapePath({
+            cutIndex: bottomCopperCutSetting.index,
+            verts: pad.verts,
+            prims: pad.prims,
+            isClosed: true,
+          }),
+        )
+      }
     }
 
     // Add soldermask opening if drawing soldermask
