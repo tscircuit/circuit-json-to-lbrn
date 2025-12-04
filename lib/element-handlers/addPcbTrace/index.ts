@@ -21,21 +21,23 @@ export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
 
   const netId = connMap.getNetConnectedToId(
     trace.source_trace_id ?? trace.pcb_trace_id,
-  )!
+  )
 
   if (!netId) {
-    console.warn(`Trace ${trace.pcb_trace_id} is not connected to any net`)
+    // Skip traces that are not connected to any net
+    // This can happen for traces without a source_trace_id
     return
   }
 
   if (!trace.route || trace.route.length < 2) {
-    console.warn(`Trace ${trace.pcb_trace_id} has insufficient route points`)
     return
   }
 
   const { route } = trace
+  // @ts-ignore - route_type may not exist on all point types
   const traceWidth =
-    route.find((point) => point.route_type === "wire")?.width ?? 0.15
+    route.find((point) => point.route_type === "wire" || !point.route_type)
+      ?.width ?? 0.15
 
   // Group consecutive wire segments by layer
   // When we hit a via, we start a new segment on the new layer
@@ -48,6 +50,7 @@ export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
   let currentLayer: "top" | "bottom" | null = null
 
   for (const point of route) {
+    // @ts-ignore - Handle both wire points and via points
     if (point.route_type === "via") {
       // Via marks end of current segment - save it
       if (currentLayer && currentSegment.length > 0) {
@@ -62,7 +65,9 @@ export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
       continue
     }
 
-    if (point.route_type === "wire" && point.layer) {
+    // Treat points without route_type as wire points (default behavior)
+    // @ts-ignore - route_type may not exist on all point types
+    if ((point.route_type === "wire" || !point.route_type) && point.layer) {
       const pointLayer = point.layer as "top" | "bottom" | string
       if (pointLayer !== "top" && pointLayer !== "bottom") {
         continue // Skip inner layers
