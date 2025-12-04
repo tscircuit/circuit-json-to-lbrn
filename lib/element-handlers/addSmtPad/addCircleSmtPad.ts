@@ -11,14 +11,33 @@ export const addCircleSmtPad = (
 ): void => {
   const {
     project,
-    copperCutSetting,
+    topCopperCutSetting,
+    bottomCopperCutSetting,
     soldermaskCutSetting,
+    topNetGeoms,
+    bottomNetGeoms,
     origin,
     includeCopper,
     includeSoldermask,
     connMap,
     soldermaskMargin,
+    includeLayers,
   } = ctx
+
+  // Filter by layer - only process top and bottom layers
+  const padLayer = smtPad.layer || "top"
+  if (padLayer !== "top" && padLayer !== "bottom") {
+    return // Skip inner layers
+  }
+  if (!includeLayers.includes(padLayer)) {
+    return
+  }
+
+  // Select the correct cut setting and net geoms based on layer
+  const copperCutSetting =
+    padLayer === "top" ? topCopperCutSetting : bottomCopperCutSetting
+  const netGeoms = padLayer === "top" ? topNetGeoms : bottomNetGeoms
+
   const centerX = smtPad.x + origin.x
   const centerY = smtPad.y + origin.y
 
@@ -33,7 +52,7 @@ export const addCircleSmtPad = (
 
       if (netId) {
         // Add to netGeoms to be merged with other elements on the same net
-        ctx.netGeoms.get(netId)?.push(polygon)
+        netGeoms.get(netId)?.push(polygon)
       } else {
         // No net connection - draw directly
         const outer = createCirclePath({

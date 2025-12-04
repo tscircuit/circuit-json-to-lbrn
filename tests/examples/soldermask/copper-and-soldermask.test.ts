@@ -88,25 +88,33 @@ test("renders both copper and soldermask", async () => {
     includeSoldermask: true,
   })
 
-  // Verify that both copper and soldermask cut settings exist
-  const copperCutSetting = project.children.find(
-    (child: any) => child.name === "Cut Copper",
+  // Verify that copper and soldermask cut settings exist
+  const topCopperCutSetting = project.children.find(
+    (child: any) => child.name === "Cut Top Copper",
+  )
+  const bottomCopperCutSetting = project.children.find(
+    (child: any) => child.name === "Cut Bottom Copper",
   )
   const soldermaskCutSetting = project.children.find(
     (child: any) => child.name === "Cut Soldermask",
   )
-  expect(copperCutSetting).toBeDefined()
+  expect(topCopperCutSetting).toBeDefined()
+  expect(bottomCopperCutSetting).toBeDefined()
   expect(soldermaskCutSetting).toBeDefined()
-  expect((copperCutSetting as any).index).toBe(0)
-  expect((soldermaskCutSetting as any).index).toBe(2)
+  expect((topCopperCutSetting as any).index).toBe(0)
+  expect((bottomCopperCutSetting as any).index).toBe(1)
+  expect((soldermaskCutSetting as any).index).toBe(3)
 
-  // Verify that we have shapes using both cut settings
+  // Verify that we have shapes using both copper and soldermask cut settings
   const shapePaths = project.children.filter(
     (child: any) => child.isClosed !== undefined,
   )
-  const copperShapes = shapePaths.filter((path: any) => path.cutIndex === 0)
-  const soldermaskShapes = shapePaths.filter((path: any) => path.cutIndex === 2)
-  expect(copperShapes.length).toBeGreaterThan(0)
+  const topCopperShapes = shapePaths.filter((path: any) => path.cutIndex === 0)
+  const bottomCopperShapes = shapePaths.filter(
+    (path: any) => path.cutIndex === 1,
+  )
+  const soldermaskShapes = shapePaths.filter((path: any) => path.cutIndex === 3)
+  expect(topCopperShapes.length + bottomCopperShapes.length).toBeGreaterThan(0)
   expect(soldermaskShapes.length).toBeGreaterThan(0)
 
   const lbrnSvg = await generateLightBurnSvg(project)

@@ -10,13 +10,15 @@ export const addCircularHoleWithRectPad = (
 ): void => {
   const {
     project,
-    copperCutSetting,
+    topCopperCutSetting,
+    bottomCopperCutSetting,
     soldermaskCutSetting,
     throughBoardCutSetting,
     origin,
     includeCopper,
     includeSoldermask,
     soldermaskMargin,
+    includeLayers,
   } = ctx
   const centerX = platedHole.x + origin.x
   const centerY = platedHole.y + origin.y
@@ -35,15 +37,28 @@ export const addCircularHoleWithRectPad = (
   })
 
   // Add the rectangular pad if drawing copper
+  // Plated holes go through all layers, so add to both top and bottom
   if (includeCopper) {
-    project.children.push(
-      new ShapePath({
-        cutIndex: copperCutSetting.index,
-        verts: padPath.verts,
-        prims: padPath.prims,
-        isClosed: true,
-      }),
-    )
+    if (includeLayers.includes("top")) {
+      project.children.push(
+        new ShapePath({
+          cutIndex: topCopperCutSetting.index,
+          verts: padPath.verts,
+          prims: padPath.prims,
+          isClosed: true,
+        }),
+      )
+    }
+    if (includeLayers.includes("bottom")) {
+      project.children.push(
+        new ShapePath({
+          cutIndex: bottomCopperCutSetting.index,
+          verts: padPath.verts,
+          prims: padPath.prims,
+          isClosed: true,
+        }),
+      )
+    }
   }
 
   // Add soldermask opening if drawing soldermask

@@ -98,17 +98,17 @@ test("renders soldermask only (no copper, no traces)", async () => {
     includeSoldermask: true,
   })
 
-  // Verify that soldermask elements use soldermaskCutSetting (index 2)
+  // Verify that soldermask elements use soldermaskCutSetting (index 3)
   const soldermaskCutSetting = project.children.find(
     (child: any) => child.name === "Cut Soldermask",
   )
   expect(soldermaskCutSetting).toBeDefined()
-  expect((soldermaskCutSetting as any).index).toBe(2)
+  expect((soldermaskCutSetting as any).index).toBe(3)
 
   const shapePaths = project.children.filter(
     (child: any) => child.isClosed !== undefined,
   )
-  const soldermaskShapes = shapePaths.filter((path: any) => path.cutIndex === 2)
+  const soldermaskShapes = shapePaths.filter((path: any) => path.cutIndex === 3)
   expect(soldermaskShapes.length).toBeGreaterThan(0)
 
   const lbrnSvg = await generateLightBurnSvg(project)
