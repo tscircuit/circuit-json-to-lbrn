@@ -29,4 +29,16 @@ export interface ConvertContext {
 
   // Soldermask margin (can be negative)
   soldermaskMargin: number
+
+  // Trace margin cutting for clearance around traces
+  traceMargin: number
+  laserSpotSize: number
+
+  // Separate net geometries for trace margins (outer - inner)
+  topMarginNetGeoms: Map<ConnectivityMapKey, Array<Polygon | Box>>
+  bottomMarginNetGeoms: Map<ConnectivityMapKey, Array<Polygon | Box>>
+
+  // Cut settings for trace margins
+  topTraceMarginCutSetting?: CutSetting
+  bottomTraceMarginCutSetting?: CutSetting
 }

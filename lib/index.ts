@@ -28,6 +28,8 @@ export const convertCircuitJsonToLbrn = (
     includeSoldermask?: boolean
     soldermaskMargin?: number
     includeLayers?: Array<"top" | "bottom">
+    traceMargin?: number
+    laserSpotSize?: number
   } = {},
 ): LightBurnProject => {
   const db = cju(circuitJson)
@@ -38,6 +40,16 @@ export const convertCircuitJsonToLbrn = (
 
   // Default to all layers if not specified
   const includeLayers = options.includeLayers ?? ["top", "bottom"]
+
+  // Default trace margin and laser spot size
+  const traceMargin = options.traceMargin ?? 0
+  const laserSpotSize = options.laserSpotSize ?? 0.005
+
+  // Validate: traceMargin requires includeCopper
+  const includeCopper = options.includeCopper ?? true
+  if (traceMargin > 0 && !includeCopper) {
+    throw new Error("traceMargin requires includeCopper to be true")
+  }
 
   const topCopperCutSetting = new CutSetting({
     index: 0,
@@ -76,6 +88,42 @@ export const convertCircuitJsonToLbrn = (
   })
   project.children.push(soldermaskCutSetting)
 
+  // Create trace margin cut settings if traceMargin is enabled
+  let topTraceMarginCutSetting: CutSetting | undefined
+  let bottomTraceMarginCutSetting: CutSetting | undefined
+
+  if (traceMargin > 0) {
+    if (includeLayers.includes("top")) {
+      topTraceMarginCutSetting = new CutSetting({
+        type: "Scan",
+        index: 4,
+        name: "Clear Top Trace Margins",
+        numPasses: 12,
+        speed: 100,
+        scanOpt: "individual",
+        interval: laserSpotSize,
+        angle: 45,
+        crossHatch: true,
+      })
+      project.children.push(topTraceMarginCutSetting)
+    }
+
+    if (includeLayers.includes("bottom")) {
+      bottomTraceMarginCutSetting = new CutSetting({
+        type: "Scan",
+        index: 5,
+        name: "Clear Bottom Trace Margins",
+        numPasses: 12,
+        speed: 100,
+        scanOpt: "individual",
+        interval: laserSpotSize,
+        angle: 45,
+        crossHatch: true,
+      })
+      project.children.push(bottomTraceMarginCutSetting)
+    }
+  }
+
   const connMap = getFullConnectivityMapFromCircuitJson(circuitJson)
 
   // Auto-calculate origin if not provided to ensure all elements are in positive quadrant
@@ -95,16 +143,24 @@ export const convertCircuitJsonToLbrn = (
     connMap,
     topNetGeoms: new Map(),
     bottomNetGeoms: new Map(),
+    topMarginNetGeoms: new Map(),
+    bottomMarginNetGeoms: new Map(),
     origin,
-    includeCopper: options.includeCopper ?? true,
+    includeCopper,
     includeSoldermask: options.includeSoldermask ?? false,
     soldermaskMargin: options.soldermaskMargin ?? 0,
     includeLayers,
+    traceMargin,
+    laserSpotSize,
+    topTraceMarginCutSetting,
+    bottomTraceMarginCutSetting,
   }
 
   for (const net of Object.keys(connMap.netMap)) {
     ctx.topNetGeoms.set(net, [])
     ctx.bottomNetGeoms.set(net, [])
+    ctx.topMarginNetGeoms.set(net, [])
+    ctx.bottomMarginNetGeoms.set(net, [])
   }
 
   for (const smtpad of db.pcb_smtpad.list()) {
@@ -174,30 +230,50 @@ export const convertCircuitJsonToLbrn = (
           continue
         }
 
-        let union = netGeoms[0]!
-        if (union instanceof Box) {
-          union = new Polygon(union)
-        }
-        for (const geom of netGeoms.slice(1)) {
-          if (geom instanceof Polygon) {
-            union = BooleanOperations.unify(union, geom)
-          } else if (geom instanceof Box) {
-            union = BooleanOperations.unify(union, new Polygon(geom))
+        try {
+          let union = netGeoms[0]!
+          if (union instanceof Box) {
+            union = new Polygon(union)
           }
-        }
+          for (const geom of netGeoms.slice(1)) {
+            if (geom instanceof Polygon) {
+              union = BooleanOperations.unify(union, geom)
+            } else if (geom instanceof Box) {
+              union = BooleanOperations.unify(union, new Polygon(geom))
+            }
+          }
 
-        for (const island of union.splitToIslands()) {
-          // Convert the polygon to verts and prims
-          const { verts, prims } = polygonToShapePathData(island)
+          for (const island of union.splitToIslands()) {
+            // Convert the polygon to verts and prims
+            const { verts, prims } = polygonToShapePathData(island)
 
-          project.children.push(
-            new ShapePath({
-              cutIndex: topCopperCutSetting.index,
-              verts,
-              prims,
-              isClosed: false,
-            }),
+            project.children.push(
+              new ShapePath({
+                cutIndex: topCopperCutSetting.index,
+                verts,
+                prims,
+                isClosed: false,
+              }),
+            )
+          }
+        } catch (error) {
+          console.warn(
+            `Failed to union geometries for net ${net} on top layer:`,
+            error,
           )
+          // Output individual geometries if union fails
+          for (const geom of netGeoms) {
+            const poly = geom instanceof Box ? new Polygon(geom) : geom
+            const { verts, prims } = polygonToShapePathData(poly)
+            project.children.push(
+              new ShapePath({
+                cutIndex: topCopperCutSetting.index,
+                verts,
+                prims,
+                isClosed: false,
+              }),
+            )
+          }
         }
       }
     }
@@ -211,33 +287,201 @@ export const convertCircuitJsonToLbrn = (
           continue
         }
 
-        let union = netGeoms[0]!
-        if (union instanceof Box) {
-          union = new Polygon(union)
-        }
-        for (const geom of netGeoms.slice(1)) {
-          if (geom instanceof Polygon) {
-            union = BooleanOperations.unify(union, geom)
-          } else if (geom instanceof Box) {
-            union = BooleanOperations.unify(union, new Polygon(geom))
+        try {
+          let union = netGeoms[0]!
+          if (union instanceof Box) {
+            union = new Polygon(union)
           }
-        }
+          for (const geom of netGeoms.slice(1)) {
+            if (geom instanceof Polygon) {
+              union = BooleanOperations.unify(union, geom)
+            } else if (geom instanceof Box) {
+              union = BooleanOperations.unify(union, new Polygon(geom))
+            }
+          }
 
-        for (const island of union.splitToIslands()) {
-          // Convert the polygon to verts and prims
-          const { verts, prims } = polygonToShapePathData(island)
+          for (const island of union.splitToIslands()) {
+            // Convert the polygon to verts and prims
+            const { verts, prims } = polygonToShapePathData(island)
 
-          project.children.push(
-            new ShapePath({
-              cutIndex: bottomCopperCutSetting.index,
-              verts,
-              prims,
-              isClosed: false,
-            }),
+            project.children.push(
+              new ShapePath({
+                cutIndex: bottomCopperCutSetting.index,
+                verts,
+                prims,
+                isClosed: false,
+              }),
+            )
+          }
+        } catch (error) {
+          console.warn(
+            `Failed to union geometries for net ${net} on bottom layer:`,
+            error,
           )
+          // Output individual geometries if union fails
+          for (const geom of netGeoms) {
+            const poly = geom instanceof Box ? new Polygon(geom) : geom
+            const { verts, prims } = polygonToShapePathData(poly)
+            project.children.push(
+              new ShapePath({
+                cutIndex: bottomCopperCutSetting.index,
+                verts,
+                prims,
+                isClosed: false,
+              }),
+            )
+          }
         }
       }
     }
   }
+
+  // Generate trace margin clearance areas (outerTraceUnion - innerTraceUnion)
+  if (traceMargin > 0 && includeCopper) {
+    // Process top layer trace margins
+    if (includeLayers.includes("top") && topTraceMarginCutSetting) {
+      for (const net of Object.keys(connMap.netMap)) {
+        const innerGeoms = ctx.topNetGeoms.get(net)!
+        const outerGeoms = ctx.topMarginNetGeoms.get(net)!
+
+        if (innerGeoms.length === 0 || outerGeoms.length === 0) {
+          continue
+        }
+
+        try {
+          // Union inner geometries (normal traces)
+          let innerUnion = innerGeoms[0]!
+          if (innerUnion instanceof Box) {
+            innerUnion = new Polygon(innerUnion)
+          }
+          for (const geom of innerGeoms.slice(1)) {
+            if (geom instanceof Polygon) {
+              innerUnion = BooleanOperations.unify(innerUnion, geom)
+            } else if (geom instanceof Box) {
+              innerUnion = BooleanOperations.unify(
+                innerUnion,
+                new Polygon(geom),
+              )
+            }
+          }
+
+          // Union outer geometries (traces with margin)
+          let outerUnion = outerGeoms[0]!
+          if (outerUnion instanceof Box) {
+            outerUnion = new Polygon(outerUnion)
+          }
+          for (const geom of outerGeoms.slice(1)) {
+            if (geom instanceof Polygon) {
+              outerUnion = BooleanOperations.unify(outerUnion, geom)
+            } else if (geom instanceof Box) {
+              outerUnion = BooleanOperations.unify(
+                outerUnion,
+                new Polygon(geom),
+              )
+            }
+          }
+
+          // Calculate clearance area (outer - inner)
+          const clearanceArea = BooleanOperations.subtract(
+            outerUnion,
+            innerUnion,
+          )
+
+          // Output clearance area as filled shapes
+          for (const island of clearanceArea.splitToIslands()) {
+            const { verts, prims } = polygonToShapePathData(island)
+
+            project.children.push(
+              new ShapePath({
+                cutIndex: topTraceMarginCutSetting.index,
+                verts,
+                prims,
+                isClosed: true, // Filled shapes should be closed
+              }),
+            )
+          }
+        } catch (error) {
+          console.warn(
+            `Failed to generate trace margin clearance for net ${net} on top layer:`,
+            error,
+          )
+          // Skip this net's margin if we can't compute it
+        }
+      }
+    }
+
+    // Process bottom layer trace margins
+    if (includeLayers.includes("bottom") && bottomTraceMarginCutSetting) {
+      for (const net of Object.keys(connMap.netMap)) {
+        const innerGeoms = ctx.bottomNetGeoms.get(net)!
+        const outerGeoms = ctx.bottomMarginNetGeoms.get(net)!
+
+        if (innerGeoms.length === 0 || outerGeoms.length === 0) {
+          continue
+        }
+
+        try {
+          // Union inner geometries (normal traces)
+          let innerUnion = innerGeoms[0]!
+          if (innerUnion instanceof Box) {
+            innerUnion = new Polygon(innerUnion)
+          }
+          for (const geom of innerGeoms.slice(1)) {
+            if (geom instanceof Polygon) {
+              innerUnion = BooleanOperations.unify(innerUnion, geom)
+            } else if (geom instanceof Box) {
+              innerUnion = BooleanOperations.unify(
+                innerUnion,
+                new Polygon(geom),
+              )
+            }
+          }
+
+          // Union outer geometries (traces with margin)
+          let outerUnion = outerGeoms[0]!
+          if (outerUnion instanceof Box) {
+            outerUnion = new Polygon(outerUnion)
+          }
+          for (const geom of outerGeoms.slice(1)) {
+            if (geom instanceof Polygon) {
+              outerUnion = BooleanOperations.unify(outerUnion, geom)
+            } else if (geom instanceof Box) {
+              outerUnion = BooleanOperations.unify(
+                outerUnion,
+                new Polygon(geom),
+              )
+            }
+          }
+
+          // Calculate clearance area (outer - inner)
+          const clearanceArea = BooleanOperations.subtract(
+            outerUnion,
+            innerUnion,
+          )
+
+          // Output clearance area as filled shapes
+          for (const island of clearanceArea.splitToIslands()) {
+            const { verts, prims } = polygonToShapePathData(island)
+
+            project.children.push(
+              new ShapePath({
+                cutIndex: bottomTraceMarginCutSetting.index,
+                verts,
+                prims,
+                isClosed: true, // Filled shapes should be closed
+              }),
+            )
+          }
+        } catch (error) {
+          console.warn(
+            `Failed to generate trace margin clearance for net ${net} on bottom layer:`,
+            error,
+          )
+          // Skip this net's margin if we can't compute it
+        }
+      }
+    }
+  }
+
   return project
 }
