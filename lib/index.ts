@@ -16,6 +16,7 @@ import {
 import { addPcbVia } from "./element-handlers/addPcbVia"
 import { addPcbHole } from "./element-handlers/addPcbHole"
 import { addPcbCutout } from "./element-handlers/addPcbCutout"
+import { generateTraceMarginClearance } from "./generateTraceMarginClearance"
 // import { writeDebugSvg } from "./writeDebugSvg"
 
 export const convertCircuitJsonToLbrn = (
@@ -338,148 +339,11 @@ export const convertCircuitJsonToLbrn = (
 
   // Generate trace margin clearance areas (outerTraceUnion - innerTraceUnion)
   if (traceMargin > 0 && includeCopper) {
-    // Process top layer trace margins
-    if (includeLayers.includes("top") && topTraceMarginCutSetting) {
-      for (const net of Object.keys(connMap.netMap)) {
-        const innerGeoms = ctx.topNetGeoms.get(net)!
-        const outerGeoms = ctx.topMarginNetGeoms.get(net)!
-
-        if (innerGeoms.length === 0 || outerGeoms.length === 0) {
-          continue
-        }
-
-        try {
-          // Union inner geometries (normal traces)
-          let innerUnion = innerGeoms[0]!
-          if (innerUnion instanceof Box) {
-            innerUnion = new Polygon(innerUnion)
-          }
-          for (const geom of innerGeoms.slice(1)) {
-            if (geom instanceof Polygon) {
-              innerUnion = BooleanOperations.unify(innerUnion, geom)
-            } else if (geom instanceof Box) {
-              innerUnion = BooleanOperations.unify(
-                innerUnion,
-                new Polygon(geom),
-              )
-            }
-          }
-
-          // Union outer geometries (traces with margin)
-          let outerUnion = outerGeoms[0]!
-          if (outerUnion instanceof Box) {
-            outerUnion = new Polygon(outerUnion)
-          }
-          for (const geom of outerGeoms.slice(1)) {
-            if (geom instanceof Polygon) {
-              outerUnion = BooleanOperations.unify(outerUnion, geom)
-            } else if (geom instanceof Box) {
-              outerUnion = BooleanOperations.unify(
-                outerUnion,
-                new Polygon(geom),
-              )
-            }
-          }
-
-          // Calculate clearance area (outer - inner)
-          const clearanceArea = BooleanOperations.subtract(
-            outerUnion,
-            innerUnion,
-          )
-
-          // Output clearance area as filled shapes
-          for (const island of clearanceArea.splitToIslands()) {
-            const { verts, prims } = polygonToShapePathData(island)
-
-            project.children.push(
-              new ShapePath({
-                cutIndex: topTraceMarginCutSetting.index,
-                verts,
-                prims,
-                isClosed: true, // Filled shapes should be closed
-              }),
-            )
-          }
-        } catch (error) {
-          console.warn(
-            `Failed to generate trace margin clearance for net ${net} on top layer:`,
-            error,
-          )
-          // Skip this net's margin if we can't compute it
-        }
-      }
+    if (includeLayers.includes("top")) {
+      generateTraceMarginClearance(ctx, "top")
     }
-
-    // Process bottom layer trace margins
-    if (includeLayers.includes("bottom") && bottomTraceMarginCutSetting) {
-      for (const net of Object.keys(connMap.netMap)) {
-        const innerGeoms = ctx.bottomNetGeoms.get(net)!
-        const outerGeoms = ctx.bottomMarginNetGeoms.get(net)!
-
-        if (innerGeoms.length === 0 || outerGeoms.length === 0) {
-          continue
-        }
-
-        try {
-          // Union inner geometries (normal traces)
-          let innerUnion = innerGeoms[0]!
-          if (innerUnion instanceof Box) {
-            innerUnion = new Polygon(innerUnion)
-          }
-          for (const geom of innerGeoms.slice(1)) {
-            if (geom instanceof Polygon) {
-              innerUnion = BooleanOperations.unify(innerUnion, geom)
-            } else if (geom instanceof Box) {
-              innerUnion = BooleanOperations.unify(
-                innerUnion,
-                new Polygon(geom),
-              )
-            }
-          }
-
-          // Union outer geometries (traces with margin)
-          let outerUnion = outerGeoms[0]!
-          if (outerUnion instanceof Box) {
-            outerUnion = new Polygon(outerUnion)
-          }
-          for (const geom of outerGeoms.slice(1)) {
-            if (geom instanceof Polygon) {
-              outerUnion = BooleanOperations.unify(outerUnion, geom)
-            } else if (geom instanceof Box) {
-              outerUnion = BooleanOperations.unify(
-                outerUnion,
-                new Polygon(geom),
-              )
-            }
-          }
-
-          // Calculate clearance area (outer - inner)
-          const clearanceArea = BooleanOperations.subtract(
-            outerUnion,
-            innerUnion,
-          )
-
-          // Output clearance area as filled shapes
-          for (const island of clearanceArea.splitToIslands()) {
-            const { verts, prims } = polygonToShapePathData(island)
-
-            project.children.push(
-              new ShapePath({
-                cutIndex: bottomTraceMarginCutSetting.index,
-                verts,
-                prims,
-                isClosed: true, // Filled shapes should be closed
-              }),
-            )
-          }
-        } catch (error) {
-          console.warn(
-            `Failed to generate trace margin clearance for net ${net} on bottom layer:`,
-            error,
-          )
-          // Skip this net's margin if we can't compute it
-        }
-      }
+    if (includeLayers.includes("bottom")) {
+      generateTraceMarginClearance(ctx, "bottom")
     }
   }
 
