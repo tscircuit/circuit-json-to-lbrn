@@ -9,13 +9,15 @@ export const addOvalPlatedHole = (
 ): void => {
   const {
     project,
-    copperCutSetting,
+    topCopperCutSetting,
+    bottomCopperCutSetting,
     soldermaskCutSetting,
     throughBoardCutSetting,
     origin,
     includeCopper,
     includeSoldermask,
     soldermaskMargin,
+    includeLayers,
   } = ctx
 
   if (platedHole.outer_width <= 0 || platedHole.outer_height <= 0) {
@@ -27,6 +29,7 @@ export const addOvalPlatedHole = (
   const rotation = (platedHole.ccw_rotation ?? 0) * (Math.PI / 180)
 
   // Add outer oval (copper) if drawing copper
+  // Plated holes go through all layers, so add to both top and bottom
   if (
     platedHole.outer_width > 0 &&
     platedHole.outer_height > 0 &&
@@ -39,14 +42,26 @@ export const addOvalPlatedHole = (
       height: platedHole.outer_height,
       rotation,
     })
-    project.children.push(
-      new ShapePath({
-        cutIndex: copperCutSetting.index,
-        verts: outer.verts,
-        prims: outer.prims,
-        isClosed: true,
-      }),
-    )
+    if (includeLayers.includes("top")) {
+      project.children.push(
+        new ShapePath({
+          cutIndex: topCopperCutSetting.index,
+          verts: outer.verts,
+          prims: outer.prims,
+          isClosed: true,
+        }),
+      )
+    }
+    if (includeLayers.includes("bottom")) {
+      project.children.push(
+        new ShapePath({
+          cutIndex: bottomCopperCutSetting.index,
+          verts: outer.verts,
+          prims: outer.prims,
+          isClosed: true,
+        }),
+      )
+    }
   }
 
   // Add soldermask opening if drawing soldermask

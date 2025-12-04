@@ -6,15 +6,27 @@ import { ShapePath } from "lbrnts"
 export const addRectSmtPad = (smtPad: PcbSmtPadRect, ctx: ConvertContext) => {
   const {
     project,
-    copperCutSetting,
+    topCopperCutSetting,
+    bottomCopperCutSetting,
     soldermaskCutSetting,
     connMap,
-    netGeoms,
+    topNetGeoms,
+    bottomNetGeoms,
     origin,
     includeCopper,
     includeSoldermask,
     soldermaskMargin,
+    includeLayers,
   } = ctx
+
+  // Filter by layer - only process top and bottom layers
+  const padLayer = smtPad.layer || "top"
+  if (padLayer !== "top" && padLayer !== "bottom") {
+    return // Skip inner layers
+  }
+  if (!includeLayers.includes(padLayer)) {
+    return
+  }
 
   const centerX = smtPad.x + origin.x
   const centerY = smtPad.y + origin.y
@@ -23,11 +35,16 @@ export const addRectSmtPad = (smtPad: PcbSmtPadRect, ctx: ConvertContext) => {
 
   const netId = connMap.getNetConnectedToId(smtPad.pcb_smtpad_id)
 
+  // Select the correct cut setting and net geoms based on layer
+  const copperCutSetting =
+    padLayer === "top" ? topCopperCutSetting : bottomCopperCutSetting
+  const netGeoms = padLayer === "top" ? topNetGeoms : bottomNetGeoms
+
   // Only add to netGeoms if drawing copper
   if (includeCopper) {
     if (netId) {
       // Add to netGeoms to be merged with other elements on the same net
-      ctx.netGeoms
+      netGeoms
         .get(netId)
         ?.push(
           new Box(

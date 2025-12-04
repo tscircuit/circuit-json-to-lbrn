@@ -9,19 +9,23 @@ export interface ConvertContext {
   db: CircuitJsonUtilObjects
   project: LightBurnProject
 
-  copperCutSetting: CutSetting
+  topCopperCutSetting: CutSetting
+  bottomCopperCutSetting: CutSetting
   throughBoardCutSetting: CutSetting
   soldermaskCutSetting: CutSetting
 
   connMap: ConnectivityMap
 
-  netGeoms: Map<ConnectivityMapKey, Array<Polygon | Box>>
+  // Separate net geometries for top and bottom layers
+  topNetGeoms: Map<ConnectivityMapKey, Array<Polygon | Box>>
+  bottomNetGeoms: Map<ConnectivityMapKey, Array<Polygon | Box>>
 
   origin: { x: number; y: number }
 
   // Include flags
   includeCopper: boolean
   includeSoldermask: boolean
+  includeLayers: Array<"top" | "bottom">
 
   // Soldermask margin (can be negative)
   soldermaskMargin: number
