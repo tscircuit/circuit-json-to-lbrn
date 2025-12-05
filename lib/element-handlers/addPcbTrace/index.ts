@@ -1,6 +1,6 @@
 import type { PcbTrace } from "circuit-json"
 import type { ConvertContext } from "../../ConvertContext"
-import { parseRouteSegments } from "./parseRouteSegments"
+import { splitRouteSegmentsByLayer } from "./splitRouteSegmentsByLayer"
 import { generateTracePolygons } from "./generateTracePolygons"
 import { unifyTracePolygons } from "./unifyTracePolygons"
 
@@ -41,8 +41,8 @@ export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
   })
   const traceWidth = (wirePoint as any)?.width ?? 0.15
 
-  // Parse route into layer segments
-  const layerSegments = parseRouteSegments(trace)
+  // Split route into segments by layer
+  const layerSegments = splitRouteSegmentsByLayer(trace)
 
   // Generate normal trace polygons
   const normalPolygons = generateTracePolygons({

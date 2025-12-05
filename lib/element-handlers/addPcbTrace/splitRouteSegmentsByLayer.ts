@@ -1,10 +1,10 @@
 import type { PcbTrace } from "circuit-json"
 
 /**
- * Groups consecutive wire segments by layer
+ * Splits route into consecutive wire segments grouped by layer
  * When we hit a via, we start a new segment on the new layer
  */
-export const parseRouteSegments = (
+export const splitRouteSegmentsByLayer = (
   trace: PcbTrace,
 ): Map<"top" | "bottom", Array<Array<{ x: number; y: number }>>> => {
   const layerSegments = new Map<
