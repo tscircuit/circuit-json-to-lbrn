@@ -18,13 +18,9 @@ test(
       includeLayers: ["top"],
     })
 
-    Bun.write(
-      "debug-output/pico-w-3x5-led-matrix.lbrn2",
-      project.getString(),
-      {
-        createPath: true,
-      },
-    )
+    Bun.write("debug-output/pico-w-3x5-led-matrix.lbrn2", project.getString(), {
+      createPath: true,
+    })
 
     const lbrnSvg = await generateLightBurnSvg(project)
 
