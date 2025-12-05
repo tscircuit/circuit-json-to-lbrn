@@ -10,8 +10,8 @@ export const addRectSmtPad = (smtPad: PcbSmtPadRect, ctx: ConvertContext) => {
     bottomCopperCutSetting,
     soldermaskCutSetting,
     connMap,
-    topNetGeoms,
-    bottomNetGeoms,
+    topCutNetGeoms,
+    bottomCutNetGeoms,
     origin,
     includeCopper,
     includeSoldermask,
@@ -38,7 +38,7 @@ export const addRectSmtPad = (smtPad: PcbSmtPadRect, ctx: ConvertContext) => {
   // Select the correct cut setting and net geoms based on layer
   const copperCutSetting =
     padLayer === "top" ? topCopperCutSetting : bottomCopperCutSetting
-  const netGeoms = padLayer === "top" ? topNetGeoms : bottomNetGeoms
+  const netGeoms = padLayer === "top" ? topCutNetGeoms : bottomCutNetGeoms
 
   // Only add to netGeoms if drawing copper
   if (includeCopper) {

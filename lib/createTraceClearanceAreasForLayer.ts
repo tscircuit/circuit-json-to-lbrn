@@ -4,11 +4,11 @@ import { polygonToShapePathData } from "./polygon-to-shape-path"
 import { ShapePath } from "lbrnts"
 
 /**
- * Generates trace clearance areas for a given layer
- * Computes the area between inner (normal) and outer (with traceMargin) trace geometries
- * and outputs them as filled shapes with crosshatch pattern for laser ablation
+ * Creates trace clearance areas for a given layer
+ * Computes the area between inner (cut) and outer (scan) trace geometries
+ * and outputs them as filled shapes with crosshatch pattern (SCAN mode)
  */
-export const generateTraceClearanceAreas = ({
+export const createTraceClearanceAreasForLayer = ({
   layer,
   ctx,
 }: {
@@ -18,26 +18,29 @@ export const generateTraceClearanceAreas = ({
   const {
     project,
     connMap,
-    topNetGeoms,
-    bottomNetGeoms,
-    topMarginNetGeoms,
-    bottomMarginNetGeoms,
-    topTraceMarginCutSetting,
-    bottomTraceMarginCutSetting,
+    topCutNetGeoms,
+    bottomCutNetGeoms,
+    topScanNetGeoms,
+    bottomScanNetGeoms,
+    topTraceClearanceAreaCutSetting,
+    bottomTraceClearanceAreaCutSetting,
   } = ctx
 
   // Get the appropriate cut setting for this layer
   const cutSetting =
-    layer === "top" ? topTraceMarginCutSetting : bottomTraceMarginCutSetting
+    layer === "top"
+      ? topTraceClearanceAreaCutSetting
+      : bottomTraceClearanceAreaCutSetting
 
   if (!cutSetting) {
     return
   }
 
   // Get the appropriate geometry maps
-  const innerGeomMap = layer === "top" ? topNetGeoms : bottomNetGeoms
-  const outerGeomMap =
-    layer === "top" ? topMarginNetGeoms : bottomMarginNetGeoms
+  // innerGeomMap = CUT geometries (normal trace outlines)
+  // outerGeomMap = SCAN geometries (trace + margin outlines)
+  const innerGeomMap = layer === "top" ? topCutNetGeoms : bottomCutNetGeoms
+  const outerGeomMap = layer === "top" ? topScanNetGeoms : bottomScanNetGeoms
 
   // Process each net
   for (const net of Object.keys(connMap.netMap)) {
@@ -49,7 +52,7 @@ export const generateTraceClearanceAreas = ({
     }
 
     try {
-      // Union inner geometries (normal traces)
+      // Union inner geometries (normal trace outlines)
       let innerUnion = innerGeoms[0]!
       if (innerUnion instanceof Box) {
         innerUnion = new Polygon(innerUnion)
@@ -62,7 +65,7 @@ export const generateTraceClearanceAreas = ({
         }
       }
 
-      // Union outer geometries (traces with traceMargin)
+      // Union outer geometries (trace + margin outlines)
       let outerUnion = outerGeoms[0]!
       if (outerUnion instanceof Box) {
         outerUnion = new Polygon(outerUnion)
@@ -93,7 +96,7 @@ export const generateTraceClearanceAreas = ({
       }
     } catch (error) {
       console.warn(
-        `Failed to generate trace clearance area for net ${net} on ${layer} layer:`,
+        `Failed to create trace clearance area for net ${net} on ${layer} layer:`,
         error,
       )
       // Skip this net's clearance if we can't compute it

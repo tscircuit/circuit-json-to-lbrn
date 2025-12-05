@@ -4,10 +4,10 @@ import type { ConvertContext } from "./ConvertContext"
 import { polygonToShapePathData } from "./polygon-to-shape-path"
 
 /**
- * Outputs copper shapes for a given layer by unifying net geometries
- * and converting them to LightBurn ShapePath objects
+ * Creates copper shapes for a given layer by unifying net geometries
+ * and converting them to LightBurn ShapePath objects (CUT mode)
  */
-export const outputCopperShapes = ({
+export const createCopperShapesForLayer = ({
   layer,
   ctx,
 }: {
@@ -17,13 +17,13 @@ export const outputCopperShapes = ({
   const {
     project,
     connMap,
-    topNetGeoms,
-    bottomNetGeoms,
+    topCutNetGeoms,
+    bottomCutNetGeoms,
     topCopperCutSetting,
     bottomCopperCutSetting,
   } = ctx
 
-  const netGeomMap = layer === "top" ? topNetGeoms : bottomNetGeoms
+  const netGeomMap = layer === "top" ? topCutNetGeoms : bottomCutNetGeoms
   const cutSetting =
     layer === "top" ? topCopperCutSetting : bottomCopperCutSetting
 

@@ -14,8 +14,8 @@ export const addPolygonSmtPad = (
     topCopperCutSetting,
     bottomCopperCutSetting,
     soldermaskCutSetting,
-    topNetGeoms,
-    bottomNetGeoms,
+    topCutNetGeoms,
+    bottomCutNetGeoms,
     origin,
     includeCopper,
     includeSoldermask,
@@ -36,7 +36,7 @@ export const addPolygonSmtPad = (
   // Select the correct cut setting and net geoms based on layer
   const copperCutSetting =
     padLayer === "top" ? topCopperCutSetting : bottomCopperCutSetting
-  const netGeoms = padLayer === "top" ? topNetGeoms : bottomNetGeoms
+  const netGeoms = padLayer === "top" ? topCutNetGeoms : bottomCutNetGeoms
 
   // Create the polygon pad
   if (smtPad.points.length >= 3) {

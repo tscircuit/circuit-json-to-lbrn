@@ -6,10 +6,10 @@ import { unifyTracePolygons } from "./unifyTracePolygons"
 
 export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
   const {
-    topNetGeoms,
-    bottomNetGeoms,
-    topMarginNetGeoms,
-    bottomMarginNetGeoms,
+    topCutNetGeoms,
+    bottomCutNetGeoms,
+    topScanNetGeoms,
+    bottomScanNetGeoms,
     connMap,
     origin,
     includeCopper,
@@ -52,6 +52,7 @@ export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
     includeLayers,
   })
 
+  // Store CUT geometries (normal trace outlines)
   for (const [layer, polygons] of normalPolygons.entries()) {
     const { result } = unifyTracePolygons({
       polygons,
@@ -59,40 +60,40 @@ export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
       layer,
     })
 
-    const netGeoms = layer === "top" ? topNetGeoms : bottomNetGeoms
+    const cutNetGeoms = layer === "top" ? topCutNetGeoms : bottomCutNetGeoms
     if (Array.isArray(result)) {
       for (const poly of result) {
-        netGeoms.get(netId)?.push(poly)
+        cutNetGeoms.get(netId)?.push(poly)
       }
     } else {
-      netGeoms.get(netId)?.push(result)
+      cutNetGeoms.get(netId)?.push(result)
     }
   }
 
-  // Generate margin trace polygons if traceMargin is enabled
+  // Store SCAN geometries (trace + margin outlines) if traceMargin is enabled
   if (traceMargin > 0) {
-    const marginPolygons = generateTracePolygons({
+    const scanPolygons = generateTracePolygons({
       layerSegments,
       width: traceWidth + 2 * traceMargin,
       origin,
       includeLayers,
     })
 
-    for (const [layer, polygons] of marginPolygons.entries()) {
+    for (const [layer, polygons] of scanPolygons.entries()) {
       const { result } = unifyTracePolygons({
         polygons,
         traceId: trace.pcb_trace_id,
         layer,
       })
 
-      const marginNetGeoms =
-        layer === "top" ? topMarginNetGeoms : bottomMarginNetGeoms
+      const scanNetGeoms =
+        layer === "top" ? topScanNetGeoms : bottomScanNetGeoms
       if (Array.isArray(result)) {
         for (const poly of result) {
-          marginNetGeoms.get(netId)?.push(poly)
+          scanNetGeoms.get(netId)?.push(poly)
         }
       } else {
-        marginNetGeoms.get(netId)?.push(result)
+        scanNetGeoms.get(netId)?.push(result)
       }
     }
   }

@@ -15,8 +15,8 @@ export const addCirclePlatedHole = (
     bottomCopperCutSetting,
     soldermaskCutSetting,
     throughBoardCutSetting,
-    topNetGeoms,
-    bottomNetGeoms,
+    topCutNetGeoms,
+    bottomCutNetGeoms,
     origin,
     includeCopper,
     includeSoldermask,
@@ -38,10 +38,10 @@ export const addCirclePlatedHole = (
     if (netId) {
       // Add to both top and bottom netGeoms since plated holes go through the board
       if (includeLayers.includes("top")) {
-        topNetGeoms.get(netId)?.push(polygon.clone())
+        topCutNetGeoms.get(netId)?.push(polygon.clone())
       }
       if (includeLayers.includes("bottom")) {
-        bottomNetGeoms.get(netId)?.push(polygon.clone())
+        bottomCutNetGeoms.get(netId)?.push(polygon.clone())
       }
     } else {
       // No net connection - draw directly for each included layer

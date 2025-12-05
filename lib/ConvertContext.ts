@@ -16,9 +16,15 @@ export interface ConvertContext {
 
   connMap: ConnectivityMap
 
-  // Separate net geometries for top and bottom layers
-  topNetGeoms: Map<ConnectivityMapKey, Array<Polygon | Box>>
-  bottomNetGeoms: Map<ConnectivityMapKey, Array<Polygon | Box>>
+  // Net geometries for CUT operations (vector/outline mode)
+  // These are traced outlines of copper features
+  topCutNetGeoms: Map<ConnectivityMapKey, Array<Polygon | Box>>
+  bottomCutNetGeoms: Map<ConnectivityMapKey, Array<Polygon | Box>>
+
+  // Net geometries for SCAN operations (raster/fill mode)
+  // These are filled areas for trace clearance zones
+  topScanNetGeoms: Map<ConnectivityMapKey, Array<Polygon | Box>>
+  bottomScanNetGeoms: Map<ConnectivityMapKey, Array<Polygon | Box>>
 
   origin: { x: number; y: number }
 
@@ -30,15 +36,11 @@ export interface ConvertContext {
   // Soldermask margin (can be negative)
   soldermaskMargin: number
 
-  // Trace margin cutting for clearance around traces
+  // Trace margin for clearance zones
   traceMargin: number
   laserSpotSize: number
 
-  // Separate net geometries for trace margins (outer - inner)
-  topMarginNetGeoms: Map<ConnectivityMapKey, Array<Polygon | Box>>
-  bottomMarginNetGeoms: Map<ConnectivityMapKey, Array<Polygon | Box>>
-
-  // Cut settings for trace margins
-  topTraceMarginCutSetting?: CutSetting
-  bottomTraceMarginCutSetting?: CutSetting
+  // Cut settings for trace clearance areas
+  topTraceClearanceAreaCutSetting?: CutSetting
+  bottomTraceClearanceAreaCutSetting?: CutSetting
 }

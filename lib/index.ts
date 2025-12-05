@@ -14,8 +14,8 @@ import {
 import { addPcbVia } from "./element-handlers/addPcbVia"
 import { addPcbHole } from "./element-handlers/addPcbHole"
 import { addPcbCutout } from "./element-handlers/addPcbCutout"
-import { outputCopperShapes } from "./outputCopperShapes"
-import { generateTraceClearanceAreas } from "./generateTraceClearanceAreas"
+import { createCopperShapesForLayer } from "./createCopperShapesForLayer"
+import { createTraceClearanceAreasForLayer } from "./createTraceClearanceAreasForLayer"
 
 export const convertCircuitJsonToLbrn = (
   circuitJson: CircuitJson,
@@ -92,15 +92,15 @@ export const convertCircuitJsonToLbrn = (
   project.children.push(soldermaskCutSetting)
 
   // Create trace clearance cut settings if needed
-  let topTraceMarginCutSetting: CutSetting | undefined
-  let bottomTraceMarginCutSetting: CutSetting | undefined
+  let topTraceClearanceAreaCutSetting: CutSetting | undefined
+  let bottomTraceClearanceAreaCutSetting: CutSetting | undefined
 
   if (shouldGenerateTraceClearanceZones) {
     if (includeLayers.includes("top")) {
-      topTraceMarginCutSetting = new CutSetting({
+      topTraceClearanceAreaCutSetting = new CutSetting({
         type: "Scan",
         index: 4,
-        name: "Clear Top Trace Margins",
+        name: "Clear Top Trace Clearance Areas",
         numPasses: 12,
         speed: 100,
         scanOpt: "individual",
@@ -108,14 +108,14 @@ export const convertCircuitJsonToLbrn = (
         angle: 45,
         crossHatch: true,
       })
-      project.children.push(topTraceMarginCutSetting)
+      project.children.push(topTraceClearanceAreaCutSetting)
     }
 
     if (includeLayers.includes("bottom")) {
-      bottomTraceMarginCutSetting = new CutSetting({
+      bottomTraceClearanceAreaCutSetting = new CutSetting({
         type: "Scan",
         index: 5,
-        name: "Clear Bottom Trace Margins",
+        name: "Clear Bottom Trace Clearance Areas",
         numPasses: 12,
         speed: 100,
         scanOpt: "individual",
@@ -123,7 +123,7 @@ export const convertCircuitJsonToLbrn = (
         angle: 45,
         crossHatch: true,
       })
-      project.children.push(bottomTraceMarginCutSetting)
+      project.children.push(bottomTraceClearanceAreaCutSetting)
     }
   }
 
@@ -144,10 +144,10 @@ export const convertCircuitJsonToLbrn = (
     throughBoardCutSetting,
     soldermaskCutSetting,
     connMap,
-    topNetGeoms: new Map(),
-    bottomNetGeoms: new Map(),
-    topMarginNetGeoms: new Map(),
-    bottomMarginNetGeoms: new Map(),
+    topCutNetGeoms: new Map(),
+    bottomCutNetGeoms: new Map(),
+    topScanNetGeoms: new Map(),
+    bottomScanNetGeoms: new Map(),
     origin,
     includeCopper,
     includeSoldermask,
@@ -155,16 +155,16 @@ export const convertCircuitJsonToLbrn = (
     includeLayers,
     traceMargin,
     laserSpotSize,
-    topTraceMarginCutSetting,
-    bottomTraceMarginCutSetting,
+    topTraceClearanceAreaCutSetting,
+    bottomTraceClearanceAreaCutSetting,
   }
 
   // Initialize net geometry maps
   for (const net of Object.keys(connMap.netMap)) {
-    ctx.topNetGeoms.set(net, [])
-    ctx.bottomNetGeoms.set(net, [])
-    ctx.topMarginNetGeoms.set(net, [])
-    ctx.bottomMarginNetGeoms.set(net, [])
+    ctx.topCutNetGeoms.set(net, [])
+    ctx.bottomCutNetGeoms.set(net, [])
+    ctx.topScanNetGeoms.set(net, [])
+    ctx.bottomScanNetGeoms.set(net, [])
   }
 
   // Process all PCB elements
@@ -196,23 +196,23 @@ export const convertCircuitJsonToLbrn = (
     addPcbCutout(cutout, ctx)
   }
 
-  // Output copper shapes
+  // Create copper shapes for each layer
   if (includeCopper) {
     if (includeLayers.includes("top")) {
-      outputCopperShapes({ layer: "top", ctx })
+      createCopperShapesForLayer({ layer: "top", ctx })
     }
     if (includeLayers.includes("bottom")) {
-      outputCopperShapes({ layer: "bottom", ctx })
+      createCopperShapesForLayer({ layer: "bottom", ctx })
     }
   }
 
-  // Generate trace clearance zones
+  // Create trace clearance areas for each layer
   if (shouldGenerateTraceClearanceZones) {
     if (includeLayers.includes("top")) {
-      generateTraceClearanceAreas({ layer: "top", ctx })
+      createTraceClearanceAreasForLayer({ layer: "top", ctx })
     }
     if (includeLayers.includes("bottom")) {
-      generateTraceClearanceAreas({ layer: "bottom", ctx })
+      createTraceClearanceAreasForLayer({ layer: "bottom", ctx })
     }
   }
 

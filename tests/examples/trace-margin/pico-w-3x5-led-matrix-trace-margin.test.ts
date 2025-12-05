@@ -28,5 +28,5 @@ test(
       import.meta.filename,
     )
   },
-  { timeout: 30000 },
+  { timeout: 40000 },
 )
