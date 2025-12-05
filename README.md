@@ -36,6 +36,9 @@ const defaultLbrn = convertCircuitJsonToLbrn(circuitJson)
 - `includeSilkscreen?: boolean` - Include silkscreen layer (not implemented yet)
 - `origin?: { x: number; y: number }` - Set the origin point for the conversion
 - `margin?: number` - Set the margin around the PCB
+- `traceMargin?: number` - Clearance margin around traces in mm (requires `includeCopper: true`)
+- `laserSpotSize?: number` - Laser spot size in mm for crosshatch spacing (default: `0.005`)
+- `includeLayers?: Array<"top" | "bottom">` - Specify which layers to include (default: `["top", "bottom"]`)
 
 ## Soldermask Support
 
@@ -57,3 +60,34 @@ You can generate:
 - **Copper only**: `{ includeCopper: true, includeSoldermask: false }` - Traditional copper cutting
 - **Soldermask only**: `{ includeCopper: false, includeSoldermask: true }` - Just Kapton tape (polyimide) cutting patterns (filled shapes)
 - **Both**: `{ includeCopper: true, includeSoldermask: true }` - Complete fabrication file with both layers
+
+## Trace Margin Support
+
+The `traceMargin` option enables smart trace rasterization for creating clearance zones around traces. This is essential for laser PCB fabrication to ensure proper electrical isolation between traces.
+
+### How it works
+
+When `traceMargin` is specified:
+1. Generates trace geometries at normal width (inner trace union)
+2. Generates trace geometries at width + 2×`traceMargin` (outer trace union)
+3. Calculates clearance area = outer - inner
+4. Outputs clearance area as filled shapes using Scan mode with crosshatch pattern
+
+The crosshatch pattern ablates copper in the margin area, with line spacing determined by `laserSpotSize`.
+
+### Example
+
+```tsx
+const lbrn = convertCircuitJsonToLbrn(circuitJson, {
+  includeCopper: true,
+  traceMargin: 0.2,      // 0.2mm clearance around traces
+  laserSpotSize: 0.005,  // 0.005mm spot size (crosshatch spacing)
+})
+```
+
+This will:
+- Cut trace outlines (vector mode)
+- Fill 0.2mm margin zones around traces with crosshatch pattern (scan mode)
+- Use 0.005mm spacing for the crosshatch lines
+
+**Note:** `traceMargin` requires `includeCopper: true` and will throw an error if copper is disabled.
