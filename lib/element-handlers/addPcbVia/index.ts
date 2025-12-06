@@ -13,8 +13,8 @@ export const addPcbVia = (via: PcbVia, ctx: ConvertContext): void => {
     bottomCopperCutSetting,
     soldermaskCutSetting,
     throughBoardCutSetting,
-    topNetGeoms,
-    bottomNetGeoms,
+    topCutNetGeoms,
+    bottomCutNetGeoms,
     origin,
     includeCopper,
     includeSoldermask,
@@ -45,10 +45,10 @@ export const addPcbVia = (via: PcbVia, ctx: ConvertContext): void => {
     if (netId) {
       // Add to both top and bottom netGeoms since vias go through the board
       if (includeLayers.includes("top")) {
-        topNetGeoms.get(netId)?.push(polygon.clone())
+        topCutNetGeoms.get(netId)?.push(polygon.clone())
       }
       if (includeLayers.includes("bottom")) {
-        bottomNetGeoms.get(netId)?.push(polygon.clone())
+        bottomCutNetGeoms.get(netId)?.push(polygon.clone())
       }
     } else {
       // No net connection - draw directly for each included layer

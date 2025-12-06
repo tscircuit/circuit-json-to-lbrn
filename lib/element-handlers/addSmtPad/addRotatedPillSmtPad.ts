@@ -13,8 +13,8 @@ export const addRotatedPillSmtPad = (
     topCopperCutSetting,
     bottomCopperCutSetting,
     soldermaskCutSetting,
-    topNetGeoms,
-    bottomNetGeoms,
+    topCutNetGeoms,
+    bottomCutNetGeoms,
     origin,
     includeCopper,
     includeSoldermask,
@@ -35,7 +35,7 @@ export const addRotatedPillSmtPad = (
   // Select the correct cut setting and net geoms based on layer
   const copperCutSetting =
     padLayer === "top" ? topCopperCutSetting : bottomCopperCutSetting
-  const netGeoms = padLayer === "top" ? topNetGeoms : bottomNetGeoms
+  const netGeoms = padLayer === "top" ? topCutNetGeoms : bottomCutNetGeoms
 
   const centerX = smtPad.x + origin.x
   const centerY = smtPad.y + origin.y

@@ -1,5 +1,5 @@
 import type { CircuitJson } from "circuit-json"
-import { LightBurnProject, CutSetting, ShapePath } from "lbrnts"
+import { LightBurnProject, CutSetting } from "lbrnts"
 import { cju } from "@tscircuit/circuit-json-util"
 import type { ConvertContext } from "./ConvertContext"
 import { addPlatedHole } from "./element-handlers/addPlatedHole"
@@ -7,8 +7,6 @@ import { addSmtPad } from "./element-handlers/addSmtPad"
 import { addPcbTrace } from "./element-handlers/addPcbTrace"
 import { addPcbBoard } from "./element-handlers/addPcbBoard"
 import { getFullConnectivityMapFromCircuitJson } from "circuit-json-to-connectivity-map"
-import { Polygon, Box, BooleanOperations } from "@flatten-js/core"
-import { polygonToShapePathData } from "./polygon-to-shape-path"
 import {
   calculateCircuitBounds,
   calculateOriginFromBounds,
@@ -16,7 +14,8 @@ import {
 import { addPcbVia } from "./element-handlers/addPcbVia"
 import { addPcbHole } from "./element-handlers/addPcbHole"
 import { addPcbCutout } from "./element-handlers/addPcbCutout"
-// import { writeDebugSvg } from "./writeDebugSvg"
+import { createCopperShapesForLayer } from "./createCopperShapesForLayer"
+import { createTraceClearanceAreasForLayer } from "./createTraceClearanceAreasForLayer"
 
 export const convertCircuitJsonToLbrn = (
   circuitJson: CircuitJson,
@@ -28,6 +27,8 @@ export const convertCircuitJsonToLbrn = (
     includeSoldermask?: boolean
     soldermaskMargin?: number
     includeLayers?: Array<"top" | "bottom">
+    traceMargin?: number
+    laserSpotSize?: number
   } = {},
 ): LightBurnProject => {
   const db = cju(circuitJson)
@@ -36,9 +37,23 @@ export const convertCircuitJsonToLbrn = (
     formatVersion: "1",
   })
 
-  // Default to all layers if not specified
+  // Parse options
   const includeLayers = options.includeLayers ?? ["top", "bottom"]
+  const traceMargin = options.traceMargin ?? 0
+  const laserSpotSize = options.laserSpotSize ?? 0.005
+  const includeCopper = options.includeCopper ?? true
+  const includeSoldermask = options.includeSoldermask ?? false
+  const soldermaskMargin = options.soldermaskMargin ?? 0
 
+  // Determine if we should generate trace clearance zones
+  const shouldGenerateTraceClearanceZones = traceMargin > 0 && includeCopper
+
+  // Validate options
+  if (traceMargin > 0 && !includeCopper) {
+    throw new Error("traceMargin requires includeCopper to be true")
+  }
+
+  // Create cut settings
   const topCopperCutSetting = new CutSetting({
     index: 0,
     name: "Cut Top Copper",
@@ -64,27 +79,63 @@ export const convertCircuitJsonToLbrn = (
   project.children.push(throughBoardCutSetting)
 
   const soldermaskCutSetting = new CutSetting({
-    type: "Scan", // Use Scan mode to fill pad shapes for Kapton tape cutting
+    type: "Scan",
     index: 3,
     name: "Cut Soldermask",
     numPasses: 1,
     speed: 150,
-    scanOpt: "individual", // Scan each shape individually
-    interval: 0.18, // Distance between cross-hatch lines
-    angle: 45, // Angle of cross-hatch lines
+    scanOpt: "individual",
+    interval: 0.18,
+    angle: 45,
     crossHatch: true,
   })
   project.children.push(soldermaskCutSetting)
 
-  const connMap = getFullConnectivityMapFromCircuitJson(circuitJson)
+  // Create trace clearance cut settings if needed
+  let topTraceClearanceAreaCutSetting: CutSetting | undefined
+  let bottomTraceClearanceAreaCutSetting: CutSetting | undefined
 
-  // Auto-calculate origin if not provided to ensure all elements are in positive quadrant
+  if (shouldGenerateTraceClearanceZones) {
+    if (includeLayers.includes("top")) {
+      topTraceClearanceAreaCutSetting = new CutSetting({
+        type: "Scan",
+        index: 4,
+        name: "Clear Top Trace Clearance Areas",
+        numPasses: 12,
+        speed: 100,
+        scanOpt: "individual",
+        interval: laserSpotSize,
+        angle: 45,
+        crossHatch: true,
+      })
+      project.children.push(topTraceClearanceAreaCutSetting)
+    }
+
+    if (includeLayers.includes("bottom")) {
+      bottomTraceClearanceAreaCutSetting = new CutSetting({
+        type: "Scan",
+        index: 5,
+        name: "Clear Bottom Trace Clearance Areas",
+        numPasses: 12,
+        speed: 100,
+        scanOpt: "individual",
+        interval: laserSpotSize,
+        angle: 45,
+        crossHatch: true,
+      })
+      project.children.push(bottomTraceClearanceAreaCutSetting)
+    }
+  }
+
+  // Build connectivity map and origin
+  const connMap = getFullConnectivityMapFromCircuitJson(circuitJson)
   let origin = options.origin
   if (!origin) {
     const bounds = calculateCircuitBounds(circuitJson)
     origin = calculateOriginFromBounds(bounds, options.margin)
   }
 
+  // Create conversion context
   const ctx: ConvertContext = {
     db,
     project,
@@ -93,20 +144,30 @@ export const convertCircuitJsonToLbrn = (
     throughBoardCutSetting,
     soldermaskCutSetting,
     connMap,
-    topNetGeoms: new Map(),
-    bottomNetGeoms: new Map(),
+    topCutNetGeoms: new Map(),
+    bottomCutNetGeoms: new Map(),
+    topScanNetGeoms: new Map(),
+    bottomScanNetGeoms: new Map(),
     origin,
-    includeCopper: options.includeCopper ?? true,
-    includeSoldermask: options.includeSoldermask ?? false,
-    soldermaskMargin: options.soldermaskMargin ?? 0,
+    includeCopper,
+    includeSoldermask,
+    soldermaskMargin,
     includeLayers,
+    traceMargin,
+    laserSpotSize,
+    topTraceClearanceAreaCutSetting,
+    bottomTraceClearanceAreaCutSetting,
   }
 
+  // Initialize net geometry maps
   for (const net of Object.keys(connMap.netMap)) {
-    ctx.topNetGeoms.set(net, [])
-    ctx.bottomNetGeoms.set(net, [])
+    ctx.topCutNetGeoms.set(net, [])
+    ctx.bottomCutNetGeoms.set(net, [])
+    ctx.topScanNetGeoms.set(net, [])
+    ctx.bottomScanNetGeoms.set(net, [])
   }
 
+  // Process all PCB elements
   for (const smtpad of db.pcb_smtpad.list()) {
     addSmtPad(smtpad, ctx)
   }
@@ -135,109 +196,25 @@ export const convertCircuitJsonToLbrn = (
     addPcbCutout(cutout, ctx)
   }
 
-  // Draw each individual shape geometry as a ShapePath
-  // FOR DEBUGGING!!!
-  // for (const net of Object.keys(connMap.netMap)) {
-  //   const netGeoms = ctx.netGeoms.get(net)!
-
-  //   if (netGeoms.length === 0) {
-  //     continue
-  //   }
-
-  //   for (const geom of netGeoms) {
-  //     // Convert Box to Polygon if needed
-  //     const polygon = geom instanceof Box ? new Polygon(geom) : geom
-
-  //     // Convert the polygon to verts and prims
-  //     const { verts, prims } = polygonToShapePathData(polygon)
-
-  //     project.children.push(
-  //       new ShapePath({
-  //         cutIndex: copperCutSetting.index,
-  //         verts,
-  //         prims,
-  //         isClosed: false,
-  //       }),
-  //     )
-  //   }
-  // }
-
-  // Create a union of all the net geoms, and add to project
-  // Only do this when including copper
-  if (ctx.includeCopper) {
-    // Process top layer
+  // Create copper shapes for each layer
+  if (includeCopper) {
     if (includeLayers.includes("top")) {
-      for (const net of Object.keys(connMap.netMap)) {
-        const netGeoms = ctx.topNetGeoms.get(net)!
-
-        if (netGeoms.length === 0) {
-          continue
-        }
-
-        let union = netGeoms[0]!
-        if (union instanceof Box) {
-          union = new Polygon(union)
-        }
-        for (const geom of netGeoms.slice(1)) {
-          if (geom instanceof Polygon) {
-            union = BooleanOperations.unify(union, geom)
-          } else if (geom instanceof Box) {
-            union = BooleanOperations.unify(union, new Polygon(geom))
-          }
-        }
-
-        for (const island of union.splitToIslands()) {
-          // Convert the polygon to verts and prims
-          const { verts, prims } = polygonToShapePathData(island)
-
-          project.children.push(
-            new ShapePath({
-              cutIndex: topCopperCutSetting.index,
-              verts,
-              prims,
-              isClosed: false,
-            }),
-          )
-        }
-      }
+      createCopperShapesForLayer({ layer: "top", ctx })
     }
-
-    // Process bottom layer
     if (includeLayers.includes("bottom")) {
-      for (const net of Object.keys(connMap.netMap)) {
-        const netGeoms = ctx.bottomNetGeoms.get(net)!
-
-        if (netGeoms.length === 0) {
-          continue
-        }
-
-        let union = netGeoms[0]!
-        if (union instanceof Box) {
-          union = new Polygon(union)
-        }
-        for (const geom of netGeoms.slice(1)) {
-          if (geom instanceof Polygon) {
-            union = BooleanOperations.unify(union, geom)
-          } else if (geom instanceof Box) {
-            union = BooleanOperations.unify(union, new Polygon(geom))
-          }
-        }
-
-        for (const island of union.splitToIslands()) {
-          // Convert the polygon to verts and prims
-          const { verts, prims } = polygonToShapePathData(island)
-
-          project.children.push(
-            new ShapePath({
-              cutIndex: bottomCopperCutSetting.index,
-              verts,
-              prims,
-              isClosed: false,
-            }),
-          )
-        }
-      }
+      createCopperShapesForLayer({ layer: "bottom", ctx })
     }
   }
+
+  // Create trace clearance areas for each layer
+  if (shouldGenerateTraceClearanceZones) {
+    if (includeLayers.includes("top")) {
+      createTraceClearanceAreasForLayer({ layer: "top", ctx })
+    }
+    if (includeLayers.includes("bottom")) {
+      createTraceClearanceAreasForLayer({ layer: "bottom", ctx })
+    }
+  }
+
   return project
 }
