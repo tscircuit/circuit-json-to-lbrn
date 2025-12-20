@@ -33,8 +33,29 @@ const optionsContainer = document.getElementById(
 ) as HTMLDivElement
 const originXInput = document.getElementById("originX") as HTMLInputElement
 const originYInput = document.getElementById("originY") as HTMLInputElement
+const traceMarginInput = document.getElementById(
+  "traceMargin",
+) as HTMLInputElement
+const soldermaskMarginInput = document.getElementById(
+  "soldermaskMargin",
+) as HTMLInputElement
+const laserSpotSizeInput = document.getElementById(
+  "laserSpotSize",
+) as HTMLInputElement
+const includeCopperInput = document.getElementById(
+  "includeCopper",
+) as HTMLInputElement
+const includeSoldermaskInput = document.getElementById(
+  "includeSoldermask",
+) as HTMLInputElement
 const includeSilkscreenInput = document.getElementById(
   "includeSilkscreen",
+) as HTMLInputElement
+const includeTopLayerInput = document.getElementById(
+  "includeTopLayer",
+) as HTMLInputElement
+const includeBottomLayerInput = document.getElementById(
+  "includeBottomLayer",
 ) as HTMLInputElement
 const reconvertBtn = document.getElementById(
   "reconvertBtn",
@@ -68,6 +89,15 @@ function getConversionOptions() {
       x: parseFloat(originXInput.value) || 0,
       y: parseFloat(originYInput.value) || 0,
     },
+    includeCopper: includeCopperInput.checked,
+    includeSoldermask: includeSoldermaskInput.checked,
+    soldermaskMargin: parseFloat(soldermaskMarginInput.value) || 0,
+    includeLayers: [
+      ...(includeTopLayerInput.checked ? ["top" as const] : []),
+      ...(includeBottomLayerInput.checked ? ["bottom" as const] : []),
+    ],
+    traceMargin: parseFloat(traceMarginInput.value) || 0,
+    laserSpotSize: parseFloat(laserSpotSizeInput.value) || 0.005,
   }
 }
 
@@ -131,9 +161,11 @@ async function convertAndDisplay() {
 
     // Convert to LBRN
     console.log("Converting to LBRN with options:", options)
-    currentLbrnProject = convertCircuitJsonToLbrn(processedCircuitJson, {
-      includeSilkscreen: options.includeSilkscreen,
-    })
+    const { origin: _, ...conversionOptions } = options
+    currentLbrnProject = convertCircuitJsonToLbrn(
+      processedCircuitJson,
+      conversionOptions,
+    )
 
     // Generate SVGs
     console.log("Generating Circuit JSON SVG...")
