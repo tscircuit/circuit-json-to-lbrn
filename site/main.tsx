@@ -81,9 +81,56 @@ const boardFrequencyInput = document.getElementById(
 const boardPulseWidthInput = document.getElementById(
   "boardPulseWidth",
 ) as HTMLInputElement
+const presetSelect = document.getElementById(
+  "presetSelect",
+) as HTMLSelectElement
 const reconvertBtn = document.getElementById(
   "reconvertBtn",
 ) as HTMLButtonElement
+
+// Convert frequency from kHz to Hz
+function kHzToHz(khz: number): number {
+  return khz * 1000
+}
+
+// Convert pulse width from ns to seconds
+function nsToSeconds(ns: number): number {
+  return ns * 1e-9
+}
+
+// Load Omni X 6W 150x150 preset
+function loadOmniX6W150x150Preset() {
+  copperSpeedInput.value = "300"
+  copperNumPassesInput.value = "1"
+  copperFrequencyInput.value = "20"
+  copperPulseWidthInput.value = "1"
+
+  boardSpeedInput.value = "20"
+  boardNumPassesInput.value = "1"
+  boardFrequencyInput.value = "20"
+  boardPulseWidthInput.value = "1"
+}
+
+// Reset to defaults
+function resetToDefaults() {
+  copperSpeedInput.value = "300"
+  copperNumPassesInput.value = "1"
+  copperFrequencyInput.value = "20"
+  copperPulseWidthInput.value = "1"
+
+  boardSpeedInput.value = "20"
+  boardNumPassesInput.value = "1"
+  boardFrequencyInput.value = "20"
+  boardPulseWidthInput.value = "1"
+}
+
+// Initialize display values on load
+function initializeDisplayValues() {
+  copperFrequencyInput.value = "20"
+  copperPulseWidthInput.value = "1"
+  boardFrequencyInput.value = "20"
+  boardPulseWidthInput.value = "1"
+}
 
 // Show error message
 function showError(message: string) {
@@ -126,14 +173,14 @@ function getConversionOptions() {
       copper: {
         speed: parseFloat(copperSpeedInput.value) || 300,
         numPasses: parseInt(copperNumPassesInput.value) || 100,
-        frequency: parseFloat(copperFrequencyInput.value) || 20000,
-        pulseWidth: parseFloat(copperPulseWidthInput.value) || 1e-9,
+        frequency: kHzToHz(parseFloat(copperFrequencyInput.value) || 20),
+        pulseWidth: nsToSeconds(parseFloat(copperPulseWidthInput.value) || 1),
       },
       board: {
         speed: parseFloat(boardSpeedInput.value) || 20,
         numPasses: parseInt(boardNumPassesInput.value) || 100,
-        frequency: parseFloat(boardFrequencyInput.value) || 20000,
-        pulseWidth: parseFloat(boardPulseWidthInput.value) || 1e-9,
+        frequency: kHzToHz(parseFloat(boardFrequencyInput.value) || 20),
+        pulseWidth: nsToSeconds(parseFloat(boardPulseWidthInput.value) || 1),
       },
     },
   }
@@ -153,6 +200,7 @@ async function processFile(file: File) {
 
     // Show options container
     optionsContainer.classList.remove("hidden")
+    initializeDisplayValues()
 
     // Convert to LBRN with options
     await convertAndDisplay()
@@ -269,6 +317,17 @@ dropArea.addEventListener("drop", (e) => {
 // Handle reconvert button
 reconvertBtn.addEventListener("click", () => {
   convertAndDisplay()
+})
+
+// Handle preset select
+presetSelect.addEventListener("change", (e: Event) => {
+  const target = e.target as HTMLSelectElement
+  const value = target.value
+  if (value === "default") {
+    resetToDefaults()
+  } else if (value === "omni-x-6w") {
+    loadOmniX6W150x150Preset()
+  }
 })
 
 // Handle download button
