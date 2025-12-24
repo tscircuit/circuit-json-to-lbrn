@@ -66,63 +66,178 @@
              <label class="block text-sm font-medium text-gray-300 mb-2">
                Origin X (mm)
              </label>
-             <input
-               type="number"
-               id="originX"
-               value="0"
-               step="0.1"
-               class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-             />
+              <input
+                type="number"
+                id="originX"
+                value="0"
+                step="0.1"
+                class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
            </div>
            <div>
              <label class="block text-sm font-medium text-gray-300 mb-2">
                Origin Y (mm)
              </label>
-             <input
-               type="number"
-               id="originY"
-               value="0"
-               step="0.1"
-               class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-             />
+              <input
+                type="number"
+                id="originY"
+                value="0"
+                step="0.1"
+                class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
            </div>
            <div>
              <label class="block text-sm font-medium text-gray-300 mb-2">
                Trace Margin (mm)
              </label>
-             <input
-               type="number"
-               id="traceMargin"
-               value="0"
-               step="0.001"
-               class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-             />
+              <input
+                type="number"
+                id="traceMargin"
+                value="0"
+                step="0.001"
+                class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
            </div>
            <div>
              <label class="block text-sm font-medium text-gray-300 mb-2">
                Soldermask Margin (mm)
              </label>
-             <input
-               type="number"
-               id="soldermaskMargin"
-               value="0"
-               step="0.001"
-               class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-             />
+              <input
+                type="number"
+                id="soldermaskMargin"
+                value="0"
+                step="0.001"
+                class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
            </div>
-           <div>
-             <label class="block text-sm font-medium text-gray-300 mb-2">
-               Laser Spot Size (mm)
-             </label>
-             <input
-               type="number"
-               id="laserSpotSize"
-               value="0.005"
-               step="0.001"
-               class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-             />
-           </div>
-           <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-300 mb-2">
+                Laser Spot Size (mm)
+              </label>
+               <input
+                 type="number"
+                 id="laserSpotSize"
+                 value="0.005"
+                 step="0.001"
+                 class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+               />
+            </div>
+            <div class="md:col-span-2">
+              <details class="group">
+                <summary class="w-full text-md font-medium text-gray-300 mb-3 flex items-center justify-between bg-blue-500 hover:bg-blue-700 border border-gray-600 rounded-lg px-4 py-3 transition-colors cursor-pointer">
+                  <span>Laser Cut Settings</span>
+                  <span class="text-sm text-gray-100 group-open:rotate-90 transition-transform duration-200">▶</span>
+                </summary>
+                 <div class="space-y-4 border border-gray-600 rounded-lg p-4 bg-gray-750">
+                   <div class="flex items-center justify-between p-3 bg-gray-750 rounded-lg">
+                     <div class="col-span-2">
+                       <label class="block text-sm font-medium text-gray-300 mb-2">Preset</label>
+                       <select id="presetSelect" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                         <option value="default">Default</option>
+                         <option value="omni-x-6w">Omni X 6W 150x150 - Continuous cutting with conductivity checks</option>
+                         <!-- Add more options here -->
+                       </select>
+                     </div>
+                   </div>
+                 <table class="w-full text-sm text-gray-300">
+                   <thead>
+                     <tr class="border-b border-gray-600">
+                       <th class="text-left py-2">Layer</th>
+                       <th class="text-left py-2">Speed (mm/s)</th>
+                       <th class="text-left py-2">Passes</th>
+                       <th class="text-left py-2">Frequency (kHz)</th>
+                       <th class="text-left py-2">Pulse Width (ns)</th>
+                     </tr>
+                   </thead>
+                   <tbody>
+                     <tr class="border-b border-gray-700">
+                       <td class="py-2 font-medium">Copper Cut Settings</td>
+                       <td class="py-2">
+                          <input
+                            type="number"
+                            id="copperSpeed"
+                            value="300"
+                            step="1"
+                            title="Cutting speed for copper layers"
+                            class="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                          />
+                        </td>
+                        <td class="py-2">
+                          <input
+                            type="number"
+                            id="copperNumPasses"
+                            value="1"
+                            step="1"
+                            title="Number of passes for copper ablation"
+                            class="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                          />
+                        </td>
+                        <td class="py-2">
+                          <input
+                            type="number"
+                            id="copperFrequency"
+                            value="20"
+                            step="1"
+                            title="Laser pulse frequency"
+                            class="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                          />
+                        </td>
+                        <td class="py-2">
+                          <input
+                            type="number"
+                            id="copperPulseWidth"
+                            value="1"
+                            step="0.1"
+                            title="Laser pulse width"
+                            class="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                          />
+                       </td>
+                     </tr>
+                     <tr>
+                       <td class="py-2 font-medium">Board Laser Settings</td>
+                        <td class="py-2">
+                          <input
+                            type="number"
+                            id="boardSpeed"
+                            value="20"
+                            step="1"
+                            class="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                          />
+                        </td>
+                        <td class="py-2">
+                          <input
+                            type="number"
+                            id="boardNumPasses"
+                            value="1"
+                            step="1"
+                            class="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                          />
+                        </td>
+                        <td class="py-2">
+                          <input
+                            type="number"
+                            id="boardFrequency"
+                            value="20"
+                            step="1"
+                            class="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                          />
+                        </td>
+                        <td class="py-2">
+                          <input
+                            type="number"
+                            id="boardPulseWidth"
+                            value="1"
+                            step="0.1"
+                            class="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                          />
+                       </td>
+                     </tr>
+                   </tbody>
+                 </table>
+                 </div>
+              </details>
+            </div>
+            <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-4">
              <label class="flex items-center cursor-pointer">
                <input
                  type="checkbox"

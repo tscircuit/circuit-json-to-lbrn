@@ -29,6 +29,20 @@ export const convertCircuitJsonToLbrn = (
     includeLayers?: Array<"top" | "bottom">
     traceMargin?: number
     laserSpotSize?: number
+    laserProfile?: {
+      copper?: {
+        speed?: number
+        numPasses?: number
+        frequency?: number
+        pulseWidth?: number
+      }
+      board?: {
+        speed?: number
+        numPasses?: number
+        frequency?: number
+        pulseWidth?: number
+      }
+    }
   } = {},
 ): LightBurnProject => {
   const db = cju(circuitJson)
@@ -44,6 +58,25 @@ export const convertCircuitJsonToLbrn = (
   const includeCopper = options.includeCopper ?? true
   const includeSoldermask = options.includeSoldermask ?? false
   const soldermaskMargin = options.soldermaskMargin ?? 0
+  const laserProfile = options.laserProfile
+
+  // Default laser settings from GitHub issue
+  const defaultCopperSettings = {
+    speed: 300,
+    numPasses: 100,
+    frequency: 20000,
+    pulseWidth: 1e-9,
+  }
+  const defaultBoardSettings = {
+    speed: 20,
+    numPasses: 100,
+    frequency: 20000,
+    pulseWidth: 1e-9,
+  }
+
+  // Merge user settings with defaults
+  const copperSettings = { ...defaultCopperSettings, ...laserProfile?.copper }
+  const boardSettings = { ...defaultBoardSettings, ...laserProfile?.board }
 
   // Determine if we should generate trace clearance zones
   const shouldGenerateTraceClearanceZones = traceMargin > 0 && includeCopper
@@ -57,24 +90,30 @@ export const convertCircuitJsonToLbrn = (
   const topCopperCutSetting = new CutSetting({
     index: 0,
     name: "Cut Top Copper",
-    numPasses: 12,
-    speed: 100,
+    numPasses: copperSettings.numPasses,
+    speed: copperSettings.speed,
+    frequency: copperSettings.frequency,
+    pulseWidth: copperSettings.pulseWidth,
   })
   project.children.push(topCopperCutSetting)
 
   const bottomCopperCutSetting = new CutSetting({
     index: 1,
     name: "Cut Bottom Copper",
-    numPasses: 12,
-    speed: 100,
+    numPasses: copperSettings.numPasses,
+    speed: copperSettings.speed,
+    frequency: copperSettings.frequency,
+    pulseWidth: copperSettings.pulseWidth,
   })
   project.children.push(bottomCopperCutSetting)
 
   const throughBoardCutSetting = new CutSetting({
     index: 2,
     name: "Cut Through Board",
-    numPasses: 3,
-    speed: 50,
+    numPasses: boardSettings.numPasses,
+    speed: boardSettings.speed,
+    frequency: boardSettings.frequency,
+    pulseWidth: boardSettings.pulseWidth,
   })
   project.children.push(throughBoardCutSetting)
 

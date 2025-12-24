@@ -38,6 +38,7 @@ const defaultLbrn = convertCircuitJsonToLbrn(circuitJson)
 - `margin?: number` - Set the margin around the PCB
 - `traceMargin?: number` - Clearance margin around traces in mm (requires `includeCopper: true`)
 - `laserSpotSize?: number` - Laser spot size in mm for crosshatch spacing (default: `0.005`)
+- `laserProfile?: { copper?: { speed?: number; numPasses?: number; frequency?: number; pulseWidth?: number }; board?: { speed?: number; numPasses?: number; frequency?: number; pulseWidth?: number } }` - Custom laser cut settings for copper and board operations. Defaults from GitHub issue: copper (speed: 300 mm/s, numPasses: 100, frequency: 20 kHz, pulseWidth: 1 ns), board (speed: 20 mm/s, numPasses: 100, frequency: 20 kHz, pulseWidth: 1 ns). Allows per-user customization for different lasers/lenses.
 - `includeLayers?: Array<"top" | "bottom">` - Specify which layers to include (default: `["top", "bottom"]`)
 
 ## Soldermask Support
