@@ -9,6 +9,10 @@
     "allowJs": true,
     "types": ["bun-types", "./types.d.ts"],
 
+    "paths": {
+      "lib/*": ["./lib/*"]
+    },
+
     "resolveJsonModule": true,
     "esModuleInterop": true,
 
