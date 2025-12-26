@@ -11,11 +11,15 @@ test("example02 - two connected test points", async () => {
 
   const project = convertCircuitJsonToLbrn(circuitJson as CircuitJson)
 
-  // Bun.write("debug-output/lga-interconnect.lbrn2", project.getString(), {
-  //   createPath: true,
-  // })
+  Bun.write("debug-output/example02.lbrn2", project.getString(), {
+    createPath: true,
+  })
 
-  const lbrnSvg = await generateLightBurnSvg(project)
+  const lbrnSvg = await generateLightBurnSvg(project, {
+    margin: 0,
+    width: 600,
+    height: 400,
+  })
 
   expect(lbrnSvg).toMatchSvgSnapshot(import.meta.filename)
 
