@@ -20,6 +20,10 @@ export const generateTraceOutline = ({
 }): Flatten.Polygon | null => {
   if (points.length < 2) return null
 
+  // Remove consecutive duplicate points to avoid zero-length segments
+  const cleanedInputPoints = removeConsecutiveDuplicates(points)
+  if (cleanedInputPoints.length < 2) return null
+
   const radius = width / 2
   const outlinePoints: Array<{ x: number; y: number }> = []
 
@@ -68,9 +72,9 @@ export const generateTraceOutline = ({
     rightP2: { x: number; y: number }
   }> = []
 
-  for (let i = 0; i < points.length - 1; i++) {
-    const p1 = points[i]!
-    const p2 = points[i + 1]!
+  for (let i = 0; i < cleanedInputPoints.length - 1; i++) {
+    const p1 = cleanedInputPoints[i]!
+    const p2 = cleanedInputPoints[i + 1]!
 
     const dx = p2.x - p1.x
     const dy = p2.y - p1.y
@@ -174,7 +178,32 @@ export const generateTraceOutline = ({
 }
 
 /**
- * Remove consecutive duplicate points (within tolerance)
+ * Remove consecutive duplicate points from input (within tolerance)
+ * This is used to clean input points before processing
+ */
+const removeConsecutiveDuplicates = (
+  points: Array<{ x: number; y: number }>,
+  tolerance = 1e-9,
+): Array<{ x: number; y: number }> => {
+  if (points.length === 0) return []
+
+  const result: Array<{ x: number; y: number }> = [points[0]!]
+
+  for (let i = 1; i < points.length; i++) {
+    const prev = result[result.length - 1]!
+    const curr = points[i]!
+    const dist = Math.hypot(curr.x - prev.x, curr.y - prev.y)
+    if (dist > tolerance) {
+      result.push(curr)
+    }
+  }
+
+  return result
+}
+
+/**
+ * Remove consecutive duplicate points from outline (within tolerance)
+ * Also removes last point if it's duplicate of first (for closed polygons)
  */
 const removeDuplicatePoints = (
   points: Array<{ x: number; y: number }>,
