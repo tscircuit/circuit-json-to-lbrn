@@ -205,7 +205,13 @@ export const generateTraceOutline = ({
 
   if (cleanedPoints.length < 3) return null
 
-  return new Flatten.Polygon(cleanedPoints.map((p) => Flatten.point(p.x, p.y)))
+  const polygon = new Flatten.Polygon(
+    cleanedPoints.map((p) => Flatten.point(p.x, p.y)),
+  )
+
+  // Reverse the polygon to ensure consistent orientation with circle polygons
+  // This is required for boolean operations (unify) to work correctly
+  return polygon.reverse()
 }
 
 /**
