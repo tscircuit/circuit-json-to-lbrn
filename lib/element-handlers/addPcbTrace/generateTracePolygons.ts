@@ -39,7 +39,6 @@ export const generateTracePolygons = ({
       const outline = generateTraceOutline({
         points: translatedPoints,
         width,
-        arcSegments: 8,
       })
 
       if (outline) {

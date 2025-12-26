@@ -60,6 +60,11 @@ export const createCopperShapesForLayer = ({
   const cutSetting =
     layer === "top" ? topCopperCutSetting : bottomCopperCutSetting
 
+  if (!cutSetting) {
+    throw new Error(`Cut setting not found for layer ${layer}`)
+  }
+  const cutIndex = cutSetting.index
+
   for (const net of Object.keys(connMap.netMap)) {
     const netGeoms = netGeomMap.get(net)!
 
@@ -71,7 +76,7 @@ export const createCopperShapesForLayer = ({
     if (netGeoms.length === 1) {
       const geom = netGeoms[0]!
       const poly = geom instanceof Box ? new Polygon(geom) : geom
-      outputPolygon(poly, cutSetting.index, project)
+      outputPolygon(poly, cutIndex, project)
       continue
     }
 
@@ -95,19 +100,19 @@ export const createCopperShapesForLayer = ({
 
       if (unionFailed) {
         // Union produced degenerate result - output individual geometries
-        outputIndividualGeometries(netGeoms, cutSetting.index, project)
+        outputIndividualGeometries(netGeoms, cutIndex, project)
         continue
       }
 
       const islands = union.splitToIslands()
       if (islands.length === 0) {
         // No islands produced - output individual geometries
-        outputIndividualGeometries(netGeoms, cutSetting.index, project)
+        outputIndividualGeometries(netGeoms, cutIndex, project)
         continue
       }
 
       for (const island of islands) {
-        outputPolygon(island, cutSetting.index, project)
+        outputPolygon(island, cutIndex, project)
       }
     } catch (error) {
       console.warn(
@@ -115,7 +120,7 @@ export const createCopperShapesForLayer = ({
         error,
       )
       // Output individual geometries if union fails
-      outputIndividualGeometries(netGeoms, cutSetting.index, project)
+      outputIndividualGeometries(netGeoms, cutIndex, project)
     }
   }
 }
