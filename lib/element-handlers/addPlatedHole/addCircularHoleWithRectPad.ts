@@ -85,8 +85,8 @@ export const addCircularHoleWithRectPad = (
 
   // Add the circular hole (as a cutout) - always cut through the board regardless of mode
   if (holeRadius > 0 && includeCopper) {
-    const holeCenterX = centerX + platedHole.hole_offset_x
-    const holeCenterY = centerY + platedHole.hole_offset_y
+    const holeCenterX = centerX + (platedHole.hole_offset_x ?? 0)
+    const holeCenterY = centerY + (platedHole.hole_offset_y ?? 0)
     const holePath = createCirclePath({
       centerX: holeCenterX,
       centerY: holeCenterY,
