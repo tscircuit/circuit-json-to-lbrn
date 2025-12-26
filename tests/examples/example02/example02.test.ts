@@ -9,11 +9,14 @@ import type { CircuitJson } from "circuit-json"
 test("example02 - two connected test points", async () => {
   const pcbSvg = await convertCircuitJsonToPcbSvg(circuitJson as CircuitJson)
 
-  const project = convertCircuitJsonToLbrn(circuitJson as CircuitJson)
+  const project = convertCircuitJsonToLbrn(circuitJson as CircuitJson, {
+    includeLayers: ["top"],
+  })
 
   Bun.write("debug-output/example02.lbrn2", project.getString(), {
     createPath: true,
   })
+  console.log("debug-output/example02.lbrn2")
 
   const lbrnSvg = await generateLightBurnSvg(project, {
     margin: 0,
