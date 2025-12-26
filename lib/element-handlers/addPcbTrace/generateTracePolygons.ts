@@ -1,9 +1,10 @@
 import Flatten from "@flatten-js/core"
-import { circleToPolygon } from "./circle-to-polygon"
+import { generateTraceOutline } from "./generateTraceOutline"
 
 /**
- * Generates trace polygons with a given width from route segments
- * Creates circles at each vertex and rectangles for line segments
+ * Generates trace polygons with a given width from route segments.
+ * Uses direct outline generation to avoid boolean operations.
+ * Each continuous segment becomes a single polygon with rounded caps and corners.
  */
 export const generateTracePolygons = ({
   layerSegments,
@@ -28,54 +29,21 @@ export const generateTracePolygons = ({
     for (const points of segments) {
       if (points.length < 2) continue
 
-      // Add circles for each vertex in this segment
-      for (const routePoint of points) {
-        const circle = new Flatten.Circle(
-          new Flatten.Point(routePoint.x + origin.x, routePoint.y + origin.y),
-          width / 2,
-        )
-        polygons.push(circleToPolygon(circle))
-      }
+      // Translate points by origin
+      const translatedPoints = points.map((p) => ({
+        x: p.x + origin.x,
+        y: p.y + origin.y,
+      }))
 
-      // Add rectangles for each line segment
-      for (let i = 0; i < points.length - 1; i++) {
-        const p1 = points[i]
-        const p2 = points[i + 1]
+      // Generate a single polygon outline for this segment
+      const outline = generateTraceOutline({
+        points: translatedPoints,
+        width,
+        arcSegments: 8,
+      })
 
-        if (!p1 || !p2) continue
-
-        const segmentLength = Math.hypot(p1.x - p2.x, p1.y - p2.y)
-        if (segmentLength === 0) continue
-
-        const centerX = (p1.x + p2.x) / 2 + origin.x
-        const centerY = (p1.y + p2.y) / 2 + origin.y
-        const rotationDeg =
-          (Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180) / Math.PI
-
-        const w2 = segmentLength / 2
-        const h2 = width / 2
-
-        const angleRad = (rotationDeg * Math.PI) / 180
-        const cosAngle = Math.cos(angleRad)
-        const sinAngle = Math.sin(angleRad)
-
-        const corners = [
-          { x: -w2, y: -h2 },
-          { x: w2, y: -h2 },
-          { x: w2, y: h2 },
-          { x: -w2, y: h2 },
-        ]
-
-        const rotatedCorners = corners.map((p) => ({
-          x: centerX + p.x * cosAngle - p.y * sinAngle,
-          y: centerY + p.x * sinAngle + p.y * cosAngle,
-        }))
-
-        polygons.push(
-          new Flatten.Polygon(
-            rotatedCorners.map((p) => Flatten.point(p.x, p.y)),
-          ),
-        )
+      if (outline) {
+        polygons.push(outline)
       }
     }
 

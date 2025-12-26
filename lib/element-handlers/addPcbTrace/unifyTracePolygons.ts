@@ -1,14 +1,14 @@
 import type Flatten from "@flatten-js/core"
-import { BooleanOperations } from "@flatten-js/core"
 
 /**
- * Unifies a list of polygons into a single polygon
- * Falls back to individual polygons if union fails
+ * Returns trace polygons for a trace.
+ * Since each segment is now generated as a complete outline polygon,
+ * no boolean union is needed within a single trace.
+ * Multiple polygons may exist if the trace has multiple disconnected segments
+ * (e.g., due to layer changes via vias).
  */
 export const unifyTracePolygons = ({
   polygons,
-  traceId,
-  layer,
 }: {
   polygons: Flatten.Polygon[]
   traceId: string
@@ -22,20 +22,6 @@ export const unifyTracePolygons = ({
     return { success: true, result: polygons[0]! }
   }
 
-  try {
-    let tracePolygon = polygons[0]!
-    for (let i = 1; i < polygons.length; i++) {
-      const poly = polygons[i]
-      if (poly) {
-        tracePolygon = BooleanOperations.unify(tracePolygon, poly)
-      }
-    }
-    return { success: true, result: tracePolygon }
-  } catch (error) {
-    console.warn(
-      `Failed to union trace polygons for trace ${traceId} on layer ${layer}:`,
-      error,
-    )
-    return { success: false, result: polygons }
-  }
+  // Return all polygons - they represent separate segments that don't need to be unified
+  return { success: true, result: polygons }
 }
