@@ -6,9 +6,10 @@ import Flatten from "@flatten-js/core"
  *
  * The algorithm:
  * 1. Walk along the "left" side of the trace (offset by width/2 perpendicular to direction)
- * 2. Add corner point at the end cap
- * 3. Walk back along the "right" side
- * 4. The polygon closes back to the start (start cap is implicit)
+ * 2. At corners, compute the intersection of adjacent offset lines (miter join)
+ * 3. Add corner point at the end cap
+ * 4. Walk back along the "right" side with proper corner intersections
+ * 5. The polygon closes back to the start (start cap is implicit)
  */
 export const generateTraceOutline = ({
   points,
@@ -35,8 +36,32 @@ export const generateTraceOutline = ({
     return { nx: -dy / len, ny: dx / len }
   }
 
-  // Calculate offset points for each segment
+  // Calculate intersection of two lines, each defined by a point and direction
+  // Returns null if lines are parallel
+  const lineIntersection = (
+    p1: { x: number; y: number },
+    d1: { x: number; y: number },
+    p2: { x: number; y: number },
+    d2: { x: number; y: number },
+  ): { x: number; y: number } | null => {
+    const cross = d1.x * d2.y - d1.y * d2.x
+    if (Math.abs(cross) < 1e-10) return null
+
+    const dx = p2.x - p1.x
+    const dy = p2.y - p1.y
+    const t = (dx * d2.y - dy * d2.x) / cross
+
+    return {
+      x: p1.x + t * d1.x,
+      y: p1.y + t * d1.y,
+    }
+  }
+
+  // Calculate offset points and directions for each segment
   const segmentData: Array<{
+    p1: { x: number; y: number }
+    p2: { x: number; y: number }
+    dir: { x: number; y: number }
     leftP1: { x: number; y: number }
     leftP2: { x: number; y: number }
     rightP1: { x: number; y: number }
@@ -47,9 +72,17 @@ export const generateTraceOutline = ({
     const p1 = points[i]!
     const p2 = points[i + 1]!
 
+    const dx = p2.x - p1.x
+    const dy = p2.y - p1.y
+    const len = Math.hypot(dx, dy)
+    const dir = len === 0 ? { x: 1, y: 0 } : { x: dx / len, y: dy / len }
+
     const { nx, ny } = getPerpendicularOffset(p1, p2)
 
     segmentData.push({
+      p1,
+      p2,
+      dir,
       leftP1: { x: p1.x + nx * radius, y: p1.y + ny * radius },
       leftP2: { x: p2.x + nx * radius, y: p2.y + ny * radius },
       rightP1: { x: p1.x - nx * radius, y: p1.y - ny * radius },
@@ -69,12 +102,27 @@ export const generateTraceOutline = ({
     const seg = segmentData[i]!
 
     if (i > 0) {
-      // Add corner point on left side
-      outlinePoints.push(seg.leftP1)
+      // Calculate corner intersection on left side
+      const prevSeg = segmentData[i - 1]!
+      const intersection = lineIntersection(
+        prevSeg.leftP1,
+        prevSeg.dir,
+        seg.leftP1,
+        seg.dir,
+      )
+
+      if (intersection) {
+        outlinePoints.push(intersection)
+      } else {
+        // Lines are parallel, use the segment's start point
+        outlinePoints.push(seg.leftP1)
+      }
     }
 
-    // Add end point of this segment's left side
-    outlinePoints.push(seg.leftP2)
+    // For the last segment, add the end point
+    if (i === segmentData.length - 1) {
+      outlinePoints.push(seg.leftP2)
+    }
   }
 
   // End cap - add right side point
@@ -86,12 +134,27 @@ export const generateTraceOutline = ({
     const seg = segmentData[i]!
 
     if (i < segmentData.length - 1) {
-      // Add corner point on right side
-      outlinePoints.push(seg.rightP2)
+      // Calculate corner intersection on right side
+      const nextSeg = segmentData[i + 1]!
+      const intersection = lineIntersection(
+        seg.rightP1,
+        seg.dir,
+        nextSeg.rightP1,
+        nextSeg.dir,
+      )
+
+      if (intersection) {
+        outlinePoints.push(intersection)
+      } else {
+        // Lines are parallel, use the segment's end point
+        outlinePoints.push(seg.rightP2)
+      }
     }
 
-    // Add start point of this segment's right side
-    outlinePoints.push(seg.rightP1)
+    // For the first segment, add the start point
+    if (i === 0) {
+      outlinePoints.push(seg.rightP1)
+    }
   }
 
   // The polygon closes back to the start
