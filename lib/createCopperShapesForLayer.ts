@@ -63,7 +63,7 @@ export const createCopperShapesForLayer = ({
   if (!cutSetting) {
     throw new Error(`Cut setting not found for layer ${layer}`)
   }
-  const cutIndex = cutSetting.index
+  const cutIndex = cutSetting.index!
 
   for (const net of Object.keys(connMap.netMap)) {
     const netGeoms = netGeomMap.get(net)!
