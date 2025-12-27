@@ -22,7 +22,7 @@ test("example02 - two connected test points", async () => {
     margin: 0,
     width: 600,
     height: 400,
-    defaultStrokeWidth: 0.0025,
+    defaultStrokeWidth: 0.01,
   })
 
   expect(lbrnSvg).toMatchSvgSnapshot(import.meta.filename)

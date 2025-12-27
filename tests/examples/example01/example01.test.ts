@@ -20,7 +20,7 @@ test("example01 - rp2040 zero with two interconnects", async () => {
   const lbrnSvg = await generateLightBurnSvg(project, {
     width: 800,
     height: 600,
-    defaultStrokeWidth: 0.005,
+    defaultStrokeWidth: 0.01,
   })
 
   expect(lbrnSvg).toMatchSvgSnapshot(import.meta.filename)
