@@ -14,6 +14,7 @@ import {
 import { addPcbVia } from "./element-handlers/addPcbVia"
 import { addPcbHole } from "./element-handlers/addPcbHole"
 import { addPcbCutout } from "./element-handlers/addPcbCutout"
+import { addPcbSilkscreenRect } from "./element-handlers/addPcbSilkscreen"
 import { createCopperShapesForLayer } from "./createCopperShapesForLayer"
 import { createTraceClearanceAreasForLayer } from "./createTraceClearanceAreasForLayer"
 
@@ -57,6 +58,7 @@ export const convertCircuitJsonToLbrn = (
   const laserSpotSize = options.laserSpotSize ?? 0.005
   const includeCopper = options.includeCopper ?? true
   const includeSoldermask = options.includeSoldermask ?? false
+  const includeSilkscreen = options.includeSilkscreen ?? true
   const soldermaskMargin = options.soldermaskMargin ?? 0
   const laserProfile = options.laserProfile
 
@@ -233,6 +235,13 @@ export const convertCircuitJsonToLbrn = (
 
   for (const cutout of db.pcb_cutout.list()) {
     addPcbCutout(cutout, ctx)
+  }
+
+  // Process silkscreen elements
+  if (includeSilkscreen) {
+    for (const silkscreenRect of db.pcb_silkscreen_rect.list()) {
+      addPcbSilkscreenRect(silkscreenRect, ctx)
+    }
   }
 
   // Create copper shapes for each layer
