@@ -49,7 +49,7 @@ test("renders pcb holes with soldermask openings", async () => {
 
   const project = convertCircuitJsonToLbrn(circuitJson, {
     includeSoldermask: true,
-    soldermaskMargin: 0.2,
+    globalCopperSoldermaskMarginAdjustment: 0.2,
   })
 
   const lbrnSvg = await generateLightBurnSvg(project)

@@ -19,7 +19,7 @@ export const addRotatedRectSmtPad = (
     includeCopper,
     includeSoldermask,
     connMap,
-    soldermaskMargin,
+    globalCopperSoldermaskMarginAdjustment,
     includeLayers,
   } = ctx
 
@@ -76,8 +76,14 @@ export const addRotatedRectSmtPad = (
 
     // Add soldermask opening if drawing soldermask
     if (includeSoldermask) {
-      const smWidth = smtPad.width + 2 * soldermaskMargin
-      const smHeight = smtPad.height + 2 * soldermaskMargin
+      const smWidth =
+        smtPad.width +
+        2 * globalCopperSoldermaskMarginAdjustment +
+        (smtPad.soldermask_margin ?? 0)
+      const smHeight =
+        smtPad.height +
+        2 * globalCopperSoldermaskMarginAdjustment +
+        (smtPad.soldermask_margin ?? 0)
       const smOuter = createRoundedRectPath({
         centerX,
         centerY,

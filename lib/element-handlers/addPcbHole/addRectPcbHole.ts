@@ -16,7 +16,6 @@ export const addRectPcbHole = (
     soldermaskCutSetting,
     origin,
     includeSoldermask,
-    soldermaskMargin,
     includeCopper,
   } = ctx
   const centerX = hole.x + origin.x
@@ -27,8 +26,8 @@ export const addRectPcbHole = (
     const soldermaskPath = createRoundedRectPath({
       centerX,
       centerY,
-      width: hole.hole_width,
-      height: hole.hole_height,
+      width: hole.hole_width + 2 * (hole.soldermask_margin ?? 0),
+      height: hole.hole_height + 2 * (hole.soldermask_margin ?? 0),
       borderRadius: 0, // no border radius for rect holes
     })
     project.children.push(

@@ -18,7 +18,6 @@ export const addPolygonPcbCutout = (
     includeCopper,
     includeSoldermask,
     soldermaskCutSetting,
-    soldermaskMargin,
   } = ctx
 
   // Add the cutout - cut through the board

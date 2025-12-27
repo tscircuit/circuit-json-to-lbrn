@@ -33,8 +33,8 @@ export interface ConvertContext {
   includeSoldermask: boolean
   includeLayers: Array<"top" | "bottom">
 
-  // Soldermask margin (can be negative)
-  soldermaskMargin: number
+  // Global copper soldermask margin adjustment (can be negative)
+  globalCopperSoldermaskMarginAdjustment: number
 
   // Trace margin for clearance zones
   traceMargin: number

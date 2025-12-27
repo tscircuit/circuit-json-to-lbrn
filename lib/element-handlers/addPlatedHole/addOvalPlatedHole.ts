@@ -16,7 +16,7 @@ export const addOvalPlatedHole = (
     origin,
     includeCopper,
     includeSoldermask,
-    soldermaskMargin,
+    globalCopperSoldermaskMarginAdjustment,
     includeLayers,
   } = ctx
 
@@ -70,6 +70,9 @@ export const addOvalPlatedHole = (
     platedHole.outer_height > 0 &&
     includeSoldermask
   ) {
+    const soldermaskMargin =
+      globalCopperSoldermaskMarginAdjustment +
+      (platedHole.soldermask_margin ?? 0)
     const smWidth = platedHole.outer_width + 2 * soldermaskMargin
     const smHeight = platedHole.outer_height + 2 * soldermaskMargin
     const outer = createOvalPath({

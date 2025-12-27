@@ -16,7 +16,6 @@ export const addPathPcbCutout = (
     origin,
     includeCopper,
     includeSoldermask,
-    soldermaskMargin,
     soldermaskCutSetting,
   } = ctx
 
