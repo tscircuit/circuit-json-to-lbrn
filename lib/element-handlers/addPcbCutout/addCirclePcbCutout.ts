@@ -42,11 +42,10 @@ export const addCirclePcbCutout = (
 
   // Add soldermask opening if drawing soldermask
   if (cutout.radius > 0 && includeSoldermask) {
-    const smRadius = cutout.radius + soldermaskMargin
     const outer = createCirclePath({
       centerX,
       centerY,
-      radius: smRadius,
+      radius: cutout.radius,
     })
     project.children.push(
       new ShapePath({

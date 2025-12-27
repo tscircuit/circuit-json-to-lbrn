@@ -24,11 +24,10 @@ export const addCirclePcbHole = (
 
   // Add soldermask opening if drawing soldermask
   if (hole.hole_diameter > 0 && includeSoldermask) {
-    const smRadius = hole.hole_diameter / 2 + soldermaskMargin
     const soldermaskPath = createCirclePath({
       centerX,
       centerY,
-      radius: smRadius,
+      radius: hole.hole_diameter / 2,
     })
     project.children.push(
       new ShapePath({

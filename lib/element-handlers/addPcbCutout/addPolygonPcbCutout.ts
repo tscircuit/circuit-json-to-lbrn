@@ -40,23 +40,8 @@ export const addPolygonPcbCutout = (
 
   // Add soldermask opening if drawing soldermask
   if (cutout.points.length >= 3 && includeSoldermask) {
-    // Apply soldermask margin to the points if margin is specified
-    const points =
-      soldermaskMargin && soldermaskMargin > 0
-        ? cutout.points.map((p) => ({
-            x:
-              (p.x ?? 0) + (p.x ?? 0) > 0
-                ? soldermaskMargin
-                : -soldermaskMargin,
-            y:
-              (p.y ?? 0) + (p.y ?? 0) > 0
-                ? soldermaskMargin
-                : -soldermaskMargin,
-          }))
-        : cutout.points
-
     const polygonPath = createPolygonPathFromOutline({
-      outline: points,
+      outline: cutout.points,
       offsetX: origin.x,
       offsetY: origin.y,
     })
