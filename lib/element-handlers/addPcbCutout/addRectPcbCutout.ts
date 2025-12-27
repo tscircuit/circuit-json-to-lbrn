@@ -48,13 +48,11 @@ export const addRectPcbCutout = (
   // Add soldermask opening if drawing soldermask
   if (cutout.width > 0 && cutout.height > 0 && includeSoldermask) {
     const rotation = (cutout.rotation ?? 0) * (Math.PI / 180) // Convert degrees to radians
-    const smWidth = cutout.width + 2 * soldermaskMargin
-    const smHeight = cutout.height + 2 * soldermaskMargin
     const rectPath = createRoundedRectPath({
       centerX,
       centerY,
-      width: smWidth,
-      height: smHeight,
+      width: cutout.width,
+      height: cutout.height,
       borderRadius: 0, // no border radius for cutouts
       segments: 4, // segments
       rotation,

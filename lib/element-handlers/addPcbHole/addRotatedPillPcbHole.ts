@@ -28,8 +28,8 @@ export const addRotatedPillPcbHole = (
     const soldermaskPath = createPillPath({
       centerX,
       centerY,
-      width: hole.hole_width + soldermaskMargin * 2,
-      height: hole.hole_height + soldermaskMargin * 2,
+      width: hole.hole_width,
+      height: hole.hole_height,
       rotation,
     })
     project.children.push(
