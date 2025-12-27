@@ -25,7 +25,7 @@ export const convertCircuitJsonToLbrn = (
     margin?: number
     includeCopper?: boolean
     includeSoldermask?: boolean
-    soldermaskMargin?: number
+    globalCopperSoldermaskMarginAdjustment?: number
     includeLayers?: Array<"top" | "bottom">
     traceMargin?: number
     laserSpotSize?: number
@@ -57,7 +57,8 @@ export const convertCircuitJsonToLbrn = (
   const laserSpotSize = options.laserSpotSize ?? 0.005
   const includeCopper = options.includeCopper ?? true
   const includeSoldermask = options.includeSoldermask ?? false
-  const soldermaskMargin = options.soldermaskMargin ?? 0
+  const globalCopperSoldermaskMarginAdjustment =
+    options.globalCopperSoldermaskMarginAdjustment ?? 0
   const laserProfile = options.laserProfile
 
   // Default laser settings from GitHub issue
@@ -190,7 +191,7 @@ export const convertCircuitJsonToLbrn = (
     origin,
     includeCopper,
     includeSoldermask,
-    soldermaskMargin,
+    globalCopperSoldermaskMarginAdjustment,
     includeLayers,
     traceMargin,
     laserSpotSize,

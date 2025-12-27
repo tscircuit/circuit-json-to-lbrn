@@ -17,7 +17,7 @@ export const addHoleWithPolygonPad = (
     origin,
     includeCopper,
     includeSoldermask,
-    soldermaskMargin,
+    globalCopperSoldermaskMarginAdjustment,
     includeLayers,
   } = ctx
 

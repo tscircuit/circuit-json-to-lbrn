@@ -15,7 +15,7 @@ export const addRectSmtPad = (smtPad: PcbSmtPadRect, ctx: ConvertContext) => {
     origin,
     includeCopper,
     includeSoldermask,
-    soldermaskMargin,
+    globalCopperSoldermaskMarginAdjustment,
     includeLayers,
   } = ctx
 
@@ -85,8 +85,14 @@ export const addRectSmtPad = (smtPad: PcbSmtPadRect, ctx: ConvertContext) => {
 
   // Add soldermask opening if drawing soldermask
   if (includeSoldermask) {
-    const smHalfWidth = halfWidth + soldermaskMargin
-    const smHalfHeight = halfHeight + soldermaskMargin
+    const smHalfWidth =
+      halfWidth +
+      globalCopperSoldermaskMarginAdjustment +
+      (smtPad.soldermask_margin ?? 0)
+    const smHalfHeight =
+      halfHeight +
+      globalCopperSoldermaskMarginAdjustment +
+      (smtPad.soldermask_margin ?? 0)
 
     const verts = [
       { x: centerX - smHalfWidth, y: centerY - smHalfHeight },

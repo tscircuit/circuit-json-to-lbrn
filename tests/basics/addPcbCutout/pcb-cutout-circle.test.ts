@@ -38,7 +38,7 @@ test("renders circular pcb cutouts with through-board cuts", async () => {
   const project = convertCircuitJsonToLbrn(circuitJson, {
     includeCopper: true,
     includeSoldermask: true,
-    soldermaskMargin: 0.1,
+    globalCopperSoldermaskMarginAdjustment: 0.1,
   })
 
   const lbrnSvg = await generateLightBurnSvg(project)

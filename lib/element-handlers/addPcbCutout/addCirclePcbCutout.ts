@@ -17,7 +17,6 @@ export const addCirclePcbCutout = (
     origin,
     includeCopper,
     includeSoldermask,
-    soldermaskMargin,
     soldermaskCutSetting,
   } = ctx
   const centerX = cutout.center.x + origin.x

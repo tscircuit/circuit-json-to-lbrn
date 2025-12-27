@@ -17,7 +17,7 @@ export const addPillHoleWithRectPad = (
     origin,
     includeCopper,
     includeSoldermask,
-    soldermaskMargin,
+    globalCopperSoldermaskMarginAdjustment,
     includeLayers,
   } = ctx
   const centerX = platedHole.x + origin.x
@@ -63,8 +63,14 @@ export const addPillHoleWithRectPad = (
 
     // Add soldermask opening if drawing soldermask
     if (includeSoldermask) {
-      const smPadWidth = padWidth + 2 * soldermaskMargin
-      const smPadHeight = padHeight + 2 * soldermaskMargin
+      const smPadWidth =
+        padWidth +
+        2 * globalCopperSoldermaskMarginAdjustment +
+        (platedHole.soldermask_margin ?? 0)
+      const smPadHeight =
+        padHeight +
+        2 * globalCopperSoldermaskMarginAdjustment +
+        (platedHole.soldermask_margin ?? 0)
       const smPadPath = createRoundedRectPath({
         centerX,
         centerY,

@@ -20,7 +20,7 @@ export const addPolygonSmtPad = (
     includeCopper,
     includeSoldermask,
     connMap,
-    soldermaskMargin,
+    globalCopperSoldermaskMarginAdjustment,
     includeLayers,
   } = ctx
 
