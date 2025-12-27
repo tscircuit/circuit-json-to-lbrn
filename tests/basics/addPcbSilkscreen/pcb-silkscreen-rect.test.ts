@@ -19,6 +19,7 @@ const circuitJson: CircuitJson = [
   {
     type: "pcb_silkscreen_rect",
     pcb_silkscreen_rect_id: "silkscreen_1",
+    pcb_component_id: "pcb_component-1",
     layer: "top",
     center: { x: -5, y: 5 },
     width: 4,
@@ -29,16 +30,32 @@ const circuitJson: CircuitJson = [
   {
     type: "pcb_silkscreen_rect",
     pcb_silkscreen_rect_id: "silkscreen_2",
+    pcb_component_id: "pcb_component-2",
     layer: "top",
     center: { x: 5, y: -5 },
     width: 3,
     height: 4,
     is_filled: true,
+    stroke_width: 0.1,
   },
   {
     type: "pcb_silkscreen_rect",
     pcb_silkscreen_rect_id: "silkscreen_3",
     layer: "bottom",
+    center: { x: 0, y: 0 },
+    pcb_component_id: "pcb_component-3",
+
+    width: 2,
+    height: 2,
+    stroke_width: 0.15,
+    is_filled: false,
+  },
+  {
+    type: "pcb_silkscreen_rect",
+    pcb_silkscreen_rect_id: "silkscreen_3",
+    layer: "bottom",
+    pcb_component_id: "pcb_component-4",
+
     center: { x: 0, y: 0 },
     width: 2,
     height: 2,
