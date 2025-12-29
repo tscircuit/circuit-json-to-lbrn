@@ -8,7 +8,7 @@ import type { CircuitJson } from "circuit-json"
 const circuitJson: CircuitJson = [
   {
     type: "pcb_board",
-    pcb_board_id: "board_1",
+    pcb_board_id: "board_soldermask_margin",
     width: 10,
     height: 10,
     center: { x: 0, y: 0 },
@@ -17,35 +17,45 @@ const circuitJson: CircuitJson = [
     material: "fr4",
   },
   {
-    type: "pcb_via",
-    pcb_via_id: "via_1",
+    type: "pcb_hole",
+    pcb_hole_id: "pcb_hole_circle_margin",
+    hole_shape: "circle",
+    hole_diameter: 1.5,
+    soldermask_margin: 0.5,
     x: -2,
     y: 2,
-    outer_diameter: 1.5,
-    hole_diameter: 0.8,
-    layers: ["top", "bottom"],
   },
   {
-    type: "pcb_via",
-    pcb_via_id: "via_2",
+    type: "pcb_hole",
+    pcb_hole_id: "pcb_hole_rect_margin",
+    hole_shape: "rect",
+    hole_width: 2,
+    hole_height: 1.5,
+    soldermask_margin: 0.3,
     x: 2,
+    y: 2,
+  },
+  {
+    type: "pcb_hole",
+    pcb_hole_id: "pcb_hole_pill_margin",
+    hole_shape: "pill",
+    hole_width: 3,
+    hole_height: 1.5,
+    soldermask_margin: 0.2,
+    x: 0,
     y: -2,
-    outer_diameter: 2,
-    hole_diameter: 1,
-    layers: ["top", "bottom"],
   },
 ]
 
-test("renders pcb vias with soldermask opening", async () => {
+test("renders pcb holes with soldermask_margin", async () => {
   const pcbSvg = await convertCircuitJsonToPcbSvg(circuitJson)
 
   const project = convertCircuitJsonToLbrn(circuitJson, {
-    includeCopper: false,
     includeSoldermask: true,
-    globalCopperSoldermaskMarginAdjustment: 0.1,
+    // Note: globalCopperSoldermaskMarginAdjustment not applied to holes
   })
 
-  const lbrnSvg = generateLightBurnSvg(project)
+  const lbrnSvg = await generateLightBurnSvg(project)
 
   expect(stackSvgsVertically([pcbSvg, lbrnSvg])).toMatchSvgSnapshot(
     import.meta.filename,

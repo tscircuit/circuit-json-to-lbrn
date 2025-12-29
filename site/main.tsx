@@ -36,8 +36,8 @@ const originYInput = document.getElementById("originY") as HTMLInputElement
 const traceMarginInput = document.getElementById(
   "traceMargin",
 ) as HTMLInputElement
-const soldermaskMarginInput = document.getElementById(
-  "soldermaskMargin",
+const globalCopperSoldermaskMarginAdjustmentInput = document.getElementById(
+  "globalCopperSoldermaskMarginAdjustment",
 ) as HTMLInputElement
 const laserSpotSizeInput = document.getElementById(
   "laserSpotSize",
@@ -162,7 +162,8 @@ function getConversionOptions() {
     },
     includeCopper: includeCopperInput.checked,
     includeSoldermask: includeSoldermaskInput.checked,
-    soldermaskMargin: parseFloat(soldermaskMarginInput.value) || 0,
+    globalCopperSoldermaskMarginAdjustment:
+      parseFloat(globalCopperSoldermaskMarginAdjustmentInput.value) || 0,
     includeLayers: [
       ...(includeTopLayerInput.checked ? ["top" as const] : []),
       ...(includeBottomLayerInput.checked ? ["bottom" as const] : []),

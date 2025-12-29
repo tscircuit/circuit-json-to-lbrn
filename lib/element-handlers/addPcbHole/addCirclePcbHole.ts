@@ -16,7 +16,6 @@ export const addCirclePcbHole = (
     soldermaskCutSetting,
     origin,
     includeSoldermask,
-    soldermaskMargin,
     includeCopper,
   } = ctx
   const centerX = hole.x + origin.x
@@ -27,7 +26,7 @@ export const addCirclePcbHole = (
     const soldermaskPath = createCirclePath({
       centerX,
       centerY,
-      radius: hole.hole_diameter / 2,
+      radius: hole.hole_diameter / 2 + (hole.soldermask_margin ?? 0),
     })
     project.children.push(
       new ShapePath({
