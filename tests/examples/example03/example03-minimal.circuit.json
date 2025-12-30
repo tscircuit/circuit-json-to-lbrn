@@ -41,9 +41,7 @@
     "name": "SW1",
     "manufacturer_part_number": "ZX_QC66_7_5TP",
     "supplier_part_numbers": {
-      "jlcpcb": [
-        "C7470157"
-      ]
+      "jlcpcb": ["C7470157"]
     },
     "source_group_id": "source_group_1"
   },
@@ -54,9 +52,7 @@
     "name": "SW2",
     "manufacturer_part_number": "ZX_QC66_7_5TP",
     "supplier_part_numbers": {
-      "jlcpcb": [
-        "C7470157"
-      ]
+      "jlcpcb": ["C7470157"]
     },
     "source_group_id": "source_group_1"
   },
@@ -67,9 +63,7 @@
     "name": "SW4",
     "manufacturer_part_number": "ZX_QC66_7_5TP",
     "supplier_part_numbers": {
-      "jlcpcb": [
-        "C7470157"
-      ]
+      "jlcpcb": ["C7470157"]
     },
     "source_group_id": "source_group_1"
   },
@@ -86,11 +80,7 @@
     "source_port_id": "source_port_2",
     "name": "V3_3",
     "pin_number": 3,
-    "port_hints": [
-      "V3_3",
-      "pin3",
-      "3"
-    ],
+    "port_hints": ["V3_3", "pin3", "3"],
     "source_component_id": "source_component_0",
     "subcircuit_id": "subcircuit_source_group_1",
     "subcircuit_connectivity_map_key": "unnamedsubcircuit112_connectivity_net1"
@@ -100,10 +90,7 @@
     "source_port_id": "source_port_25",
     "name": "pin3",
     "pin_number": 3,
-    "port_hints": [
-      "pin3",
-      "3"
-    ],
+    "port_hints": ["pin3", "3"],
     "source_component_id": "source_component_1",
     "subcircuit_id": "subcircuit_source_group_1",
     "subcircuit_connectivity_map_key": "unnamedsubcircuit112_connectivity_net1"
@@ -113,10 +100,7 @@
     "source_port_id": "source_port_29",
     "name": "pin3",
     "pin_number": 3,
-    "port_hints": [
-      "pin3",
-      "3"
-    ],
+    "port_hints": ["pin3", "3"],
     "source_component_id": "source_component_2",
     "subcircuit_id": "subcircuit_source_group_1",
     "subcircuit_connectivity_map_key": "unnamedsubcircuit112_connectivity_net1"
@@ -126,10 +110,7 @@
     "source_port_id": "source_port_38",
     "name": "pin4",
     "pin_number": 4,
-    "port_hints": [
-      "pin4",
-      "4"
-    ],
+    "port_hints": ["pin4", "4"],
     "source_component_id": "source_component_4",
     "subcircuit_id": "subcircuit_source_group_1",
     "subcircuit_connectivity_map_key": "unnamedsubcircuit112_connectivity_net1"
@@ -139,11 +120,7 @@
     "source_port_id": "source_port_102",
     "name": "P_R3_C14",
     "pin_number": 60,
-    "port_hints": [
-      "P_R3_C14",
-      "pin60",
-      "60"
-    ],
+    "port_hints": ["P_R3_C14", "pin60", "60"],
     "source_component_id": "source_component_6",
     "subcircuit_id": "subcircuit_source_group_1"
   },
@@ -248,9 +225,7 @@
     "type": "pcb_port",
     "pcb_port_id": "pcb_port_2",
     "pcb_component_id": "pcb_component_0",
-    "layers": [
-      "top"
-    ],
+    "layers": ["top"],
     "subcircuit_id": "subcircuit_source_group_1",
     "pcb_group_id": "pcb_group_0",
     "x": 8.89,
@@ -261,9 +236,7 @@
     "type": "pcb_port",
     "pcb_port_id": "pcb_port_25",
     "pcb_component_id": "pcb_component_1",
-    "layers": [
-      "top"
-    ],
+    "layers": ["top"],
     "subcircuit_id": "subcircuit_source_group_1",
     "x": 15.70003399999996,
     "y": -16.25005900000008,
@@ -273,9 +246,7 @@
     "type": "pcb_port",
     "pcb_port_id": "pcb_port_29",
     "pcb_component_id": "pcb_component_2",
-    "layers": [
-      "top"
-    ],
+    "layers": ["top"],
     "subcircuit_id": "subcircuit_source_group_1",
     "x": 15.70003399999996,
     "y": -26.25005900000008,
@@ -285,9 +256,7 @@
     "type": "pcb_port",
     "pcb_port_id": "pcb_port_38",
     "pcb_component_id": "pcb_component_4",
-    "layers": [
-      "top"
-    ],
+    "layers": ["top"],
     "subcircuit_id": "subcircuit_source_group_1",
     "x": -15.700034000000073,
     "y": -26.25005900000008,
@@ -297,12 +266,7 @@
     "type": "pcb_port",
     "pcb_port_id": "pcb_port_102",
     "pcb_component_id": "pcb_component_6",
-    "layers": [
-      "top",
-      "inner1",
-      "inner2",
-      "bottom"
-    ],
+    "layers": ["top", "inner1", "inner2", "bottom"],
     "subcircuit_id": "subcircuit_source_group_1",
     "x": 17.78,
     "y": -3.81,
@@ -317,9 +281,7 @@
     "shape": "rect",
     "width": 2,
     "height": 1.6,
-    "port_hints": [
-      "3"
-    ],
+    "port_hints": ["3"],
     "is_covered_with_solder_mask": false,
     "x": 8.89,
     "y": -25.380000000000003,
@@ -335,9 +297,7 @@
     "shape": "rect",
     "width": 2.1999956,
     "height": 1.499997,
-    "port_hints": [
-      "pin3"
-    ],
+    "port_hints": ["pin3"],
     "is_covered_with_solder_mask": false,
     "x": 15.70003399999996,
     "y": -16.25005900000008,
@@ -352,9 +312,7 @@
     "shape": "rect",
     "width": 2.1999956,
     "height": 1.499997,
-    "port_hints": [
-      "pin3"
-    ],
+    "port_hints": ["pin3"],
     "is_covered_with_solder_mask": false,
     "x": 15.70003399999996,
     "y": -26.25005900000008,
@@ -369,9 +327,7 @@
     "shape": "rect",
     "width": 2.1999956,
     "height": 1.499997,
-    "port_hints": [
-      "pin4"
-    ],
+    "port_hints": ["pin4"],
     "is_covered_with_solder_mask": false,
     "x": -15.700034000000073,
     "y": -26.25005900000008,
@@ -385,16 +341,10 @@
     "outer_diameter": 1.8,
     "hole_diameter": 1,
     "shape": "circle",
-    "port_hints": [
-      "pin60",
-      "pin60"
-    ],
+    "port_hints": ["pin60", "pin60"],
     "x": 17.78,
     "y": -3.81,
-    "layers": [
-      "top",
-      "bottom"
-    ],
+    "layers": ["top", "bottom"],
     "is_covered_with_solder_mask": false,
     "subcircuit_id": "subcircuit_source_group_1"
   },
