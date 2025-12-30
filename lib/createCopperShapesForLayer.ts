@@ -1,16 +1,44 @@
-import { Polygon, Box, BooleanOperations } from "@flatten-js/core"
+import { Polygon, Box, BooleanOperations, Point } from "@flatten-js/core"
 import { ShapePath } from "lbrnts"
 import type { ConvertContext } from "./ConvertContext"
 import { polygonToShapePathData } from "./polygon-to-shape-path"
 
 /**
- * Outputs a polygon as a ShapePath
+ * Outputs a polygon as a ShapePath.
+ * If the polygon has multiple faces, outputs each face as a separate ShapePath.
  */
 const outputPolygon = (
   poly: Polygon,
   cutIndex: number,
   project: ConvertContext["project"],
 ) => {
+  // If polygon has multiple faces, output each face separately
+  // This handles the case where boolean union creates touching but non-overlapping regions
+  if (poly.faces.size > 1) {
+    for (const face of poly.faces) {
+      // Create a new polygon from just this face's edges
+      const facePoints: Point[] = []
+      for (const edge of face) {
+        facePoints.push(edge.start)
+      }
+      if (facePoints.length >= 3) {
+        const facePoly = new Polygon(facePoints)
+        const { verts, prims } = polygonToShapePathData(facePoly)
+        if (verts.length > 0) {
+          project.children.push(
+            new ShapePath({
+              cutIndex,
+              verts,
+              prims,
+              isClosed: false,
+            }),
+          )
+        }
+      }
+    }
+    return
+  }
+
   const { verts, prims } = polygonToShapePathData(poly)
   project.children.push(
     new ShapePath({
