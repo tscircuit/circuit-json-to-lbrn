@@ -1,10 +1,9 @@
-import type { PcbTrace } from "circuit-json"
+import type { PcbTrace, point } from "circuit-json"
 import type { ConvertContext } from "../../ConvertContext"
 import { splitRouteSegmentsByLayer } from "./splitRouteSegmentsByLayer"
 import { generateTracePolygons } from "./generateTracePolygons"
 import { unifyTracePolygons } from "./unifyTracePolygons"
-import Flatten from "@flatten-js/core"
-
+import Flatten, { Point } from "@flatten-js/core"
 /**
  * Creates a circular polygon at the given center point.
  * Used to ensure traces overlap at junction points.
@@ -64,6 +63,16 @@ export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
   })
   const traceWidth = (wirePoint as any)?.width ?? 0.15
 
+  // Collect via locations for adjusting circle sizes at via connections
+  const viaLocations: Point[] = []
+  if (trace.route) {
+    for (const point of trace.route) {
+      if ("route_type" in point && point.route_type === "via") {
+        viaLocations.push(new Point(point.x, point.y))
+      }
+    }
+  }
+
   // Split route into segments by layer
   const layerSegments = splitRouteSegmentsByLayer(trace)
 
@@ -94,26 +103,35 @@ export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
 
     // Add circular pads at trace endpoints to ensure overlap at junctions
     // This is crucial for boolean union to properly merge traces that share endpoints
-    // Use a slightly larger radius (1.1x) to ensure proper overlap despite floating point issues
+    // Use a larger radius at via locations to ensure connection through via holes
     const segments = layerSegments.get(layer)
     if (segments) {
       for (const segment of segments) {
         if (segment.length >= 2) {
           const firstPoint = segment[0]!
           const lastPoint = segment[segment.length - 1]!
-          const radius = (traceWidth / 2) * 1.1 // Slightly larger for reliable overlap
+          const startRadius = viaLocations.some(
+            (p) => p.x === firstPoint.x && p.y === firstPoint.y,
+          )
+            ? 0.3
+            : (traceWidth / 2) * 1.1
+          const endRadius = viaLocations.some(
+            (p) => p.x === lastPoint.x && p.y === lastPoint.y,
+          )
+            ? 0.3
+            : (traceWidth / 2) * 1.1
 
           // Add circle at start point (translated by origin)
           const startCircle = createCirclePolygon(
             { x: firstPoint.x + origin.x, y: firstPoint.y + origin.y },
-            radius,
+            startRadius,
           )
           cutNetGeoms.get(netId)?.push(startCircle)
 
           // Add circle at end point (translated by origin)
           const endCircle = createCirclePolygon(
             { x: lastPoint.x + origin.x, y: lastPoint.y + origin.y },
-            radius,
+            endRadius,
           )
           cutNetGeoms.get(netId)?.push(endCircle)
         }
