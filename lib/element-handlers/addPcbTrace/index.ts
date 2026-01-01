@@ -63,12 +63,20 @@ export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
   })
   const traceWidth = (wirePoint as any)?.width ?? 0.15
 
-  // Collect via locations for adjusting circle sizes at via connections
-  const viaLocations: Point[] = []
+  // Collect via data for adjusting circle sizes at via connections
+  const traceViaData: { point: Point; outerDiameter: number }[] = []
   if (trace.route) {
     for (const point of trace.route) {
       if ("route_type" in point && point.route_type === "via") {
-        viaLocations.push(new Point(point.x, point.y))
+        const via = ctx.db.pcb_via
+          .list()
+          .find((v) => v.x === point.x && v.y === point.y)
+        if (via && via.outer_diameter > 0) {
+          traceViaData.push({
+            point: new Point(point.x, point.y),
+            outerDiameter: via.outer_diameter,
+          })
+        }
       }
     }
   }
@@ -103,23 +111,22 @@ export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
 
     // Add circular pads at trace endpoints to ensure overlap at junctions
     // This is crucial for boolean union to properly merge traces that share endpoints
-    // Use a larger radius at via locations to ensure connection through via holes
+    const getEndpointRadius = (point: { x: number; y: number }): number => {
+      const via = traceViaData.find(
+        (vl) => vl.point.x === point.x && vl.point.y === point.y,
+      )
+      // Use via outer diameter + margin for reliable connection, or standard trace width
+      return via ? via.outerDiameter / 2 + 0.05 : (traceWidth / 2) * 1.1
+    }
+
     const segments = layerSegments.get(layer)
     if (segments) {
       for (const segment of segments) {
         if (segment.length >= 2) {
           const firstPoint = segment[0]!
           const lastPoint = segment[segment.length - 1]!
-          const startRadius = viaLocations.some(
-            (p) => p.x === firstPoint.x && p.y === firstPoint.y,
-          )
-            ? 0.3
-            : (traceWidth / 2) * 1.1
-          const endRadius = viaLocations.some(
-            (p) => p.x === lastPoint.x && p.y === lastPoint.y,
-          )
-            ? 0.3
-            : (traceWidth / 2) * 1.1
+          const startRadius = getEndpointRadius(firstPoint)
+          const endRadius = getEndpointRadius(lastPoint)
 
           // Add circle at start point (translated by origin)
           const startCircle = createCirclePolygon(
