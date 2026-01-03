@@ -34,8 +34,8 @@ export const addPcbVia = (via: PcbVia, ctx: ConvertContext): void => {
     let netId: string | undefined
 
     // Try pcb_trace_id first (vias created during routing have this)
-    if ((via as PcbVia).pcb_trace_id) {
-      netId = connMap.getNetConnectedToId((via as any).pcb_trace_id)
+    if (via.pcb_trace_id) {
+      netId = connMap.getNetConnectedToId(via.pcb_trace_id)
     }
 
     // Fallback: find pcb_port at the via's location
