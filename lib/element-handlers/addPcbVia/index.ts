@@ -28,22 +28,33 @@ export const addPcbVia = (via: PcbVia, ctx: ConvertContext): void => {
   // Add outer circle (copper annulus) if drawing copper - add to netGeoms for merging
   // Vias go through all layers, so add to both top and bottom
   if (via.outer_diameter > 0 && includeCopper) {
-    // Find the pcb_port associated with this via (vias don't have pcb_port_id property)
-    // We need to find a port at the same location as the via
-    const viaPort = db.pcb_port
-      .list()
-      .find((port) => port.x === via.x && port.y === via.y)
+    // Find the net for this via using multiple methods:
+    // 1. Via's pcb_trace_id (common in routed designs)
+    // 2. pcb_port at the same location
+    let netId: string | undefined
 
-    const netId = viaPort
-      ? connMap.getNetConnectedToId(viaPort.pcb_port_id)
-      : undefined
+    // Try pcb_trace_id first (vias created during routing have this)
+    if ((via as PcbVia).pcb_trace_id) {
+      netId = connMap.getNetConnectedToId((via as any).pcb_trace_id)
+    }
+
+    // Fallback: find pcb_port at the via's location
+    if (!netId) {
+      const viaPort = db.pcb_port
+        .list()
+        .find((port) => port.x === via.x && port.y === via.y)
+
+      if (viaPort) {
+        netId = connMap.getNetConnectedToId(viaPort.pcb_port_id)
+      }
+    }
 
     const outerRadius = via.outer_diameter / 2
     const circle = new Circle(point(centerX, centerY), outerRadius)
     const polygon = circleToPolygon(circle)
 
     if (netId) {
-      // Add to both top and bottom netGeoms since vias go through the board
+      // Add to netGeoms so it can be unified with traces on the same net
       if (includeLayers.includes("top")) {
         topCutNetGeoms.get(netId)?.push(polygon.clone())
       }
