@@ -1,9 +1,10 @@
-import type { PcbTrace, point } from "circuit-json"
+import type { PcbTrace } from "circuit-json"
 import type { ConvertContext } from "../../ConvertContext"
 import { splitRouteSegmentsByLayer } from "./splitRouteSegmentsByLayer"
 import { generateTracePolygons } from "./generateTracePolygons"
 import { unifyTracePolygons } from "./unifyTracePolygons"
-import Flatten, { Point } from "@flatten-js/core"
+import Flatten from "@flatten-js/core"
+
 /**
  * Creates a circular polygon at the given center point.
  * Used to ensure traces overlap at junction points.
@@ -63,24 +64,6 @@ export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
   })
   const traceWidth = (wirePoint as any)?.width ?? 0.15
 
-  // Collect via data for adjusting circle sizes at via connections
-  const traceViaData: { point: Point; outerDiameter: number }[] = []
-  if (trace.route) {
-    for (const point of trace.route) {
-      if ("route_type" in point && point.route_type === "via") {
-        const via = ctx.db.pcb_via
-          .list()
-          .find((v) => v.x === point.x && v.y === point.y)
-        if (via && via.outer_diameter > 0) {
-          traceViaData.push({
-            point: new Point(point.x, point.y),
-            outerDiameter: via.outer_diameter,
-          })
-        }
-      }
-    }
-  }
-
   // Split route into segments by layer
   const layerSegments = splitRouteSegmentsByLayer(trace)
 
@@ -111,34 +94,26 @@ export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
 
     // Add circular pads at trace endpoints to ensure overlap at junctions
     // This is crucial for boolean union to properly merge traces that share endpoints
-    const getEndpointRadius = (point: { x: number; y: number }): number => {
-      const via = traceViaData.find(
-        (vl) => vl.point.x === point.x && vl.point.y === point.y,
-      )
-      // Use via outer diameter + margin for reliable connection, or standard trace width
-      return via ? via.outerDiameter / 2 + 0.05 : (traceWidth / 2) * 1.1
-    }
-
+    // Use a slightly larger radius (1.1x) to ensure proper overlap despite floating point issues
     const segments = layerSegments.get(layer)
     if (segments) {
       for (const segment of segments) {
         if (segment.length >= 2) {
           const firstPoint = segment[0]!
           const lastPoint = segment[segment.length - 1]!
-          const startRadius = getEndpointRadius(firstPoint)
-          const endRadius = getEndpointRadius(lastPoint)
+          const radius = (traceWidth / 2) * 1.1 // Slightly larger for reliable overlap
 
           // Add circle at start point (translated by origin)
           const startCircle = createCirclePolygon(
             { x: firstPoint.x + origin.x, y: firstPoint.y + origin.y },
-            startRadius,
+            radius,
           )
           cutNetGeoms.get(netId)?.push(startCircle)
 
           // Add circle at end point (translated by origin)
           const endCircle = createCirclePolygon(
             { x: lastPoint.x + origin.x, y: lastPoint.y + origin.y },
-            endRadius,
+            radius,
           )
           cutNetGeoms.get(netId)?.push(endCircle)
         }
