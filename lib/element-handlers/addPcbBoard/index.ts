@@ -56,14 +56,4 @@ export const addPcbBoard = (board: PcbBoard, ctx: ConvertContext) => {
       }),
     )
   }
-  if (includeSoldermask) {
-    project.children.push(
-      new ShapePath({
-        cutIndex: soldermaskCutSetting.index,
-        verts,
-        prims,
-        isClosed: false,
-      }),
-    )
-  }
 }
