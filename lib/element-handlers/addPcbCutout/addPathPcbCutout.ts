@@ -10,14 +10,7 @@ export const addPathPcbCutout = (
   cutout: PcbCutoutPath,
   ctx: ConvertContext,
 ): void => {
-  const {
-    project,
-    throughBoardCutSetting,
-    origin,
-    includeCopper,
-    includeSoldermask,
-    soldermaskCutSetting,
-  } = ctx
+  const { project, throughBoardCutSetting, origin, includeCopper } = ctx
 
   // For path cutouts, we need to create a stroke along the route with the given width
   // For simplicity, we'll convert the path to a polyline
@@ -42,30 +35,6 @@ export const addPathPcbCutout = (
         verts,
         prims,
         isClosed: false, // Paths are typically not closed
-      }),
-    )
-  }
-
-  // Add soldermask opening if drawing soldermask
-  if (cutout.route.length >= 2 && includeSoldermask) {
-    const verts: { x: number; y: number }[] = []
-    const prims: { type: number }[] = []
-
-    // Create path with soldermask margin
-    for (const point of cutout.route) {
-      verts.push({
-        x: point.x + origin.x,
-        y: point.y + origin.y,
-      })
-      prims.push({ type: 0 })
-    }
-
-    project.children.push(
-      new ShapePath({
-        cutIndex: soldermaskCutSetting.index,
-        verts,
-        prims,
-        isClosed: false, // Match the same path as the copper cutout
       }),
     )
   }
