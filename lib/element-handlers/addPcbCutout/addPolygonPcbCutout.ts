@@ -11,14 +11,7 @@ export const addPolygonPcbCutout = (
   cutout: PcbCutoutPolygon,
   ctx: ConvertContext,
 ): void => {
-  const {
-    project,
-    throughBoardCutSetting,
-    origin,
-    includeCopper,
-    includeSoldermask,
-    soldermaskCutSetting,
-  } = ctx
+  const { project, throughBoardCutSetting, origin, includeCopper } = ctx
 
   // Add the cutout - cut through the board
   if (cutout.points.length >= 3 && includeCopper) {
@@ -30,23 +23,6 @@ export const addPolygonPcbCutout = (
     project.children.push(
       new ShapePath({
         cutIndex: throughBoardCutSetting.index,
-        verts: polygonPath.verts,
-        prims: polygonPath.prims,
-        isClosed: true,
-      }),
-    )
-  }
-
-  // Add soldermask opening if drawing soldermask
-  if (cutout.points.length >= 3 && includeSoldermask) {
-    const polygonPath = createPolygonPathFromOutline({
-      outline: cutout.points,
-      offsetX: origin.x,
-      offsetY: origin.y,
-    })
-    project.children.push(
-      new ShapePath({
-        cutIndex: soldermaskCutSetting.index,
         verts: polygonPath.verts,
         prims: polygonPath.prims,
         isClosed: true,
