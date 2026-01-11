@@ -28,6 +28,6 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "lbrnts": "^0.0.11"
+    "lbrnts": "^0.0.12"
   }
 }
