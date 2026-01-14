@@ -2,8 +2,7 @@ import type { PcbSmtPadCircle } from "circuit-json"
 import type { ConvertContext } from "../../ConvertContext"
 import { ShapePath } from "lbrnts"
 import { createCirclePath } from "../../helpers/circleShape"
-import { Circle, Polygon, point } from "@flatten-js/core"
-import { circleToPolygon } from "../addPcbTrace/circle-to-polygon"
+import { addCopperGeometryToNetOrProject } from "../../helpers/addCopperGeometryToNetOrProject"
 
 export const addCircleSmtPad = (
   smtPad: PcbSmtPadCircle,
@@ -11,15 +10,10 @@ export const addCircleSmtPad = (
 ): void => {
   const {
     project,
-    topCopperCutSetting,
-    bottomCopperCutSetting,
     soldermaskCutSetting,
-    topCutNetGeoms,
-    bottomCutNetGeoms,
     origin,
     includeCopper,
     includeSoldermask,
-    connMap,
     globalCopperSoldermaskMarginAdjustment,
     includeLayers,
   } = ctx
@@ -33,42 +27,26 @@ export const addCircleSmtPad = (
     return
   }
 
-  // Select the correct cut setting and net geoms based on layer
-  const copperCutSetting =
-    padLayer === "top" ? topCopperCutSetting : bottomCopperCutSetting
-  const netGeoms = padLayer === "top" ? topCutNetGeoms : bottomCutNetGeoms
-
   const centerX = smtPad.x + origin.x
   const centerY = smtPad.y + origin.y
 
   if (smtPad.radius > 0) {
     const outerRadius = smtPad.radius
 
-    // Add to netGeoms for copper (will be merged with traces)
+    // Add to copper geometry (will be merged with traces if connected)
     if (includeCopper) {
-      const netId = connMap.getNetConnectedToId(smtPad.pcb_smtpad_id)
-      const circle = new Circle(point(centerX, centerY), outerRadius)
-      const polygon = circleToPolygon(circle)
+      const path = createCirclePath({
+        centerX,
+        centerY,
+        radius: outerRadius,
+      })
 
-      if (netId) {
-        // Add to netGeoms to be merged with other elements on the same net
-        netGeoms.get(netId)?.push(polygon)
-      } else {
-        // No net connection - draw directly
-        const outer = createCirclePath({
-          centerX,
-          centerY,
-          radius: outerRadius,
-        })
-        project.children.push(
-          new ShapePath({
-            cutIndex: copperCutSetting.index,
-            verts: outer.verts,
-            prims: outer.prims,
-            isClosed: true,
-          }),
-        )
-      }
+      addCopperGeometryToNetOrProject({
+        geometryId: smtPad.pcb_smtpad_id,
+        path,
+        layer: padLayer,
+        ctx,
+      })
     }
 
     // Add soldermask opening if drawing soldermask

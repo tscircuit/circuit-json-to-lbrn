@@ -2,7 +2,7 @@ import type { PcbSmtPadRotatedPill } from "circuit-json"
 import type { ConvertContext } from "../../ConvertContext"
 import { ShapePath } from "lbrnts"
 import { createPillPath } from "../../helpers/pillShape"
-import { pathToPolygon } from "../../helpers/pathToPolygon"
+import { addCopperGeometryToNetOrProject } from "../../helpers/addCopperGeometryToNetOrProject"
 
 export const addRotatedPillSmtPad = (
   smtPad: PcbSmtPadRotatedPill,
@@ -10,15 +10,10 @@ export const addRotatedPillSmtPad = (
 ): void => {
   const {
     project,
-    topCopperCutSetting,
-    bottomCopperCutSetting,
     soldermaskCutSetting,
-    topCutNetGeoms,
-    bottomCutNetGeoms,
     origin,
     includeCopper,
     includeSoldermask,
-    connMap,
     globalCopperSoldermaskMarginAdjustment,
     includeLayers,
   } = ctx
@@ -32,11 +27,6 @@ export const addRotatedPillSmtPad = (
     return
   }
 
-  // Select the correct cut setting and net geoms based on layer
-  const copperCutSetting =
-    padLayer === "top" ? topCopperCutSetting : bottomCopperCutSetting
-  const netGeoms = padLayer === "top" ? topCutNetGeoms : bottomCutNetGeoms
-
   const centerX = smtPad.x + origin.x
   const centerY = smtPad.y + origin.y
 
@@ -49,25 +39,14 @@ export const addRotatedPillSmtPad = (
       rotation: (smtPad.ccw_rotation ?? 0) * (Math.PI / 180),
     })
 
-    // Add to netGeoms for copper (will be merged with traces)
+    // Add to copper geometry (will be merged with traces if connected)
     if (includeCopper) {
-      const netId = connMap.getNetConnectedToId(smtPad.pcb_smtpad_id)
-      const polygon = pathToPolygon(outer.verts)
-
-      if (netId) {
-        // Add to netGeoms to be merged with other elements on the same net
-        netGeoms.get(netId)?.push(polygon)
-      } else {
-        // No net connection - draw directly
-        project.children.push(
-          new ShapePath({
-            cutIndex: copperCutSetting.index,
-            verts: outer.verts,
-            prims: outer.prims,
-            isClosed: true,
-          }),
-        )
-      }
+      addCopperGeometryToNetOrProject({
+        geometryId: smtPad.pcb_smtpad_id,
+        path: outer,
+        layer: padLayer,
+        ctx,
+      })
     }
 
     // Add soldermask opening if drawing soldermask
