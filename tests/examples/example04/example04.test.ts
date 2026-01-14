@@ -16,7 +16,6 @@ test("example04 - issue with rect pads and trace  ", async () => {
   Bun.write("debug-output/example04.lbrn2", project.getString(), {
     createPath: true,
   })
-  console.log("debug-output/example04.lbrn2")
 
   const lbrnSvg = await generateLightBurnSvg(project, {
     margin: 0,
