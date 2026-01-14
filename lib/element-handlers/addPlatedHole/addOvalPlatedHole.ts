@@ -17,6 +17,7 @@ export const addOvalPlatedHole = (
     includeCopper,
     includeSoldermask,
     globalCopperSoldermaskMarginAdjustment,
+    solderMaskMarginPercent,
     includeLayers,
   } = ctx
 
@@ -70,11 +71,26 @@ export const addOvalPlatedHole = (
     platedHole.outer_height > 0 &&
     includeSoldermask
   ) {
-    const soldermaskMargin =
+    // Percent margin is additive and may be negative.
+    // Absolute per-element margin and global adjustment are always applied.
+    const percentMarginX =
+      (solderMaskMarginPercent / 100) * platedHole.outer_width
+    const percentMarginY =
+      (solderMaskMarginPercent / 100) * platedHole.outer_height
+    const totalMarginX = Math.max(
       globalCopperSoldermaskMarginAdjustment +
-      (platedHole.soldermask_margin ?? 0)
-    const smWidth = platedHole.outer_width + 2 * soldermaskMargin
-    const smHeight = platedHole.outer_height + 2 * soldermaskMargin
+        (platedHole.soldermask_margin ?? 0) +
+        percentMarginX,
+      -platedHole.outer_width / 2,
+    )
+    const totalMarginY = Math.max(
+      globalCopperSoldermaskMarginAdjustment +
+        (platedHole.soldermask_margin ?? 0) +
+        percentMarginY,
+      -platedHole.outer_height / 2,
+    )
+    const smWidth = platedHole.outer_width + 2 * totalMarginX
+    const smHeight = platedHole.outer_height + 2 * totalMarginY
     const outer = createOvalPath({
       centerX,
       centerY,

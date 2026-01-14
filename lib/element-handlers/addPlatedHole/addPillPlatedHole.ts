@@ -17,6 +17,7 @@ export const addPcbPlatedHolePill = (
     includeCopper,
     includeSoldermask,
     globalCopperSoldermaskMarginAdjustment,
+    solderMaskMarginPercent,
     includeLayers,
   } = ctx
   const centerX = platedHole.x + origin.x
@@ -65,14 +66,26 @@ export const addPcbPlatedHolePill = (
     platedHole.outer_height > 0 &&
     includeSoldermask
   ) {
-    const smWidth =
-      platedHole.outer_width +
-      2 * globalCopperSoldermaskMarginAdjustment +
-      (platedHole.soldermask_margin ?? 0)
-    const smHeight =
-      platedHole.outer_height +
-      2 * globalCopperSoldermaskMarginAdjustment +
-      (platedHole.soldermask_margin ?? 0)
+    // Percent margin is additive and may be negative.
+    // Absolute per-element margin and global adjustment are always applied.
+    const percentMarginX =
+      (solderMaskMarginPercent / 100) * platedHole.outer_width
+    const percentMarginY =
+      (solderMaskMarginPercent / 100) * platedHole.outer_height
+    const totalMarginX = Math.max(
+      globalCopperSoldermaskMarginAdjustment +
+        (platedHole.soldermask_margin ?? 0) +
+        percentMarginX,
+      -platedHole.outer_width / 2,
+    )
+    const totalMarginY = Math.max(
+      globalCopperSoldermaskMarginAdjustment +
+        (platedHole.soldermask_margin ?? 0) +
+        percentMarginY,
+      -platedHole.outer_height / 2,
+    )
+    const smWidth = platedHole.outer_width + 2 * totalMarginX
+    const smHeight = platedHole.outer_height + 2 * totalMarginY
     const outer = createPillPath({
       centerX,
       centerY,

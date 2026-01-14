@@ -22,6 +22,7 @@ export const addCirclePlatedHole = (
     includeSoldermask,
     connMap,
     globalCopperSoldermaskMarginAdjustment,
+    solderMaskMarginPercent,
     includeLayers,
   } = ctx
   const centerX = platedHole.x + origin.x
@@ -75,10 +76,15 @@ export const addCirclePlatedHole = (
 
   // Add soldermask opening if drawing soldermask
   if (platedHole.outer_diameter > 0 && includeSoldermask) {
-    const smRadius =
-      platedHole.outer_diameter / 2 +
+    // Percent margin is additive and may be negative.
+    // Absolute per-element margin and global adjustment are always applied.
+    const percentMargin =
+      (solderMaskMarginPercent / 100) * platedHole.outer_diameter
+    const totalMargin =
       globalCopperSoldermaskMarginAdjustment +
-      (platedHole.soldermask_margin ?? 0)
+      (platedHole.soldermask_margin ?? 0) +
+      percentMargin
+    const smRadius = Math.max(platedHole.outer_diameter / 2 + totalMargin, 0)
     const outer = createCirclePath({
       centerX,
       centerY,

@@ -24,6 +24,7 @@ export interface ConvertCircuitJsonToLbrnOptions {
   includeCopper?: boolean
   includeSoldermask?: boolean
   globalCopperSoldermaskMarginAdjustment?: number
+  solderMaskMarginPercent?: number
   includeLayers?: Array<"top" | "bottom">
   traceMargin?: number
   laserSpotSize?: number
@@ -60,6 +61,7 @@ export const convertCircuitJsonToLbrn = (
   const includeSoldermask = options.includeSoldermask ?? false
   const globalCopperSoldermaskMarginAdjustment =
     options.globalCopperSoldermaskMarginAdjustment ?? 0
+  const solderMaskMarginPercent = options.solderMaskMarginPercent ?? 0
   const laserProfile = options.laserProfile
 
   // Default laser settings from GitHub issue
@@ -198,6 +200,7 @@ export const convertCircuitJsonToLbrn = (
     laserSpotSize,
     topTraceClearanceAreaCutSetting,
     bottomTraceClearanceAreaCutSetting,
+    solderMaskMarginPercent,
   }
 
   // Initialize net geometry maps

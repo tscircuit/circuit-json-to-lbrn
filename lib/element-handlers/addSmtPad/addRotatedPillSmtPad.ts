@@ -15,6 +15,7 @@ export const addRotatedPillSmtPad = (
     includeCopper,
     includeSoldermask,
     globalCopperSoldermaskMarginAdjustment,
+    solderMaskMarginPercent,
     includeLayers,
   } = ctx
 
@@ -51,14 +52,24 @@ export const addRotatedPillSmtPad = (
 
     // Add soldermask opening if drawing soldermask
     if (includeSoldermask) {
-      const smWidth =
-        smtPad.width +
-        2 * globalCopperSoldermaskMarginAdjustment +
-        (smtPad.soldermask_margin ?? 0)
-      const smHeight =
-        smtPad.height +
-        2 * globalCopperSoldermaskMarginAdjustment +
-        (smtPad.soldermask_margin ?? 0)
+      // Percent margin is additive and may be negative.
+      // Absolute per-element margin and global adjustment are always applied.
+      const percentMarginX = (solderMaskMarginPercent / 100) * smtPad.width
+      const percentMarginY = (solderMaskMarginPercent / 100) * smtPad.height
+      const totalMarginX = Math.max(
+        globalCopperSoldermaskMarginAdjustment +
+          (smtPad.soldermask_margin ?? 0) +
+          percentMarginX,
+        -smtPad.width / 2,
+      )
+      const totalMarginY = Math.max(
+        globalCopperSoldermaskMarginAdjustment +
+          (smtPad.soldermask_margin ?? 0) +
+          percentMarginY,
+        -smtPad.height / 2,
+      )
+      const smWidth = smtPad.width + 2 * totalMarginX
+      const smHeight = smtPad.height + 2 * totalMarginY
       const smOuter = createPillPath({
         centerX,
         centerY,

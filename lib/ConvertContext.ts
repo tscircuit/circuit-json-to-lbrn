@@ -43,4 +43,7 @@ export interface ConvertContext {
   // Cut settings for trace clearance areas
   topTraceClearanceAreaCutSetting?: CutSetting
   bottomTraceClearanceAreaCutSetting?: CutSetting
+
+  // Percent-based solder mask margin (scales with element size)
+  solderMaskMarginPercent: number
 }

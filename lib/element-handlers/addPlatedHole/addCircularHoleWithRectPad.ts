@@ -17,6 +17,7 @@ export const addCircularHoleWithRectPad = (
     includeCopper,
     includeSoldermask,
     globalCopperSoldermaskMarginAdjustment,
+    solderMaskMarginPercent,
     includeLayers,
   } = ctx
   const centerX = platedHole.x + origin.x
@@ -54,14 +55,25 @@ export const addCircularHoleWithRectPad = (
 
   // Add soldermask opening if drawing soldermask
   if (includeSoldermask) {
-    const smPadWidth =
-      padWidth +
-      2 * globalCopperSoldermaskMarginAdjustment +
-      (platedHole.soldermask_margin ?? 0)
-    const smPadHeight =
-      padHeight +
-      2 * globalCopperSoldermaskMarginAdjustment +
-      (platedHole.soldermask_margin ?? 0)
+    // Percent margin is additive and may be negative.
+    // Absolute per-element margin and global adjustment are always applied.
+    const percentMarginX = (solderMaskMarginPercent / 100) * padWidth
+    const percentMarginY = (solderMaskMarginPercent / 100) * padHeight
+
+    const totalMarginX = Math.max(
+      globalCopperSoldermaskMarginAdjustment +
+        (platedHole.soldermask_margin ?? 0) +
+        percentMarginX,
+      -padWidth / 2,
+    )
+    const totalMarginY = Math.max(
+      globalCopperSoldermaskMarginAdjustment +
+        (platedHole.soldermask_margin ?? 0) +
+        percentMarginY,
+      -padHeight / 2,
+    )
+    const smPadWidth = padWidth + 2 * totalMarginX
+    const smPadHeight = padHeight + 2 * totalMarginY
     const smPadPath = createRoundedRectPath({
       centerX,
       centerY,

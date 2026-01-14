@@ -20,6 +20,7 @@ export const addPcbVia = (via: PcbVia, ctx: ConvertContext): void => {
     includeSoldermask,
     connMap,
     globalCopperSoldermaskMarginAdjustment,
+    solderMaskMarginPercent,
     includeLayers,
   } = ctx
   const centerX = via.x + origin.x
@@ -93,8 +94,16 @@ export const addPcbVia = (via: PcbVia, ctx: ConvertContext): void => {
 
   // Add soldermask opening if drawing soldermask
   if (via.outer_diameter > 0 && includeSoldermask) {
-    const smRadius =
-      via.outer_diameter / 2 + globalCopperSoldermaskMarginAdjustment
+    // Percent margin is additive and may be negative.
+    // Global adjustment is always applied.
+    // Percent margin is applied to full diameter
+    const percentMargin = (solderMaskMarginPercent / 100) * via.outer_diameter
+
+    // Total margin is additive
+    const totalMargin = globalCopperSoldermaskMarginAdjustment + percentMargin
+
+    // Clamp so radius never goes below zero
+    const smRadius = Math.max(via.outer_diameter / 2 + totalMargin, 0)
     const outer = createCirclePath({
       centerX,
       centerY,

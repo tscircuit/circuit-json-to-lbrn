@@ -15,6 +15,7 @@ export const addCircleSmtPad = (
     includeCopper,
     includeSoldermask,
     globalCopperSoldermaskMarginAdjustment,
+    solderMaskMarginPercent,
     includeLayers,
   } = ctx
 
@@ -51,10 +52,26 @@ export const addCircleSmtPad = (
 
     // Add soldermask opening if drawing soldermask
     if (includeSoldermask) {
-      const smRadius =
-        outerRadius +
+      // Percent margin is additive and may be negative.
+      // Absolute per-element margin and global adjustment are always applied.
+      const elementWidth = 2 * outerRadius
+      const elementHeight = 2 * outerRadius
+      const percentMarginX = (solderMaskMarginPercent / 100) * elementWidth
+      const percentMarginY = (solderMaskMarginPercent / 100) * elementHeight
+      const totalMarginX = Math.max(
         globalCopperSoldermaskMarginAdjustment +
-        (smtPad.soldermask_margin ?? 0)
+          (smtPad.soldermask_margin ?? 0) +
+          percentMarginX,
+        -elementWidth / 2,
+      )
+      const totalMarginY = Math.max(
+        globalCopperSoldermaskMarginAdjustment +
+          (smtPad.soldermask_margin ?? 0) +
+          percentMarginY,
+        -elementHeight / 2,
+      )
+      // Since symmetric, use totalMarginX (same as totalMarginY)
+      const smRadius = outerRadius + totalMarginX
       const outer = createCirclePath({
         centerX,
         centerY,
