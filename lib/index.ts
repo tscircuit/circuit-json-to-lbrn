@@ -16,6 +16,7 @@ import { addPcbHole } from "./element-handlers/addPcbHole"
 import { addPcbCutout } from "./element-handlers/addPcbCutout"
 import { createCopperShapesForLayer } from "./createCopperShapesForLayer"
 import { createTraceClearanceAreasForLayer } from "./createTraceClearanceAreasForLayer"
+import { createCopperFillForLayer } from "./createCopperFillForLayer"
 
 export interface ConvertCircuitJsonToLbrnOptions {
   includeSilkscreen?: boolean
@@ -28,6 +29,14 @@ export interface ConvertCircuitJsonToLbrnOptions {
   includeLayers?: Array<"top" | "bottom">
   traceMargin?: number
   laserSpotSize?: number
+  /**
+   * Expansion distance (in mm) for the copper fill layer.
+   * When set > 0, creates an additional layer that ablates a larger area
+   * around all copper features (traces, pads, vias) using SCAN/fill mode.
+   * This creates bigger gaps between the copper pour and circuit traces,
+   * making soldering easier.
+   */
+  copperFillExpansion?: number
   laserProfile?: {
     copper?: {
       speed?: number
@@ -62,6 +71,7 @@ export const convertCircuitJsonToLbrn = (
   const globalCopperSoldermaskMarginAdjustment =
     options.globalCopperSoldermaskMarginAdjustment ?? 0
   const solderMaskMarginPercent = options.solderMaskMarginPercent ?? 0
+  const copperFillExpansion = options.copperFillExpansion ?? 0
   const laserProfile = options.laserProfile
 
   // Default laser settings from GitHub issue
@@ -82,12 +92,16 @@ export const convertCircuitJsonToLbrn = (
   const copperSettings = { ...defaultCopperSettings, ...laserProfile?.copper }
   const boardSettings = { ...defaultBoardSettings, ...laserProfile?.board }
 
-  // Determine if we should generate trace clearance zones
+  // Determine if we should generate trace clearance zones and copper fill
   const shouldGenerateTraceClearanceZones = traceMargin > 0 && includeCopper
+  const shouldGenerateCopperFill = copperFillExpansion > 0 && includeCopper
 
   // Validate options
   if (traceMargin > 0 && !includeCopper) {
     throw new Error("traceMargin requires includeCopper to be true")
+  }
+  if (copperFillExpansion > 0 && !includeCopper) {
+    throw new Error("copperFillExpansion requires includeCopper to be true")
   }
 
   // Create cut settings
@@ -170,6 +184,42 @@ export const convertCircuitJsonToLbrn = (
     }
   }
 
+  // Create copper fill cut settings if needed
+  let topCopperFillCutSetting: CutSetting | undefined
+  let bottomCopperFillCutSetting: CutSetting | undefined
+
+  if (shouldGenerateCopperFill) {
+    if (includeLayers.includes("top")) {
+      topCopperFillCutSetting = new CutSetting({
+        type: "Scan",
+        index: 6,
+        name: "Fill Top Copper",
+        numPasses: 12,
+        speed: 100,
+        scanOpt: "individual",
+        interval: laserSpotSize,
+        angle: 45,
+        crossHatch: true,
+      })
+      project.children.push(topCopperFillCutSetting)
+    }
+
+    if (includeLayers.includes("bottom")) {
+      bottomCopperFillCutSetting = new CutSetting({
+        type: "Scan",
+        index: 7,
+        name: "Fill Bottom Copper",
+        numPasses: 12,
+        speed: 100,
+        scanOpt: "individual",
+        interval: laserSpotSize,
+        angle: 45,
+        crossHatch: true,
+      })
+      project.children.push(bottomCopperFillCutSetting)
+    }
+  }
+
   // Build connectivity map and origin
   const connMap = getFullConnectivityMapFromCircuitJson(circuitJson)
   let origin = options.origin
@@ -191,6 +241,10 @@ export const convertCircuitJsonToLbrn = (
     bottomCutNetGeoms: new Map(),
     topScanNetGeoms: new Map(),
     bottomScanNetGeoms: new Map(),
+    topCopperFillNetGeoms: new Map(),
+    bottomCopperFillNetGeoms: new Map(),
+    topAllCopperGeoms: [],
+    bottomAllCopperGeoms: [],
     origin,
     includeCopper,
     includeSoldermask,
@@ -201,6 +255,9 @@ export const convertCircuitJsonToLbrn = (
     topTraceClearanceAreaCutSetting,
     bottomTraceClearanceAreaCutSetting,
     solderMaskMarginPercent,
+    copperFillExpansion,
+    topCopperFillCutSetting,
+    bottomCopperFillCutSetting,
   }
 
   // Initialize net geometry maps
@@ -209,7 +266,13 @@ export const convertCircuitJsonToLbrn = (
     ctx.bottomCutNetGeoms.set(net, [])
     ctx.topScanNetGeoms.set(net, [])
     ctx.bottomScanNetGeoms.set(net, [])
+    ctx.topCopperFillNetGeoms.set(net, [])
+    ctx.bottomCopperFillNetGeoms.set(net, [])
   }
+
+  // Initialize global copper geometry lists
+  ctx.topAllCopperGeoms = []
+  ctx.bottomAllCopperGeoms = []
 
   // Process all PCB elements
   for (const smtpad of db.pcb_smtpad.list()) {
@@ -257,6 +320,16 @@ export const convertCircuitJsonToLbrn = (
     }
     if (includeLayers.includes("bottom")) {
       createTraceClearanceAreasForLayer({ layer: "bottom", ctx })
+    }
+  }
+
+  // Create copper fill for each layer
+  if (shouldGenerateCopperFill) {
+    if (includeLayers.includes("top")) {
+      createCopperFillForLayer({ layer: "top", ctx })
+    }
+    if (includeLayers.includes("bottom")) {
+      createCopperFillForLayer({ layer: "bottom", ctx })
     }
   }
 

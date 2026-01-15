@@ -33,11 +33,14 @@ export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
     bottomCutNetGeoms,
     topScanNetGeoms,
     bottomScanNetGeoms,
+    topCopperFillNetGeoms,
+    bottomCopperFillNetGeoms,
     connMap,
     origin,
     includeCopper,
     includeLayers,
     traceMargin,
+    copperFillExpansion,
   } = ctx
 
   // Only include traces when including copper
@@ -84,12 +87,18 @@ export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
     })
 
     const cutNetGeoms = layer === "top" ? topCutNetGeoms : bottomCutNetGeoms
+    // Also add to global copper geometry list for copper fill subtraction
+    const allCopperGeoms =
+      layer === "top" ? ctx.topAllCopperGeoms : ctx.bottomAllCopperGeoms
+
     if (Array.isArray(result)) {
       for (const poly of result) {
         cutNetGeoms.get(netId)?.push(poly)
+        allCopperGeoms.push(poly)
       }
     } else {
       cutNetGeoms.get(netId)?.push(result)
+      allCopperGeoms.push(result)
     }
 
     // Add circular pads at trace endpoints to ensure overlap at junctions
@@ -109,6 +118,7 @@ export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
             radius,
           )
           cutNetGeoms.get(netId)?.push(startCircle)
+          allCopperGeoms.push(startCircle)
 
           // Add circle at end point (translated by origin)
           const endCircle = createCirclePolygon(
@@ -116,6 +126,7 @@ export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
             radius,
           )
           cutNetGeoms.get(netId)?.push(endCircle)
+          allCopperGeoms.push(endCircle)
         }
       }
     }
@@ -145,6 +156,58 @@ export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
         }
       } else {
         scanNetGeoms.get(netId)?.push(result)
+      }
+    }
+  }
+
+  // Store copper fill geometries (trace + copperFillExpansion) if enabled
+  if (copperFillExpansion > 0) {
+    const copperFillPolygons = generateTracePolygons({
+      layerSegments,
+      width: traceWidth + 2 * copperFillExpansion,
+      origin,
+      includeLayers,
+    })
+
+    for (const [layer, polygons] of copperFillPolygons.entries()) {
+      const { result } = unifyTracePolygons({
+        polygons,
+        traceId: trace.pcb_trace_id,
+        layer,
+      })
+
+      const copperFillNetGeoms =
+        layer === "top" ? topCopperFillNetGeoms : bottomCopperFillNetGeoms
+      if (Array.isArray(result)) {
+        for (const poly of result) {
+          copperFillNetGeoms.get(netId)?.push(poly)
+        }
+      } else {
+        copperFillNetGeoms.get(netId)?.push(result)
+      }
+
+      // Add expanded circular pads at trace endpoints for copper fill
+      const segments = layerSegments.get(layer)
+      if (segments) {
+        for (const segment of segments) {
+          if (segment.length >= 2) {
+            const firstPoint = segment[0]!
+            const lastPoint = segment[segment.length - 1]!
+            const radius = (traceWidth / 2 + copperFillExpansion) * 1.1
+
+            const startCircle = createCirclePolygon(
+              { x: firstPoint.x + origin.x, y: firstPoint.y + origin.y },
+              radius,
+            )
+            copperFillNetGeoms.get(netId)?.push(startCircle)
+
+            const endCircle = createCirclePolygon(
+              { x: lastPoint.x + origin.x, y: lastPoint.y + origin.y },
+              radius,
+            )
+            copperFillNetGeoms.get(netId)?.push(endCircle)
+          }
+        }
       }
     }
   }

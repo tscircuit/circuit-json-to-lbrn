@@ -44,6 +44,9 @@ export const addPcbBoard = (board: PcbBoard, ctx: ConvertContext) => {
 
   if (!polygon) return
 
+  // Store board outline in context for clipping copper fill
+  ctx.boardOutline = polygon
+
   const { verts, prims } = polygonToShapePathData(polygon)
 
   if (includeCopper) {

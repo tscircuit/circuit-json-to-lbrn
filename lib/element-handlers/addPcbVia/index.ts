@@ -2,19 +2,14 @@ import type { PcbVia } from "circuit-json"
 import type { ConvertContext } from "../../ConvertContext"
 import { ShapePath } from "lbrnts"
 import { createCirclePath } from "../../helpers/circleShape"
-import { Circle, point } from "@flatten-js/core"
-import { circleToPolygon } from "../addPcbTrace/circle-to-polygon"
+import { addCopperGeometryToNetOrProject } from "../../helpers/addCopperGeometryToNetOrProject"
 
 export const addPcbVia = (via: PcbVia, ctx: ConvertContext): void => {
   const {
     db,
     project,
-    topCopperCutSetting,
-    bottomCopperCutSetting,
     soldermaskCutSetting,
     throughBoardCutSetting,
-    topCutNetGeoms,
-    bottomCutNetGeoms,
     origin,
     includeCopper,
     includeSoldermask,
@@ -23,10 +18,11 @@ export const addPcbVia = (via: PcbVia, ctx: ConvertContext): void => {
     solderMaskMarginPercent,
     includeLayers,
   } = ctx
+
   const centerX = via.x + origin.x
   const centerY = via.y + origin.y
 
-  // Add outer circle (copper annulus) if drawing copper - add to netGeoms for merging
+  // Add outer circle (copper annulus) if drawing copper
   // Vias go through all layers, so add to both top and bottom
   if (via.outer_diameter > 0 && includeCopper) {
     // Find the net for this via using multiple methods:
@@ -51,44 +47,31 @@ export const addPcbVia = (via: PcbVia, ctx: ConvertContext): void => {
     }
 
     const outerRadius = via.outer_diameter / 2
-    const circle = new Circle(point(centerX, centerY), outerRadius)
-    const polygon = circleToPolygon(circle)
+    const outerPath = createCirclePath({
+      centerX,
+      centerY,
+      radius: outerRadius,
+    })
 
-    if (netId) {
-      // Add to netGeoms so it can be unified with traces on the same net
-      if (includeLayers.includes("top")) {
-        topCutNetGeoms.get(netId)?.push(polygon.clone())
-      }
-      if (includeLayers.includes("bottom")) {
-        bottomCutNetGeoms.get(netId)?.push(polygon.clone())
-      }
-    } else {
-      // No net connection - draw directly for each included layer
-      const outer = createCirclePath({
-        centerX,
-        centerY,
-        radius: outerRadius,
+    // Use the helper for both layers (vias go through board)
+    // Pass the resolved netId as override since via uses pcb_trace_id for net lookup
+    if (includeLayers.includes("top")) {
+      addCopperGeometryToNetOrProject({
+        geometryId: via.pcb_via_id,
+        path: outerPath,
+        layer: "top",
+        ctx,
+        overrideNetId: netId,
       })
-      if (includeLayers.includes("top")) {
-        project.children.push(
-          new ShapePath({
-            cutIndex: topCopperCutSetting.index,
-            verts: outer.verts,
-            prims: outer.prims,
-            isClosed: true,
-          }),
-        )
-      }
-      if (includeLayers.includes("bottom")) {
-        project.children.push(
-          new ShapePath({
-            cutIndex: bottomCopperCutSetting.index,
-            verts: outer.verts,
-            prims: outer.prims,
-            isClosed: true,
-          }),
-        )
-      }
+    }
+    if (includeLayers.includes("bottom")) {
+      addCopperGeometryToNetOrProject({
+        geometryId: via.pcb_via_id,
+        path: outerPath,
+        layer: "bottom",
+        ctx,
+        overrideNetId: netId,
+      })
     }
   }
 

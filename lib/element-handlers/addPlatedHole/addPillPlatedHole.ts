@@ -2,6 +2,7 @@ import type { PcbPlatedHoleOval } from "circuit-json"
 import type { ConvertContext } from "../../ConvertContext"
 import { ShapePath } from "lbrnts"
 import { createPillPath } from "../../helpers/pillShape"
+import { addCopperGeometryToNetOrProject } from "../../helpers/addCopperGeometryToNetOrProject"
 
 export const addPcbPlatedHolePill = (
   platedHole: PcbPlatedHoleOval,
@@ -9,8 +10,6 @@ export const addPcbPlatedHolePill = (
 ): void => {
   const {
     project,
-    topCopperCutSetting,
-    bottomCopperCutSetting,
     soldermaskCutSetting,
     throughBoardCutSetting,
     origin,
@@ -38,25 +37,23 @@ export const addPcbPlatedHolePill = (
       height: platedHole.outer_height,
       rotation,
     })
+
+    // Use addCopperGeometryToNetOrProject for both layers (plated holes go through board)
     if (includeLayers.includes("top")) {
-      project.children.push(
-        new ShapePath({
-          cutIndex: topCopperCutSetting.index,
-          verts: outer.verts,
-          prims: outer.prims,
-          isClosed: true,
-        }),
-      )
+      addCopperGeometryToNetOrProject({
+        geometryId: platedHole.pcb_plated_hole_id,
+        path: outer,
+        layer: "top",
+        ctx,
+      })
     }
     if (includeLayers.includes("bottom")) {
-      project.children.push(
-        new ShapePath({
-          cutIndex: bottomCopperCutSetting.index,
-          verts: outer.verts,
-          prims: outer.prims,
-          isClosed: true,
-        }),
-      )
+      addCopperGeometryToNetOrProject({
+        geometryId: platedHole.pcb_plated_hole_id,
+        path: outer,
+        layer: "bottom",
+        ctx,
+      })
     }
   }
 
