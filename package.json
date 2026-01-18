@@ -28,6 +28,7 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "lbrnts": "^0.0.12"
+    "lbrnts": "^0.0.12",
+    "manifold-3d": "^3.3.2"
   }
 }

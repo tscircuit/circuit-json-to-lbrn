@@ -20,8 +20,8 @@ const circuitJson: CircuitJson = [
   },
 ]
 
-test("applies custom laserProfile settings", () => {
-  const project = convertCircuitJsonToLbrn(circuitJson, {
+test("applies custom laserProfile settings", async () => {
+  const project = await convertCircuitJsonToLbrn(circuitJson, {
     laserProfile: {
       copper: {
         speed: 350,
@@ -66,8 +66,8 @@ test("applies custom laserProfile settings", () => {
   expect(throughBoard.pulseWidth).toBe(1.5e-9)
 })
 
-test("uses default laserProfile settings when not provided", () => {
-  const project = convertCircuitJsonToLbrn(circuitJson)
+test("uses default laserProfile settings when not provided", async () => {
+  const project = await convertCircuitJsonToLbrn(circuitJson)
 
   expect(project).toBeDefined()
   const cutSettings = project.children.filter(

@@ -93,7 +93,7 @@ const circuitJson: CircuitJson = [
 test("renders soldermask only (no copper, no traces)", async () => {
   const pcbSvg = await convertCircuitJsonToPcbSvg(circuitJson)
 
-  const project = convertCircuitJsonToLbrn(circuitJson, {
+  const project = await convertCircuitJsonToLbrn(circuitJson, {
     includeCopper: false,
     includeSoldermask: true,
   })

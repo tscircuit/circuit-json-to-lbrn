@@ -16,6 +16,7 @@ import { addPcbHole } from "./element-handlers/addPcbHole"
 import { addPcbCutout } from "./element-handlers/addPcbCutout"
 import { createCopperShapesForLayer } from "./createCopperShapesForLayer"
 import { createTraceClearanceAreasForLayer } from "./createTraceClearanceAreasForLayer"
+import { createCopperFillForLayer } from "./createCopperFillForLayer"
 
 export interface ConvertCircuitJsonToLbrnOptions {
   includeSilkscreen?: boolean
@@ -28,6 +29,17 @@ export interface ConvertCircuitJsonToLbrnOptions {
   includeLayers?: Array<"top" | "bottom">
   traceMargin?: number
   laserSpotSize?: number
+  /**
+   * Whether to generate copper fill layers (ground plane).
+   * Copper fill creates a negative of the copper layer, filling areas
+   * around traces and pads with copper removal.
+   */
+  includeCopperFill?: boolean
+  /**
+   * Margin to expand the copper bounds for the fill area (in mm).
+   * This determines how far beyond the copper features the fill extends.
+   */
+  copperFillMargin?: number
   laserProfile?: {
     copper?: {
       speed?: number
@@ -43,10 +55,10 @@ export interface ConvertCircuitJsonToLbrnOptions {
     }
   }
 }
-export const convertCircuitJsonToLbrn = (
+export const convertCircuitJsonToLbrn = async (
   circuitJson: CircuitJson,
   options: ConvertCircuitJsonToLbrnOptions = {},
-): LightBurnProject => {
+): Promise<LightBurnProject> => {
   const db = cju(circuitJson)
   const project = new LightBurnProject({
     appVersion: "1.7.03",
@@ -63,6 +75,8 @@ export const convertCircuitJsonToLbrn = (
     options.globalCopperSoldermaskMarginAdjustment ?? 0
   const solderMaskMarginPercent = options.solderMaskMarginPercent ?? 0
   const laserProfile = options.laserProfile
+  const includeCopperFill = options.includeCopperFill ?? false
+  const copperFillMargin = options.copperFillMargin ?? 0.5
 
   // Default laser settings from GitHub issue
   const defaultCopperSettings = {
@@ -134,6 +148,9 @@ export const convertCircuitJsonToLbrn = (
   })
   project.children.push(soldermaskCutSetting)
 
+  // Track the next available cut setting index
+  let nextCutIndex = 4
+
   // Create trace clearance cut settings if needed
   let topTraceClearanceAreaCutSetting: CutSetting | undefined
   let bottomTraceClearanceAreaCutSetting: CutSetting | undefined
@@ -142,7 +159,7 @@ export const convertCircuitJsonToLbrn = (
     if (includeLayers.includes("top")) {
       topTraceClearanceAreaCutSetting = new CutSetting({
         type: "Scan",
-        index: 4,
+        index: nextCutIndex++,
         name: "Clear Top Trace Clearance Areas",
         numPasses: 12,
         speed: 100,
@@ -157,7 +174,7 @@ export const convertCircuitJsonToLbrn = (
     if (includeLayers.includes("bottom")) {
       bottomTraceClearanceAreaCutSetting = new CutSetting({
         type: "Scan",
-        index: 5,
+        index: nextCutIndex++,
         name: "Clear Bottom Trace Clearance Areas",
         numPasses: 12,
         speed: 100,
@@ -167,6 +184,42 @@ export const convertCircuitJsonToLbrn = (
         crossHatch: true,
       })
       project.children.push(bottomTraceClearanceAreaCutSetting)
+    }
+  }
+
+  // Create copper fill cut settings if needed
+  let topCopperFillCutSetting: CutSetting | undefined
+  let bottomCopperFillCutSetting: CutSetting | undefined
+
+  if (includeCopperFill && includeCopper) {
+    if (includeLayers.includes("top")) {
+      topCopperFillCutSetting = new CutSetting({
+        type: "Scan",
+        index: nextCutIndex++,
+        name: "Top Copper Fill",
+        numPasses: copperSettings.numPasses,
+        speed: copperSettings.speed,
+        scanOpt: "individual",
+        interval: laserSpotSize,
+        angle: 45,
+        crossHatch: true,
+      })
+      project.children.push(topCopperFillCutSetting)
+    }
+
+    if (includeLayers.includes("bottom")) {
+      bottomCopperFillCutSetting = new CutSetting({
+        type: "Scan",
+        index: nextCutIndex++,
+        name: "Bottom Copper Fill",
+        numPasses: copperSettings.numPasses,
+        speed: copperSettings.speed,
+        scanOpt: "individual",
+        interval: laserSpotSize,
+        angle: 45,
+        crossHatch: true,
+      })
+      project.children.push(bottomCopperFillCutSetting)
     }
   }
 
@@ -201,6 +254,9 @@ export const convertCircuitJsonToLbrn = (
     topTraceClearanceAreaCutSetting,
     bottomTraceClearanceAreaCutSetting,
     solderMaskMarginPercent,
+    topCopperFillCutSetting,
+    bottomCopperFillCutSetting,
+    copperFillMargin,
   }
 
   // Initialize net geometry maps
@@ -257,6 +313,16 @@ export const convertCircuitJsonToLbrn = (
     }
     if (includeLayers.includes("bottom")) {
       createTraceClearanceAreasForLayer({ layer: "bottom", ctx })
+    }
+  }
+
+  // Create copper fill for each layer
+  if (includeCopperFill && includeCopper) {
+    if (includeLayers.includes("top")) {
+      await createCopperFillForLayer({ layer: "top", ctx })
+    }
+    if (includeLayers.includes("bottom")) {
+      await createCopperFillForLayer({ layer: "bottom", ctx })
     }
   }
 

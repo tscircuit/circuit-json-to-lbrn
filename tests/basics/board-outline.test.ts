@@ -92,7 +92,7 @@ const circuitJson: CircuitJson = [
 test("creates board outline cut with through-board setting", async () => {
   const pcbSvg = await convertCircuitJsonToPcbSvg(circuitJson)
 
-  const project = convertCircuitJsonToLbrn(circuitJson)
+  const project = await convertCircuitJsonToLbrn(circuitJson)
 
   const lbrnSvg = await generateLightBurnSvg(project)
 

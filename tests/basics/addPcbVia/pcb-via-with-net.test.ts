@@ -116,7 +116,7 @@ const circuitJson: CircuitJson = [
 test("renders pcb via connected to net with trace merging", async () => {
   const pcbSvg = await convertCircuitJsonToPcbSvg(circuitJson)
 
-  const project = convertCircuitJsonToLbrn(circuitJson)
+  const project = await convertCircuitJsonToLbrn(circuitJson)
 
   const lbrnSvg = generateLightBurnSvg(project)
 

@@ -98,7 +98,7 @@ const circuitJson: CircuitJson = [
 test("renders mixed elements with global and per-element soldermask margins", async () => {
   const pcbSvg = await convertCircuitJsonToPcbSvg(circuitJson as CircuitJson)
 
-  const project = convertCircuitJsonToLbrn(circuitJson as CircuitJson, {
+  const project = await convertCircuitJsonToLbrn(circuitJson as CircuitJson, {
     includeSoldermask: true,
     globalCopperSoldermaskMarginAdjustment: 0.2,
   })

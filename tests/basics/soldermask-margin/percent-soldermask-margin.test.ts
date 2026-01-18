@@ -75,7 +75,7 @@ const circuitJson: CircuitJson = [
 test("soldermask renders with correct percent margin", async () => {
   const pcbSvg = await convertCircuitJsonToPcbSvg(circuitJson)
 
-  const project = convertCircuitJsonToLbrn(circuitJson, {
+  const project = await convertCircuitJsonToLbrn(circuitJson, {
     includeSoldermask: true,
     includeCopper: true,
     solderMaskMarginPercent: -20, // negative shrink

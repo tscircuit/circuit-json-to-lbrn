@@ -9,7 +9,7 @@ import type { CircuitJson } from "circuit-json"
 test("example01 - rp2040 zero with two interconnects", async () => {
   const pcbSvg = await convertCircuitJsonToPcbSvg(circuitJson as CircuitJson)
 
-  const project = convertCircuitJsonToLbrn(circuitJson as CircuitJson, {
+  const project = await convertCircuitJsonToLbrn(circuitJson as CircuitJson, {
     includeLayers: ["top"],
   })
 

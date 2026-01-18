@@ -2,7 +2,7 @@ import { test, expect } from "bun:test"
 import { convertCircuitJsonToLbrn } from "../../../lib"
 import type { CircuitJson } from "circuit-json"
 
-test("trace-margin - error when includeCopper is false", () => {
+test("trace-margin - error when includeCopper is false", async () => {
   const circuitJson = [
     {
       type: "pcb_board",
@@ -38,10 +38,10 @@ test("trace-margin - error when includeCopper is false", () => {
     },
   ] as CircuitJson
 
-  expect(() => {
+  await expect(
     convertCircuitJsonToLbrn(circuitJson, {
       includeCopper: false,
       traceMargin: 0.3,
-    })
-  }).toThrow("traceMargin requires includeCopper to be true")
+    }),
+  ).rejects.toThrow("traceMargin requires includeCopper to be true")
 })

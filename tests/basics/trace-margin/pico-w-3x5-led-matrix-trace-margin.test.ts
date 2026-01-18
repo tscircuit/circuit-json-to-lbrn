@@ -11,7 +11,7 @@ test(
   async () => {
     const pcbSvg = await convertCircuitJsonToPcbSvg(circuitJson as CircuitJson)
 
-    const project = convertCircuitJsonToLbrn(circuitJson as CircuitJson, {
+    const project = await convertCircuitJsonToLbrn(circuitJson as CircuitJson, {
       includeCopper: true,
       traceMargin: 0.15,
       laserSpotSize: 0.005,

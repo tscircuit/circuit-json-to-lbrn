@@ -43,7 +43,7 @@ test("trace-margin-basic", async () => {
 
   const pcbSvg = await convertCircuitJsonToPcbSvg(circuitJson)
 
-  const project = convertCircuitJsonToLbrn(circuitJson, {
+  const project = await convertCircuitJsonToLbrn(circuitJson, {
     includeCopper: true,
     traceMargin: 0.3,
     laserSpotSize: 0.005,

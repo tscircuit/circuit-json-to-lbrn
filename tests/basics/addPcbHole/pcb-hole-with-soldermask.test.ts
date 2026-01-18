@@ -47,7 +47,7 @@ const circuitJson: CircuitJson = [
 test("renders pcb holes with soldermask openings", async () => {
   const pcbSvg = await convertCircuitJsonToPcbSvg(circuitJson)
 
-  const project = convertCircuitJsonToLbrn(circuitJson, {
+  const project = await convertCircuitJsonToLbrn(circuitJson, {
     includeSoldermask: true,
     globalCopperSoldermaskMarginAdjustment: 0.2,
   })

@@ -10,7 +10,7 @@ import { stackSvgsVertically } from "stack-svgs"
 test("keyboard-both-layers-includeSoldermask", async () => {
   const pcbSvg = await convertCircuitJsonToPcbSvg(circuitJson)
 
-  const project = convertCircuitJsonToLbrn(circuitJson, {
+  const project = await convertCircuitJsonToLbrn(circuitJson, {
     includeLayers: ["top", "bottom"],
     includeSoldermask: true,
   })

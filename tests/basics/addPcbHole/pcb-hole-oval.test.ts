@@ -39,7 +39,7 @@ const circuitJson: CircuitJson = [
 test("renders oval pcb holes with through-board cuts", async () => {
   const pcbSvg = await convertCircuitJsonToPcbSvg(circuitJson)
 
-  const project = convertCircuitJsonToLbrn(circuitJson)
+  const project = await convertCircuitJsonToLbrn(circuitJson)
 
   const lbrnSvg = await generateLightBurnSvg(project)
 

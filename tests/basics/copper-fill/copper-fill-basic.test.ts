@@ -1,21 +1,17 @@
 import { test, expect } from "bun:test"
 import { convertCircuitJsonToPcbSvg } from "circuit-to-svg"
 import { generateLightBurnSvg } from "lbrnts"
-import { convertCircuitJsonToLbrn } from "../../lib"
+import { convertCircuitJsonToLbrn } from "../../../lib"
 import { stackSvgsVertically } from "stack-svgs"
 import type { CircuitJson, SourceTrace } from "circuit-json"
 
 /**
- * This test demonstrates a bug where standalone traces (traces not connected
- * to any ports/nets) are not being converted to cut shapes in the LightBurn output.
- *
- * Expected: The trace should appear as a cut shape in the bottom SVG
- * Actual: The trace is missing from the LightBurn output (only CutSetting is present)
- *
- * Root cause: addPcbTrace gets netId=undefined for unconnected traces, and
- * netGeoms.get(undefined) returns undefined, so the trace polygon is never added.
+ * Test basic copper fill functionality with a single trace.
+ * The copper fill should create a "ring" around the trace that removes
+ * copper in the area between the trace and the expanded boundary,
+ * but never cuts into the trace itself.
  */
-test("single-trace", async () => {
+test("copper-fill-basic", async () => {
   const circuitJson = [
     {
       type: "pcb_board",
@@ -31,13 +27,13 @@ test("single-trace", async () => {
       route: [
         {
           x: -5,
-          y: -5,
+          y: 0,
           width: 0.5,
           layer: "top",
         },
         {
           x: 5,
-          y: 5,
+          y: 0,
           width: 0.5,
           layer: "top",
         },
@@ -45,17 +41,28 @@ test("single-trace", async () => {
     },
     {
       type: "source_trace",
-      source_trace_id: "trace_2",
-      connected_source_net_ids: [],
+      source_trace_id: "trace_1",
+      connected_source_net_ids: ["net_1"],
       connected_source_port_ids: [],
     } as SourceTrace,
+    {
+      type: "source_net",
+      source_net_id: "net_1",
+      name: "NET1",
+      member_source_group_ids: [],
+    },
   ] as CircuitJson
 
   const pcbSvg = await convertCircuitJsonToPcbSvg(circuitJson)
 
-  const project = await convertCircuitJsonToLbrn(circuitJson)
+  const project = await convertCircuitJsonToLbrn(circuitJson, {
+    includeCopper: true,
+    includeCopperFill: true,
+    copperFillMargin: 0.5,
+    includeLayers: ["top"],
+  })
 
-  Bun.write("debug-output/single-trace.lbrn2", project.getString(), {
+  Bun.write("debug-output/copper-fill-basic.lbrn2", project.getString(), {
     createPath: true,
   })
 

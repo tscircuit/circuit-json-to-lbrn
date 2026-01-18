@@ -38,7 +38,7 @@ const circuitJson: CircuitJson = [
 test("renders a rotated pill smt pad", async () => {
   const pcbSvg = await convertCircuitJsonToPcbSvg(circuitJson)
 
-  const project = convertCircuitJsonToLbrn(circuitJson)
+  const project = await convertCircuitJsonToLbrn(circuitJson)
 
   const lbrnSvg = await generateLightBurnSvg(project)
 

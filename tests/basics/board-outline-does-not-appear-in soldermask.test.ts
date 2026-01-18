@@ -31,7 +31,7 @@ const circuitJson: CircuitJson = [
 test("board outline does not appear in soldermask cuts", async () => {
   const pcbSvg = await convertCircuitJsonToPcbSvg(circuitJson)
 
-  const project = convertCircuitJsonToLbrn(circuitJson, {
+  const project = await convertCircuitJsonToLbrn(circuitJson, {
     includeCopper: false,
     includeSoldermask: true,
   })
