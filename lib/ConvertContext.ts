@@ -3,6 +3,8 @@ import type { CutSetting, LightBurnProject } from "lbrnts"
 import type { Box, Polygon } from "@flatten-js/core"
 import type { ConnectivityMap } from "circuit-json-to-connectivity-map"
 
+type Contour = Array<[number, number]>
+
 export type ConnectivityMapKey = string
 
 export interface ConvertContext {
@@ -58,4 +60,7 @@ export interface ConvertContext {
   // Key is "x,y" rounded to 6 decimal places
   topTraceEndpoints: Set<string>
   bottomTraceEndpoints: Set<string>
+
+  // Board outline as a contour for clipping copper cut fill
+  boardOutlineContour?: Contour
 }

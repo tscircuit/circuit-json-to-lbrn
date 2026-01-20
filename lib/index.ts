@@ -269,6 +269,34 @@ export const convertCircuitJsonToLbrn = async (
     ctx.bottomScanNetGeoms.set(net, [])
   }
 
+  // Extract board outline for clipping copper cut fill
+  for (const board of db.pcb_board.list()) {
+    if (board.outline?.length) {
+      ctx.boardOutlineContour = board.outline.map((outlinePoint) => [
+        outlinePoint.x + origin.x,
+        outlinePoint.y + origin.y,
+      ])
+    } else if (
+      typeof board.width === "number" &&
+      typeof board.height === "number" &&
+      board.center
+    ) {
+      const halfWidth = board.width / 2
+      const halfHeight = board.height / 2
+      const minX = board.center.x - halfWidth + origin.x
+      const minY = board.center.y - halfHeight + origin.y
+      const maxX = board.center.x + halfWidth + origin.x
+      const maxY = board.center.y + halfHeight + origin.y
+      ctx.boardOutlineContour = [
+        [minX, minY],
+        [maxX, minY],
+        [maxX, maxY],
+        [minX, maxY],
+      ]
+    }
+    break // Only use the first board
+  }
+
   // Process all PCB elements
   for (const smtpad of db.pcb_smtpad.list()) {
     addSmtPad(smtpad, ctx)
