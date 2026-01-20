@@ -1,17 +1,16 @@
-import { test, expect } from "bun:test"
+import { expect, test } from "bun:test"
+import type { CircuitJson, SourceTrace } from "circuit-json"
 import { convertCircuitJsonToPcbSvg } from "circuit-to-svg"
 import { generateLightBurnSvg } from "lbrnts"
-import { convertCircuitJsonToLbrn } from "../../../lib"
 import { stackSvgsVertically } from "stack-svgs"
-import type { CircuitJson, SourceTrace } from "circuit-json"
+import { convertCircuitJsonToLbrn } from "../../../lib"
 
 /**
- * Test basic copper fill functionality with a single trace.
- * The copper fill should create a "ring" around the trace that removes
- * copper in the area between the trace and the expanded boundary,
- * but never cuts into the trace itself.
+ * Test basic copper cut fill functionality with a single trace.
+ * The copper cut fill should create a ring/band around the trace that
+ * will be laser cut to remove copper, but never cuts into the trace itself.
  */
-test("copper-fill-basic", async () => {
+test("copper-cut-fill-basic", async () => {
   const circuitJson = [
     {
       type: "pcb_board",
@@ -57,12 +56,12 @@ test("copper-fill-basic", async () => {
 
   const project = await convertCircuitJsonToLbrn(circuitJson, {
     includeCopper: true,
-    includeCopperFill: true,
-    copperFillMargin: 0.5,
+    includeCopperCutFill: true,
+    copperCutFillMargin: 0.5,
     includeLayers: ["top"],
   })
 
-  Bun.write("debug-output/copper-fill-basic.lbrn2", project.getString(), {
+  Bun.write("debug-output/copper-cut-fill-basic.lbrn2", project.getString(), {
     createPath: true,
   })
 

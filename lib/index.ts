@@ -16,7 +16,7 @@ import { addPcbHole } from "./element-handlers/addPcbHole"
 import { addPcbCutout } from "./element-handlers/addPcbCutout"
 import { createCopperShapesForLayer } from "./createCopperShapesForLayer"
 import { createTraceClearanceAreasForLayer } from "./createTraceClearanceAreasForLayer"
-import { createCopperFillForLayer } from "./createCopperFillForLayer"
+import { createCopperCutFillForLayer } from "./createCopperCutFillForLayer"
 
 export interface ConvertCircuitJsonToLbrnOptions {
   includeSilkscreen?: boolean
@@ -30,16 +30,16 @@ export interface ConvertCircuitJsonToLbrnOptions {
   traceMargin?: number
   laserSpotSize?: number
   /**
-   * Whether to generate copper fill layers (ground plane).
-   * Copper fill creates a negative of the copper layer, filling areas
-   * around traces and pads with copper removal.
+   * Whether to generate copper cut fill layers.
+   * Creates a ring/band around traces and pads that will be laser cut
+   * to remove copper, without cutting into the traces or pads themselves.
    */
-  includeCopperFill?: boolean
+  includeCopperCutFill?: boolean
   /**
-   * Margin to expand the copper bounds for the fill area (in mm).
-   * This determines how far beyond the copper features the fill extends.
+   * Margin to expand the copper outline for the cut fill band (in mm).
+   * This determines how wide the band of copper removal will be around traces/pads.
    */
-  copperFillMargin?: number
+  copperCutFillMargin?: number
   laserProfile?: {
     copper?: {
       speed?: number
@@ -75,8 +75,8 @@ export const convertCircuitJsonToLbrn = async (
     options.globalCopperSoldermaskMarginAdjustment ?? 0
   const solderMaskMarginPercent = options.solderMaskMarginPercent ?? 0
   const laserProfile = options.laserProfile
-  const includeCopperFill = options.includeCopperFill ?? false
-  const copperFillMargin = options.copperFillMargin ?? 0.5
+  const includeCopperCutFill = options.includeCopperCutFill ?? false
+  const copperCutFillMargin = options.copperCutFillMargin ?? 0.5
 
   // Default laser settings from GitHub issue
   const defaultCopperSettings = {
@@ -187,16 +187,16 @@ export const convertCircuitJsonToLbrn = async (
     }
   }
 
-  // Create copper fill cut settings if needed
-  let topCopperFillCutSetting: CutSetting | undefined
-  let bottomCopperFillCutSetting: CutSetting | undefined
+  // Create copper cut fill cut settings if needed
+  let topCopperCutFillCutSetting: CutSetting | undefined
+  let bottomCopperCutFillCutSetting: CutSetting | undefined
 
-  if (includeCopperFill && includeCopper) {
+  if (includeCopperCutFill && includeCopper) {
     if (includeLayers.includes("top")) {
-      topCopperFillCutSetting = new CutSetting({
+      topCopperCutFillCutSetting = new CutSetting({
         type: "Scan",
         index: nextCutIndex++,
-        name: "Top Copper Fill",
+        name: "Top Copper Cut Fill",
         numPasses: copperSettings.numPasses,
         speed: copperSettings.speed,
         scanOpt: "individual",
@@ -204,14 +204,14 @@ export const convertCircuitJsonToLbrn = async (
         angle: 45,
         crossHatch: true,
       })
-      project.children.push(topCopperFillCutSetting)
+      project.children.push(topCopperCutFillCutSetting)
     }
 
     if (includeLayers.includes("bottom")) {
-      bottomCopperFillCutSetting = new CutSetting({
+      bottomCopperCutFillCutSetting = new CutSetting({
         type: "Scan",
         index: nextCutIndex++,
-        name: "Bottom Copper Fill",
+        name: "Bottom Copper Cut Fill",
         numPasses: copperSettings.numPasses,
         speed: copperSettings.speed,
         scanOpt: "individual",
@@ -219,7 +219,7 @@ export const convertCircuitJsonToLbrn = async (
         angle: 45,
         crossHatch: true,
       })
-      project.children.push(bottomCopperFillCutSetting)
+      project.children.push(bottomCopperCutFillCutSetting)
     }
   }
 
@@ -254,9 +254,9 @@ export const convertCircuitJsonToLbrn = async (
     topTraceClearanceAreaCutSetting,
     bottomTraceClearanceAreaCutSetting,
     solderMaskMarginPercent,
-    topCopperFillCutSetting,
-    bottomCopperFillCutSetting,
-    copperFillMargin,
+    topCopperCutFillCutSetting,
+    bottomCopperCutFillCutSetting,
+    copperCutFillMargin,
   }
 
   // Initialize net geometry maps
@@ -316,13 +316,13 @@ export const convertCircuitJsonToLbrn = async (
     }
   }
 
-  // Create copper fill for each layer
-  if (includeCopperFill && includeCopper) {
+  // Create copper cut fill for each layer
+  if (includeCopperCutFill && includeCopper) {
     if (includeLayers.includes("top")) {
-      await createCopperFillForLayer({ layer: "top", ctx })
+      await createCopperCutFillForLayer({ layer: "top", ctx })
     }
     if (includeLayers.includes("bottom")) {
-      await createCopperFillForLayer({ layer: "bottom", ctx })
+      await createCopperCutFillForLayer({ layer: "bottom", ctx })
     }
   }
 

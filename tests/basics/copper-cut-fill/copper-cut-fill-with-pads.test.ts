@@ -1,19 +1,19 @@
-import { test, expect } from "bun:test"
+import { expect, test } from "bun:test"
+import type { CircuitJson, SourceTrace } from "circuit-json"
 import { convertCircuitJsonToPcbSvg } from "circuit-to-svg"
 import { generateLightBurnSvg } from "lbrnts"
-import { convertCircuitJsonToLbrn } from "../../../lib"
 import { stackSvgsVertically } from "stack-svgs"
-import type { CircuitJson, SourceTrace } from "circuit-json"
+import { convertCircuitJsonToLbrn } from "../../../lib"
 
 /**
- * Test copper fill with traces and SMT pads.
- * The copper fill should create rings around both the trace and pads,
+ * Test copper cut fill with traces and SMT pads.
+ * The copper cut fill should create a ring/band around both the trace and pads,
  * ensuring that:
- * 1. The fill never cuts into the traces or pads
- * 2. The fill creates a uniform margin around all copper features
- * 3. Where traces connect to pads, the fill is continuous around the connection
+ * 1. The cut fill never cuts into the traces or pads
+ * 2. The cut fill creates a uniform margin around all copper features
+ * 3. Where traces connect to pads, the cut fill is continuous around the connection
  */
-test("copper-fill-with-pads", async () => {
+test("copper-cut-fill-with-pads", async () => {
   const circuitJson = [
     {
       type: "pcb_board",
@@ -107,14 +107,18 @@ test("copper-fill-with-pads", async () => {
 
   const project = await convertCircuitJsonToLbrn(circuitJson, {
     includeCopper: true,
-    includeCopperFill: true,
-    copperFillMargin: 0.8, // Larger margin to clearly see the fill
+    includeCopperCutFill: true,
+    copperCutFillMargin: 0.8, // Larger margin to clearly see the cut fill
     includeLayers: ["top"],
   })
 
-  Bun.write("debug-output/copper-fill-with-pads.lbrn2", project.getString(), {
-    createPath: true,
-  })
+  Bun.write(
+    "debug-output/copper-cut-fill-with-pads.lbrn2",
+    project.getString(),
+    {
+      createPath: true,
+    },
+  )
 
   const lbrnSvg = await generateLightBurnSvg(project)
 
