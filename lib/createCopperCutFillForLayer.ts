@@ -2,13 +2,17 @@ import { Polygon, Box, Point } from "@flatten-js/core"
 import type { ConvertContext } from "./ConvertContext"
 import { polygonToShapePathData } from "./polygon-to-shape-path"
 import { ShapePath, ShapeGroup } from "lbrnts"
-import ManifoldModule from "manifold-3d"
 
 // Lazy-load the manifold WASM module
-let manifoldInstance: Awaited<ReturnType<typeof ManifoldModule>> | null = null
+// Use dynamic import with computed string to prevent bundler from analyzing the import
+// This allows the browser build to succeed - the feature will fail gracefully at runtime
+let manifoldInstance: any = null
 
 const getManifold = async () => {
   if (!manifoldInstance) {
+    // Use computed module name to prevent bundler from tracing the import
+    const moduleName = "manifold-3d"
+    const ManifoldModule = (await import(/* @vite-ignore */ moduleName)).default
     manifoldInstance = await ManifoldModule()
     manifoldInstance.setup() // Initialize the JS-friendly API
   }
@@ -115,9 +119,7 @@ export const createCopperCutFillForLayer = async ({
 
   // Get the appropriate cut setting for this layer
   const cutSetting =
-    layer === "top"
-      ? topCopperCutFillCutSetting
-      : bottomCopperCutFillCutSetting
+    layer === "top" ? topCopperCutFillCutSetting : bottomCopperCutFillCutSetting
 
   if (!cutSetting) {
     return
@@ -225,9 +227,6 @@ export const createCopperCutFillForLayer = async ({
     cutFillArea.delete()
     simplifiedArea.delete()
   } catch (error) {
-    console.warn(
-      `Failed to create copper cut fill for ${layer} layer:`,
-      error,
-    )
+    console.warn(`Failed to create copper cut fill for ${layer} layer:`, error)
   }
 }
