@@ -257,6 +257,8 @@ export const convertCircuitJsonToLbrn = async (
     topCopperCutFillCutSetting,
     bottomCopperCutFillCutSetting,
     copperCutFillMargin,
+    topTraceEndpoints: new Set(),
+    bottomTraceEndpoints: new Set(),
   }
 
   // Initialize net geometry maps
