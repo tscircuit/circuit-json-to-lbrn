@@ -2,22 +2,7 @@ import { Polygon, Box, Point } from "@flatten-js/core"
 import type { ConvertContext } from "./ConvertContext"
 import { polygonToShapePathData } from "./polygon-to-shape-path"
 import { ShapePath, ShapeGroup } from "lbrnts"
-
-// Lazy-load the manifold WASM module
-// Use dynamic import with computed string to prevent bundler from analyzing the import
-// This allows the browser build to succeed - the feature will fail gracefully at runtime
-let manifoldInstance: any = null
-
-const getManifold = async () => {
-  if (!manifoldInstance) {
-    // Use computed module name to prevent bundler from tracing the import
-    const moduleName = "manifold-3d"
-    const ManifoldModule = (await import(/* @vite-ignore */ moduleName)).default
-    manifoldInstance = await ManifoldModule()
-    manifoldInstance.setup() // Initialize the JS-friendly API
-  }
-  return manifoldInstance
-}
+import { getManifold } from "./getManifold"
 
 type Contour = Array<[number, number]>
 
