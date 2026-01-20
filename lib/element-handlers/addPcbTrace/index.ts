@@ -107,7 +107,8 @@ export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
     // Use a slightly larger radius (1.1x) to ensure proper overlap despite floating point issues
     // Deduplicate endpoints to avoid identical polygons that cause boolean operation failures
     const segments = layerSegments.get(layer)
-    const endpointSet = layer === "top" ? topTraceEndpoints : bottomTraceEndpoints
+    const endpointSet =
+      layer === "top" ? topTraceEndpoints : bottomTraceEndpoints
     if (segments) {
       for (const segment of segments) {
         if (segment.length >= 2) {
@@ -121,7 +122,10 @@ export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
           const startKey = positionKey(startX, startY)
           if (!endpointSet.has(startKey)) {
             endpointSet.add(startKey)
-            const startCircle = createCirclePolygon({ x: startX, y: startY }, radius)
+            const startCircle = createCirclePolygon(
+              { x: startX, y: startY },
+              radius,
+            )
             cutNetGeoms.get(netId)?.push(startCircle)
           }
 
