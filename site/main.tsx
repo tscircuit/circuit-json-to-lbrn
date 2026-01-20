@@ -48,6 +48,12 @@ const laserSpotSizeInput = document.getElementById(
 const includeCopperInput = document.getElementById(
   "includeCopper",
 ) as HTMLInputElement
+const includeCopperCutFillInput = document.getElementById(
+  "includeCopperCutFill",
+) as HTMLInputElement
+const copperCutFillMarginInput = document.getElementById(
+  "copperCutFillMargin",
+) as HTMLInputElement
 const includeSoldermaskInput = document.getElementById(
   "includeSoldermask",
 ) as HTMLInputElement
@@ -164,6 +170,8 @@ function getConversionOptions() {
       y: parseFloat(originYInput.value) || 0,
     },
     includeCopper: includeCopperInput.checked,
+    includeCopperCutFill: includeCopperCutFillInput.checked,
+    copperCutFillMargin: parseFloat(copperCutFillMarginInput.value) || 0.5,
     includeSoldermask: includeSoldermaskInput.checked,
     globalCopperSoldermaskMarginAdjustment:
       parseFloat(globalCopperSoldermaskMarginAdjustmentInput.value) || 0,
