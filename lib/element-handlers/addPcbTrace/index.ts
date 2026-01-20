@@ -27,6 +27,14 @@ const createCirclePolygon = (
   return new Flatten.Polygon(points)
 }
 
+/**
+ * Creates a position key for deduplication.
+ * Rounds to 6 decimal places to handle floating point precision.
+ */
+const positionKey = (x: number, y: number): string => {
+  return `${x.toFixed(6)},${y.toFixed(6)}`
+}
+
 export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
   const {
     topCutNetGeoms,
@@ -38,6 +46,8 @@ export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
     includeCopper,
     includeLayers,
     traceMargin,
+    topTraceEndpoints,
+    bottomTraceEndpoints,
   } = ctx
 
   // Only include traces when including copper
@@ -95,7 +105,9 @@ export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
     // Add circular pads at trace endpoints to ensure overlap at junctions
     // This is crucial for boolean union to properly merge traces that share endpoints
     // Use a slightly larger radius (1.1x) to ensure proper overlap despite floating point issues
+    // Deduplicate endpoints to avoid identical polygons that cause boolean operation failures
     const segments = layerSegments.get(layer)
+    const endpointSet = layer === "top" ? topTraceEndpoints : bottomTraceEndpoints
     if (segments) {
       for (const segment of segments) {
         if (segment.length >= 2) {
@@ -103,19 +115,25 @@ export const addPcbTrace = (trace: PcbTrace, ctx: ConvertContext) => {
           const lastPoint = segment[segment.length - 1]!
           const radius = (traceWidth / 2) * 1.1 // Slightly larger for reliable overlap
 
-          // Add circle at start point (translated by origin)
-          const startCircle = createCirclePolygon(
-            { x: firstPoint.x + origin.x, y: firstPoint.y + origin.y },
-            radius,
-          )
-          cutNetGeoms.get(netId)?.push(startCircle)
+          // Add circle at start point (translated by origin) if not already added
+          const startX = firstPoint.x + origin.x
+          const startY = firstPoint.y + origin.y
+          const startKey = positionKey(startX, startY)
+          if (!endpointSet.has(startKey)) {
+            endpointSet.add(startKey)
+            const startCircle = createCirclePolygon({ x: startX, y: startY }, radius)
+            cutNetGeoms.get(netId)?.push(startCircle)
+          }
 
-          // Add circle at end point (translated by origin)
-          const endCircle = createCirclePolygon(
-            { x: lastPoint.x + origin.x, y: lastPoint.y + origin.y },
-            radius,
-          )
-          cutNetGeoms.get(netId)?.push(endCircle)
+          // Add circle at end point (translated by origin) if not already added
+          const endX = lastPoint.x + origin.x
+          const endY = lastPoint.y + origin.y
+          const endKey = positionKey(endX, endY)
+          if (!endpointSet.has(endKey)) {
+            endpointSet.add(endKey)
+            const endCircle = createCirclePolygon({ x: endX, y: endY }, radius)
+            cutNetGeoms.get(netId)?.push(endCircle)
+          }
         }
       }
     }
