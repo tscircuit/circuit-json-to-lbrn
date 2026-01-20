@@ -1,7 +1,7 @@
 {
   "name": "circuit-json-to-lbrn",
   "main": "dist/index.js",
-  "version": "0.0.43",
+  "version": "0.0.44",
   "type": "module",
   "scripts": {
     "start": "bun run site/index.html",
