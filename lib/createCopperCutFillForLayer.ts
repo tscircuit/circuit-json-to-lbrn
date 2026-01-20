@@ -100,6 +100,7 @@ export const createCopperCutFillForLayer = async ({
     topCopperCutFillCutSetting,
     bottomCopperCutFillCutSetting,
     copperCutFillMargin,
+    boardOutlineContour,
   } = ctx
 
   // Get the appropriate cut setting for this layer
@@ -157,7 +158,16 @@ export const createCopperCutFillForLayer = async ({
 
     // Subtract the inside (original copper) from the outer boundary (expanded copper)
     // This gives us the ring/band area to laser cut
-    const cutFillArea = outerBoundary.subtract(copperInside)
+    let cutFillArea = outerBoundary.subtract(copperInside)
+
+    // Clip to board outline if available
+    if (boardOutlineContour && boardOutlineContour.length >= 3) {
+      const boardOutline = new CrossSection([boardOutlineContour], "Positive")
+      const clippedArea = cutFillArea.intersect(boardOutline)
+      cutFillArea.delete()
+      cutFillArea = clippedArea
+      boardOutline.delete()
+    }
 
     // Simplify to clean up any spurious tiny segments
     const simplifiedArea = cutFillArea.simplify(0.001)
