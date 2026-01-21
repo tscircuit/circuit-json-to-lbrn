@@ -78,7 +78,7 @@ export const convertCircuitJsonToLbrn = async (
   const includeCopperCutFill = options.includeCopperCutFill ?? false
   const copperCutFillMargin = options.copperCutFillMargin ?? 0.5
 
-  // Default laser settings from GitHub issue
+  // Default laser settings
   const defaultCopperSettings = {
     speed: 300,
     numPasses: 100,

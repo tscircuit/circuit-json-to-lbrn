@@ -262,7 +262,7 @@ async function convertAndDisplay() {
     // Convert to LBRN
     console.log("Converting to LBRN with options:", options)
     const { origin: _, ...conversionOptions } = options
-    currentLbrnProject = convertCircuitJsonToLbrn(
+    currentLbrnProject = await convertCircuitJsonToLbrn(
       processedCircuitJson,
       conversionOptions,
     )
