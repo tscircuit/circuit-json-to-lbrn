@@ -1,14 +1,15 @@
 import { test, expect } from "bun:test"
 import circuitJson from "./example05.circuit.json" with { type: "json" }
-import { convertCircuitJsonToPcbSvg } from "circuit-to-svg"
-import { generateLightBurnSvg, ShapePath, ShapeGroup } from "lbrnts"
+import { generateLightBurnSvg } from "lbrnts"
 import { convertCircuitJsonToLbrn } from "lib/index"
-import { stackSvgsVertically } from "stack-svgs"
+import {
+  calculateCircuitBounds,
+  calculateOriginFromBounds,
+} from "lib/calculateBounds"
+import { cju } from "@tscircuit/circuit-json-util"
 import type { CircuitJson } from "circuit-json"
 
 test("example05 - copper fill conversion", async () => {
-  const pcbSvg = await convertCircuitJsonToPcbSvg(circuitJson as CircuitJson)
-
   const project = await convertCircuitJsonToLbrn(circuitJson as CircuitJson, {
     includeLayers: ["top"],
     copperCutFillMargin: 0.5,
@@ -20,27 +21,39 @@ test("example05 - copper fill conversion", async () => {
   })
   console.log("tmp/example05.lbrn2")
 
-  // Board dimensions: centered at (0,0), width 18, height 23.38
-  // With margin adjustment for origin, we need to check the actual bounds
-  // The origin adjustment shifts coordinates to be positive
-  const boardWidth = 18
-  const boardHeight = 23.380000000000003
+  // Calculate actual board bounds with origin transformation (same as index.ts)
+  const db = cju(circuitJson as CircuitJson)
+  const board = db.pcb_board.list()[0]
+  const bounds = calculateCircuitBounds(circuitJson as CircuitJson)
+  const origin = calculateOriginFromBounds(bounds, undefined)
+
+  let boardMinX = 0,
+    boardMinY = 0,
+    boardMaxX = 0,
+    boardMaxY = 0
+  if (board && board.width && board.height && board.center) {
+    const halfWidth = board.width / 2
+    const halfHeight = board.height / 2
+    boardMinX = board.center.x - halfWidth + origin.x
+    boardMinY = board.center.y - halfHeight + origin.y
+    boardMaxX = board.center.x + halfWidth + origin.x
+    boardMaxY = board.center.y + halfHeight + origin.y
+  }
 
   // Get the copper cut fill shapes (cut index 4) and verify they're within board bounds
-  // Find the copper cut fill cut setting index
   const copperCutFillCutIndex = 4 // "Top Copper Cut Fill" cut setting
 
   // Collect all vertices from copper cut fill shapes
   const collectShapeVertices = (
-    shapes: Array<ShapePath | ShapeGroup>,
-  ): Array<[number, number]> => {
-    const vertices: Array<[number, number]> = []
+    shapes: any[],
+  ): Array<{ x: number; y: number }> => {
+    const vertices: Array<{ x: number; y: number }> = []
     for (const shape of shapes) {
-      if (shape instanceof ShapePath && shape.cutIndex === copperCutFillCutIndex) {
-        for (let i = 0; i < shape.verts.length; i += 2) {
-          vertices.push([shape.verts[i]!, shape.verts[i + 1]!])
+      if (shape.cutIndex === copperCutFillCutIndex && shape.verts) {
+        for (const vert of shape.verts) {
+          vertices.push({ x: vert.x, y: vert.y })
         }
-      } else if (shape instanceof ShapeGroup) {
+      } else if (shape.children) {
         vertices.push(...collectShapeVertices(shape.children))
       }
     }
@@ -50,17 +63,16 @@ test("example05 - copper fill conversion", async () => {
   const copperFillVertices = collectShapeVertices(project.children as any)
 
   // All copper cut fill vertices should be within board bounds
-  // The origin shifts coordinates so they start at (0, 0)
   // Allow small tolerance for floating point
   const tolerance = 0.001
-  for (const [x, y] of copperFillVertices) {
-    expect(x).toBeGreaterThanOrEqual(-tolerance)
-    expect(x).toBeLessThanOrEqual(boardWidth + tolerance)
-    expect(y).toBeGreaterThanOrEqual(-tolerance)
-    expect(y).toBeLessThanOrEqual(boardHeight + tolerance)
+  for (const { x, y } of copperFillVertices) {
+    expect(x).toBeGreaterThanOrEqual(boardMinX - tolerance)
+    expect(x).toBeLessThanOrEqual(boardMaxX + tolerance)
+    expect(y).toBeGreaterThanOrEqual(boardMinY - tolerance)
+    expect(y).toBeLessThanOrEqual(boardMaxY + tolerance)
   }
 
-  const lbrnSvg = await generateLightBurnSvg(project, {
+  const lbrnSvg = generateLightBurnSvg(project, {
     margin: 0,
     width: 600,
     height: 400,

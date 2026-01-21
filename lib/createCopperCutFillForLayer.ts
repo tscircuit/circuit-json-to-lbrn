@@ -7,22 +7,6 @@ import { getManifold } from "./getManifold"
 type Contour = Array<[number, number]>
 
 /**
- * Calculates the signed area of a contour.
- * Positive area = counter-clockwise winding (outer boundary)
- * Negative area = clockwise winding (hole)
- */
-const getSignedArea = (contour: Contour): number => {
-  let area = 0
-  const n = contour.length
-  for (let i = 0; i < n; i++) {
-    const j = (i + 1) % n
-    area += contour[i]![0] * contour[j]![1]
-    area -= contour[j]![0] * contour[i]![1]
-  }
-  return area / 2
-}
-
-/**
  * Converts a flatten-js Polygon to an array of contours for manifold CrossSection
  * Each contour is an array of [x, y] coordinates
  */
