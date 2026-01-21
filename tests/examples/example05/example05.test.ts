@@ -22,7 +22,7 @@ test("example05 - copper fill conversion", async () => {
   console.log("tmp/example05.lbrn2")
 
   // Calculate actual board bounds with origin transformation (same as index.ts)
-  const db = cju(circuitJson)
+  const db = cju(circuitJson as CircuitJson)
   const board = db.pcb_board.list()[0]
   const bounds = calculateCircuitBounds(circuitJson as CircuitJson)
   const origin = calculateOriginFromBounds(bounds, undefined)
@@ -31,7 +31,7 @@ test("example05 - copper fill conversion", async () => {
     boardMinY = 0,
     boardMaxX = 0,
     boardMaxY = 0
-  if (board.width && board.height && board.center) {
+  if (board && board.width && board.height && board.center) {
     const halfWidth = board.width / 2
     const halfHeight = board.height / 2
     boardMinX = board.center.x - halfWidth + origin.x
