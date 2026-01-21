@@ -36,7 +36,10 @@ test("example05 - copper fill conversion", async () => {
   ): Array<[number, number]> => {
     const vertices: Array<[number, number]> = []
     for (const shape of shapes) {
-      if (shape instanceof ShapePath && shape.cutIndex === copperCutFillCutIndex) {
+      if (
+        shape instanceof ShapePath &&
+        shape.cutIndex === copperCutFillCutIndex
+      ) {
         for (let i = 0; i < shape.verts.length; i += 2) {
           vertices.push([shape.verts[i]!, shape.verts[i + 1]!])
         }
