@@ -23,7 +23,7 @@ export const addRectPcbCutout = (
       centerY,
       width: cutout.width,
       height: cutout.height,
-      borderRadius: 0, // no border radius for cutouts
+      borderRadius: cutout.corner_radius,
       segments: 4, // segments
       rotation,
     })
