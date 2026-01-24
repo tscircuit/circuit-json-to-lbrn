@@ -1,4 +1,4 @@
-import type { PcbHoleCircle } from "circuit-json"
+import type { PcbHoleCircle, PcbHoleCircleOrSquare } from "circuit-json"
 import type { ConvertContext } from "../../ConvertContext"
 import { ShapePath } from "lbrnts"
 import { createCirclePath } from "../../helpers/circleShape"
@@ -7,7 +7,7 @@ import { createCirclePath } from "../../helpers/circleShape"
  * Adds a circular PCB hole (non-plated) to the project
  */
 export const addCirclePcbHole = (
-  hole: PcbHoleCircle,
+  hole: PcbHoleCircle | PcbHoleCircleOrSquare,
   ctx: ConvertContext,
 ): void => {
   const { project, throughBoardCutSetting, origin, includeCopper } = ctx
