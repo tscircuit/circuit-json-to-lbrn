@@ -45,26 +45,8 @@ const solderMaskMarginPercentInput = document.getElementById(
 const laserSpotSizeInput = document.getElementById(
   "laserSpotSize",
 ) as HTMLInputElement
-const includeCopperInput = document.getElementById(
-  "includeCopper",
-) as HTMLInputElement
-const includeCopperCutFillInput = document.getElementById(
-  "includeCopperCutFill",
-) as HTMLInputElement
 const copperCutFillMarginInput = document.getElementById(
   "copperCutFillMargin",
-) as HTMLInputElement
-const includeSoldermaskInput = document.getElementById(
-  "includeSoldermask",
-) as HTMLInputElement
-const includeSilkscreenInput = document.getElementById(
-  "includeSilkscreen",
-) as HTMLInputElement
-const includeTopLayerInput = document.getElementById(
-  "includeTopLayer",
-) as HTMLInputElement
-const includeBottomLayerInput = document.getElementById(
-  "includeBottomLayer",
 ) as HTMLInputElement
 const copperSpeedInput = document.getElementById(
   "copperSpeed",
@@ -159,23 +141,21 @@ function showLoading(show: boolean) {
 // Get conversion options from UI
 function getConversionOptions() {
   return {
-    includeSilkscreen: includeSilkscreenInput.checked,
+    includeSilkscreen: true,
     origin: {
       x: parseFloat(originXInput.value) || 0,
       y: parseFloat(originYInput.value) || 0,
     },
-    includeCopper: includeCopperInput.checked,
-    includeCopperCutFill: includeCopperCutFillInput.checked,
+    includeCopper: true,
+    includeCopperCutFill: true,
     copperCutFillMargin: parseFloat(copperCutFillMarginInput.value) || 0.5,
-    includeSoldermask: includeSoldermaskInput.checked,
+    includeSoldermask: true,
+    includeSoldermaskCure: true,
     globalCopperSoldermaskMarginAdjustment:
       parseFloat(globalCopperSoldermaskMarginAdjustmentInput.value) || 0,
     solderMaskMarginPercent:
       parseFloat(solderMaskMarginPercentInput.value) || 0,
-    includeLayers: [
-      ...(includeTopLayerInput.checked ? ["top" as const] : []),
-      ...(includeBottomLayerInput.checked ? ["bottom" as const] : []),
-    ],
+    includeLayers: ["top", "bottom"] as Array<"top" | "bottom">,
     traceMargin: parseFloat(traceMarginInput.value) || 0,
     laserSpotSize: parseFloat(laserSpotSizeInput.value) || 0.005,
     laserProfile: {
