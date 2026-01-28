@@ -93,13 +93,13 @@ export const convertCircuitJsonToLbrn = async (
     speed: 300,
     numPasses: 100,
     frequency: 20000,
-    pulseWidth: 1e-9,
+    pulseWidth: 1,
   }
   const defaultBoardSettings = {
     speed: 20,
     numPasses: 100,
     frequency: 20000,
-    pulseWidth: 1e-9,
+    pulseWidth: 1,
   }
 
   // Merge user settings with defaults
@@ -121,7 +121,7 @@ export const convertCircuitJsonToLbrn = async (
     numPasses: copperSettings.numPasses,
     speed: copperSettings.speed,
     frequency: copperSettings.frequency,
-    pulseWidth: copperSettings.pulseWidth,
+    qPulseWidth: copperSettings.pulseWidth,
   })
   project.children.push(topCopperCutSetting)
 
@@ -131,7 +131,7 @@ export const convertCircuitJsonToLbrn = async (
     numPasses: copperSettings.numPasses,
     speed: copperSettings.speed,
     frequency: copperSettings.frequency,
-    pulseWidth: copperSettings.pulseWidth,
+    qPulseWidth: copperSettings.pulseWidth,
   })
   project.children.push(bottomCopperCutSetting)
 
@@ -141,7 +141,7 @@ export const convertCircuitJsonToLbrn = async (
     numPasses: boardSettings.numPasses,
     speed: boardSettings.speed,
     frequency: boardSettings.frequency,
-    pulseWidth: boardSettings.pulseWidth,
+    qPulseWidth: boardSettings.pulseWidth,
   })
   project.children.push(throughBoardCutSetting)
 

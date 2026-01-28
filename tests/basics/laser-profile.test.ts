@@ -27,13 +27,13 @@ test("applies custom laserProfile settings", async () => {
         speed: 350,
         numPasses: 150,
         frequency: 25000,
-        pulseWidth: 2e-9,
+        pulseWidth: 2,
       },
       board: {
         speed: 25,
         numPasses: 120,
         frequency: 21000,
-        pulseWidth: 1.5e-9,
+        pulseWidth: 1.5,
       },
     },
   })
@@ -49,21 +49,21 @@ test("applies custom laserProfile settings", async () => {
   expect(topCopper.speed).toBe(350)
   expect(topCopper.numPasses).toBe(150)
   expect(topCopper.frequency).toBe(25000)
-  expect(topCopper.pulseWidth).toBe(2e-9)
+  expect(topCopper.qPulseWidth).toBe(2)
 
   // Verify bottom copper settings (same as top)
   const bottomCopper = cutSettings[1]!
   expect(bottomCopper.speed).toBe(350)
   expect(bottomCopper.numPasses).toBe(150)
   expect(bottomCopper.frequency).toBe(25000)
-  expect(bottomCopper.pulseWidth).toBe(2e-9)
+  expect(bottomCopper.qPulseWidth).toBe(2)
 
   // Verify through board settings
   const throughBoard = cutSettings[2]!
   expect(throughBoard.speed).toBe(25)
   expect(throughBoard.numPasses).toBe(120)
   expect(throughBoard.frequency).toBe(21000)
-  expect(throughBoard.pulseWidth).toBe(1.5e-9)
+  expect(throughBoard.qPulseWidth).toBe(1.5)
 })
 
 test("uses default laserProfile settings when not provided", async () => {
@@ -80,12 +80,12 @@ test("uses default laserProfile settings when not provided", async () => {
   expect(topCopper.speed).toBe(300)
   expect(topCopper.numPasses).toBe(100)
   expect(topCopper.frequency).toBe(20000)
-  expect(topCopper.pulseWidth).toBe(1e-9)
+  expect(topCopper.qPulseWidth).toBe(1)
 
   // Verify through board defaults
   const throughBoard = cutSettings[2]!
   expect(throughBoard.speed).toBe(20)
   expect(throughBoard.numPasses).toBe(100)
   expect(throughBoard.frequency).toBe(20000)
-  expect(throughBoard.pulseWidth).toBe(1e-9)
+  expect(throughBoard.qPulseWidth).toBe(1)
 })

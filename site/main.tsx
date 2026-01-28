@@ -102,11 +102,6 @@ function kHzToHz(khz: number): number {
   return khz * 1000
 }
 
-// Convert pulse width from ns to seconds
-function nsToSeconds(ns: number): number {
-  return ns * 1e-9
-}
-
 // Load Omni X 6W 150x150 preset
 function loadOmniX6W150x150Preset() {
   copperSpeedInput.value = "300"
@@ -188,13 +183,13 @@ function getConversionOptions() {
         speed: parseFloat(copperSpeedInput.value) || 300,
         numPasses: parseInt(copperNumPassesInput.value) || 100,
         frequency: kHzToHz(parseFloat(copperFrequencyInput.value) || 20),
-        pulseWidth: nsToSeconds(parseFloat(copperPulseWidthInput.value) || 1),
+        pulseWidth: parseFloat(copperPulseWidthInput.value) || 1,
       },
       board: {
         speed: parseFloat(boardSpeedInput.value) || 20,
         numPasses: parseInt(boardNumPassesInput.value) || 100,
         frequency: kHzToHz(parseFloat(boardFrequencyInput.value) || 20),
-        pulseWidth: nsToSeconds(parseFloat(boardPulseWidthInput.value) || 1),
+        pulseWidth: parseFloat(boardPulseWidthInput.value) || 1,
       },
     },
   }
