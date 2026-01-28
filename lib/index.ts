@@ -18,6 +18,7 @@ import { createCopperShapesForLayer } from "./createCopperShapesForLayer"
 import { createTraceClearanceAreasForLayer } from "./createTraceClearanceAreasForLayer"
 import { createCopperCutFillForLayer } from "./createCopperCutFillForLayer"
 import { createOxidationCleaningLayerForLayer } from "./createOxidationCleaningLayerForLayer"
+import { LAYER_INDEXES } from "./layer-indexes"
 
 export interface ConvertCircuitJsonToLbrnOptions {
   includeSilkscreen?: boolean
@@ -115,7 +116,7 @@ export const convertCircuitJsonToLbrn = async (
 
   // Create cut settings
   const topCopperCutSetting = new CutSetting({
-    index: 0,
+    index: LAYER_INDEXES.topCopper,
     name: "Cut Top Copper",
     numPasses: copperSettings.numPasses,
     speed: copperSettings.speed,
@@ -125,7 +126,7 @@ export const convertCircuitJsonToLbrn = async (
   project.children.push(topCopperCutSetting)
 
   const bottomCopperCutSetting = new CutSetting({
-    index: 1,
+    index: LAYER_INDEXES.bottomCopper,
     name: "Cut Bottom Copper",
     numPasses: copperSettings.numPasses,
     speed: copperSettings.speed,
@@ -135,7 +136,7 @@ export const convertCircuitJsonToLbrn = async (
   project.children.push(bottomCopperCutSetting)
 
   const throughBoardCutSetting = new CutSetting({
-    index: 2,
+    index: LAYER_INDEXES.throughBoard,
     name: "Cut Through Board",
     numPasses: boardSettings.numPasses,
     speed: boardSettings.speed,
@@ -146,7 +147,7 @@ export const convertCircuitJsonToLbrn = async (
 
   const soldermaskCutSetting = new CutSetting({
     type: "Scan",
-    index: 3,
+    index: LAYER_INDEXES.soldermask,
     name: "Cut Soldermask",
     numPasses: 1,
     speed: 150,
@@ -157,9 +158,6 @@ export const convertCircuitJsonToLbrn = async (
   })
   project.children.push(soldermaskCutSetting)
 
-  // Track the next available cut setting index
-  let nextCutIndex = 4
-
   // Create trace clearance cut settings if needed
   let topTraceClearanceAreaCutSetting: CutSetting | undefined
   let bottomTraceClearanceAreaCutSetting: CutSetting | undefined
@@ -168,7 +166,7 @@ export const convertCircuitJsonToLbrn = async (
     if (includeLayers.includes("top")) {
       topTraceClearanceAreaCutSetting = new CutSetting({
         type: "Scan",
-        index: nextCutIndex++,
+        index: LAYER_INDEXES.topTraceClearance,
         name: "Clear Top Trace Clearance Areas",
         numPasses: 12,
         speed: 100,
@@ -183,7 +181,7 @@ export const convertCircuitJsonToLbrn = async (
     if (includeLayers.includes("bottom")) {
       bottomTraceClearanceAreaCutSetting = new CutSetting({
         type: "Scan",
-        index: nextCutIndex++,
+        index: LAYER_INDEXES.bottomTraceClearance,
         name: "Clear Bottom Trace Clearance Areas",
         numPasses: 12,
         speed: 100,
@@ -204,7 +202,7 @@ export const convertCircuitJsonToLbrn = async (
     if (includeLayers.includes("top")) {
       topCopperCutFillCutSetting = new CutSetting({
         type: "Scan",
-        index: nextCutIndex++,
+        index: LAYER_INDEXES.topCopperCutFill,
         name: "Top Copper Cut Fill",
         numPasses: copperSettings.numPasses,
         speed: copperSettings.speed,
@@ -219,7 +217,7 @@ export const convertCircuitJsonToLbrn = async (
     if (includeLayers.includes("bottom")) {
       bottomCopperCutFillCutSetting = new CutSetting({
         type: "Scan",
-        index: nextCutIndex++,
+        index: LAYER_INDEXES.bottomCopperCutFill,
         name: "Bottom Copper Cut Fill",
         numPasses: copperSettings.numPasses,
         speed: copperSettings.speed,
@@ -240,7 +238,7 @@ export const convertCircuitJsonToLbrn = async (
     if (includeLayers.includes("top")) {
       topOxidationCleaningCutSetting = new CutSetting({
         type: "Scan",
-        index: nextCutIndex++,
+        index: LAYER_INDEXES.topOxidationCleaning,
         name: "Top Oxidation Cleaning",
         numPasses: copperSettings.numPasses,
         speed: 500,
@@ -255,7 +253,7 @@ export const convertCircuitJsonToLbrn = async (
     if (includeLayers.includes("bottom")) {
       bottomOxidationCleaningCutSetting = new CutSetting({
         type: "Scan",
-        index: nextCutIndex++,
+        index: LAYER_INDEXES.bottomOxidationCleaning,
         name: "Bottom Oxidation Cleaning",
         numPasses: copperSettings.numPasses,
         speed: 500,
