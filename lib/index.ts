@@ -17,6 +17,7 @@ import { addPcbCutout } from "./element-handlers/addPcbCutout"
 import { createCopperShapesForLayer } from "./createCopperShapesForLayer"
 import { createTraceClearanceAreasForLayer } from "./createTraceClearanceAreasForLayer"
 import { createCopperCutFillForLayer } from "./createCopperCutFillForLayer"
+import { createOxidationCleaningLayerForLayer } from "./createOxidationCleaningLayerForLayer"
 
 export interface ConvertCircuitJsonToLbrnOptions {
   includeSilkscreen?: boolean
@@ -40,6 +41,12 @@ export interface ConvertCircuitJsonToLbrnOptions {
    * This determines how wide the band of copper removal will be around traces/pads.
    */
   copperCutFillMargin?: number
+  /**
+   * Whether to generate an oxidation cleaning layer.
+   * Creates a filled area covering the entire "inside" of the board outline
+   * for laser ablation to clean oxidation from the copper surface.
+   */
+  includeOxidationCleaningLayer?: boolean
   laserProfile?: {
     copper?: {
       speed?: number
@@ -77,6 +84,8 @@ export const convertCircuitJsonToLbrn = async (
   const laserProfile = options.laserProfile
   const includeCopperCutFill = options.includeCopperCutFill ?? false
   const copperCutFillMargin = options.copperCutFillMargin ?? 0.5
+  const includeOxidationCleaningLayer =
+    options.includeOxidationCleaningLayer ?? false
 
   // Default laser settings
   const defaultCopperSettings = {
@@ -223,6 +232,42 @@ export const convertCircuitJsonToLbrn = async (
     }
   }
 
+  // Create oxidation cleaning layer cut settings if needed
+  let topOxidationCleaningCutSetting: CutSetting | undefined
+  let bottomOxidationCleaningCutSetting: CutSetting | undefined
+
+  if (includeOxidationCleaningLayer) {
+    if (includeLayers.includes("top")) {
+      topOxidationCleaningCutSetting = new CutSetting({
+        type: "Scan",
+        index: nextCutIndex++,
+        name: "Top Oxidation Cleaning",
+        numPasses: copperSettings.numPasses,
+        speed: 500,
+        scanOpt: "individual",
+        interval: laserSpotSize,
+        angle: 45,
+        crossHatch: true,
+      })
+      project.children.push(topOxidationCleaningCutSetting)
+    }
+
+    if (includeLayers.includes("bottom")) {
+      bottomOxidationCleaningCutSetting = new CutSetting({
+        type: "Scan",
+        index: nextCutIndex++,
+        name: "Bottom Oxidation Cleaning",
+        numPasses: copperSettings.numPasses,
+        speed: 500,
+        scanOpt: "individual",
+        interval: laserSpotSize,
+        angle: 45,
+        crossHatch: true,
+      })
+      project.children.push(bottomOxidationCleaningCutSetting)
+    }
+  }
+
   // Build connectivity map and origin
   const connMap = getFullConnectivityMapFromCircuitJson(circuitJson)
   let origin = options.origin
@@ -257,6 +302,8 @@ export const convertCircuitJsonToLbrn = async (
     topCopperCutFillCutSetting,
     bottomCopperCutFillCutSetting,
     copperCutFillMargin,
+    topOxidationCleaningCutSetting,
+    bottomOxidationCleaningCutSetting,
     topTraceEndpoints: new Set(),
     bottomTraceEndpoints: new Set(),
   }
@@ -353,6 +400,16 @@ export const convertCircuitJsonToLbrn = async (
     }
     if (includeLayers.includes("bottom")) {
       await createCopperCutFillForLayer({ layer: "bottom", ctx })
+    }
+  }
+
+  // Create oxidation cleaning layer for each layer
+  if (includeOxidationCleaningLayer) {
+    if (includeLayers.includes("top")) {
+      await createOxidationCleaningLayerForLayer({ layer: "top", ctx })
+    }
+    if (includeLayers.includes("bottom")) {
+      await createOxidationCleaningLayerForLayer({ layer: "bottom", ctx })
     }
   }
 
