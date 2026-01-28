@@ -15,6 +15,7 @@ export interface ConvertContext {
   bottomCopperCutSetting: CutSetting
   throughBoardCutSetting: CutSetting
   soldermaskCutSetting: CutSetting
+  soldermaskCureCutSetting?: CutSetting
 
   connMap: ConnectivityMap
 
@@ -33,6 +34,7 @@ export interface ConvertContext {
   // Include flags
   includeCopper: boolean
   includeSoldermask: boolean
+  includeSoldermaskCure: boolean
   includeLayers: Array<"top" | "bottom">
 
   // Global copper soldermask margin adjustment (can be negative)
