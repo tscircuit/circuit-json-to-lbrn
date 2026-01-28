@@ -19,6 +19,7 @@ import { createTraceClearanceAreasForLayer } from "./createTraceClearanceAreasFo
 import { createCopperCutFillForLayer } from "./createCopperCutFillForLayer"
 import { createOxidationCleaningLayerForLayer } from "./createOxidationCleaningLayerForLayer"
 import { LAYER_INDEXES } from "./layer-indexes"
+import { createSoldermaskCureLayer } from "./createSoldermaskCureLayer"
 
 export interface ConvertCircuitJsonToLbrnOptions {
   includeSilkscreen?: boolean
@@ -26,6 +27,7 @@ export interface ConvertCircuitJsonToLbrnOptions {
   margin?: number
   includeCopper?: boolean
   includeSoldermask?: boolean
+  includeSoldermaskCure?: boolean
   globalCopperSoldermaskMarginAdjustment?: number
   solderMaskMarginPercent?: number
   includeLayers?: Array<"top" | "bottom">
@@ -79,6 +81,8 @@ export const convertCircuitJsonToLbrn = async (
   const laserSpotSize = options.laserSpotSize ?? 0.005
   const includeCopper = options.includeCopper ?? true
   const includeSoldermask = options.includeSoldermask ?? false
+  const includeSoldermaskCure = options.includeSoldermaskCure ?? false
+  const shouldIncludeSoldermaskCure = includeSoldermask && includeSoldermaskCure
   const globalCopperSoldermaskMarginAdjustment =
     options.globalCopperSoldermaskMarginAdjustment ?? 0
   const solderMaskMarginPercent = options.solderMaskMarginPercent ?? 0
@@ -157,6 +161,22 @@ export const convertCircuitJsonToLbrn = async (
     crossHatch: true,
   })
   project.children.push(soldermaskCutSetting)
+
+  let soldermaskCureCutSetting: CutSetting | undefined
+  if (shouldIncludeSoldermaskCure) {
+    soldermaskCureCutSetting = new CutSetting({
+      type: "Scan",
+      index: LAYER_INDEXES.soldermaskCure,
+      name: "Cut Soldermask Cure",
+      numPasses: 1,
+      speed: 150,
+      scanOpt: "individual",
+      interval: 0.18,
+      angle: 45,
+      crossHatch: true,
+    })
+    project.children.push(soldermaskCureCutSetting)
+  }
 
   // Create trace clearance cut settings if needed
   let topTraceClearanceAreaCutSetting: CutSetting | undefined
@@ -282,6 +302,7 @@ export const convertCircuitJsonToLbrn = async (
     bottomCopperCutSetting,
     throughBoardCutSetting,
     soldermaskCutSetting,
+    soldermaskCureCutSetting,
     connMap,
     topCutNetGeoms: new Map(),
     bottomCutNetGeoms: new Map(),
@@ -290,6 +311,7 @@ export const convertCircuitJsonToLbrn = async (
     origin,
     includeCopper,
     includeSoldermask,
+    includeSoldermaskCure,
     globalCopperSoldermaskMarginAdjustment,
     includeLayers,
     traceMargin,
@@ -409,6 +431,10 @@ export const convertCircuitJsonToLbrn = async (
     if (includeLayers.includes("bottom")) {
       await createOxidationCleaningLayerForLayer({ layer: "bottom", ctx })
     }
+  }
+
+  if (shouldIncludeSoldermaskCure) {
+    await createSoldermaskCureLayer({ ctx })
   }
 
   return project

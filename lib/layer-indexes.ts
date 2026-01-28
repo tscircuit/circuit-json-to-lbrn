@@ -17,6 +17,7 @@ export const LAYER_INDEXES = {
   bottomCopperCutFill: 7,
   topOxidationCleaning: 8,
   bottomOxidationCleaning: 9,
+  soldermaskCure: 10,
 } as const
 
 export type LayerIndex = (typeof LAYER_INDEXES)[keyof typeof LAYER_INDEXES]
