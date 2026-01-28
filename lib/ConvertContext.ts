@@ -50,6 +50,10 @@ export interface ConvertContext {
   topCopperCutFillCutSetting?: CutSetting
   bottomCopperCutFillCutSetting?: CutSetting
 
+  // Cut settings for oxidation cleaning layer
+  topOxidationCleaningCutSetting?: CutSetting
+  bottomOxidationCleaningCutSetting?: CutSetting
+
   // Percent-based solder mask margin (scales with element size)
   solderMaskMarginPercent: number
 
