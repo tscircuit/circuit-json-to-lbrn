@@ -100,7 +100,7 @@ test("renders soldermask only (no copper, no traces)", async () => {
 
   // Verify that soldermask elements use soldermaskCutSetting (index 3)
   const soldermaskCutSetting = project.children.find(
-    (child: any) => child.name === "Cut Soldermask",
+    (child: any) => child.name === "Soldermask",
   )
   expect(soldermaskCutSetting).toBeDefined()
   expect((soldermaskCutSetting as any).index).toBe(3)

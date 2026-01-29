@@ -96,7 +96,7 @@ test("renders both copper and soldermask", async () => {
     (child: any) => child.name === "Cut Bottom Copper",
   )
   const soldermaskCutSetting = project.children.find(
-    (child: any) => child.name === "Cut Soldermask",
+    (child: any) => child.name === "Soldermask",
   )
   expect(topCopperCutSetting).toBeDefined()
   expect(bottomCopperCutSetting).toBeDefined()

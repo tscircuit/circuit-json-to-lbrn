@@ -151,6 +151,7 @@ function getConversionOptions() {
     copperCutFillMargin: parseFloat(copperCutFillMarginInput.value) || 0.5,
     includeSoldermask: true,
     includeSoldermaskCure: true,
+    includeOxidationCleaningLayer: true,
     globalCopperSoldermaskMarginAdjustment:
       parseFloat(globalCopperSoldermaskMarginAdjustmentInput.value) || 0,
     solderMaskMarginPercent:

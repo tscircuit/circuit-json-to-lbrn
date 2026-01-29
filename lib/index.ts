@@ -152,7 +152,7 @@ export const convertCircuitJsonToLbrn = async (
   const soldermaskCutSetting = new CutSetting({
     type: "Scan",
     index: LAYER_INDEXES.soldermask,
-    name: "Cut Soldermask",
+    name: "Soldermask",
     numPasses: 1,
     speed: 150,
     scanOpt: "individual",
@@ -167,7 +167,7 @@ export const convertCircuitJsonToLbrn = async (
     soldermaskCureCutSetting = new CutSetting({
       type: "Scan",
       index: LAYER_INDEXES.soldermaskCure,
-      name: "Cut Soldermask Cure",
+      name: "Soldermask Cure",
       numPasses: 1,
       speed: 150,
       scanOpt: "individual",
