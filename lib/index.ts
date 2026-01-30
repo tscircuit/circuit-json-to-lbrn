@@ -158,6 +158,7 @@ export const convertCircuitJsonToLbrn = async (
     scanOpt: "individual",
     interval: 0.18,
     angle: 45,
+    qPulseWidth: 1,
     crossHatch: true,
   })
   project.children.push(soldermaskCutSetting)
@@ -173,6 +174,7 @@ export const convertCircuitJsonToLbrn = async (
       scanOpt: "individual",
       interval: 0.18,
       angle: 45,
+      qPulseWidth: 1,
       crossHatch: true,
     })
     project.children.push(soldermaskCureCutSetting)
@@ -193,6 +195,7 @@ export const convertCircuitJsonToLbrn = async (
         scanOpt: "individual",
         interval: laserSpotSize,
         angle: 45,
+        qPulseWidth: 1,
         crossHatch: true,
       })
       project.children.push(topTraceClearanceAreaCutSetting)
@@ -208,6 +211,7 @@ export const convertCircuitJsonToLbrn = async (
         scanOpt: "individual",
         interval: laserSpotSize,
         angle: 45,
+        qPulseWidth: 1,
         crossHatch: true,
       })
       project.children.push(bottomTraceClearanceAreaCutSetting)
@@ -229,6 +233,7 @@ export const convertCircuitJsonToLbrn = async (
         scanOpt: "individual",
         interval: 0.03,
         angle: 45,
+        qPulseWidth: 1,
         crossHatch: true,
       })
       project.children.push(topCopperCutFillCutSetting)
@@ -244,6 +249,7 @@ export const convertCircuitJsonToLbrn = async (
         scanOpt: "individual",
         interval: 0.03,
         angle: 45,
+        qPulseWidth: 1,
         crossHatch: true,
       })
       project.children.push(bottomCopperCutFillCutSetting)
@@ -265,6 +271,7 @@ export const convertCircuitJsonToLbrn = async (
         scanOpt: "individual",
         interval: laserSpotSize,
         angle: 45,
+        qPulseWidth: 1,
         crossHatch: true,
       })
       project.children.push(topOxidationCleaningCutSetting)
@@ -280,6 +287,7 @@ export const convertCircuitJsonToLbrn = async (
         scanOpt: "individual",
         interval: laserSpotSize,
         angle: 45,
+        qPulseWidth: 1,
         crossHatch: true,
       })
       project.children.push(bottomOxidationCleaningCutSetting)
