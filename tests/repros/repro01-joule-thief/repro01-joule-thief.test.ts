@@ -15,8 +15,6 @@ test("repro01 - joule thief visual regression", async () => {
   })
 
   const lbrnSvg = await generateLightBurnSvg(project, {
-    width: 1200,
-    height: 900,
     defaultStrokeWidth: 0.01,
   })
 
