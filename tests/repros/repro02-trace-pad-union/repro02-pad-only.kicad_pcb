@@ -19,7 +19,6 @@
     (pad "1" smd rect (at 0 0) (size 0.8 0.8) (layers "F.Cu" "F.Paste" "F.Mask")
       (net 1 "Net-(J1-Pad1)") (pintype "passive"))
   )
-  (segment (start 99.8 100) (end 100.2 100) (width 0.6) (layer "F.Cu") (net 1) (tstamp 22222222-2222-2222-2222-222222222222))
 
   (gr_rect (start 95 95) (end 105 105)
     (stroke (width 0.05) (type default)) (fill none) (layer "Edge.Cuts"))
