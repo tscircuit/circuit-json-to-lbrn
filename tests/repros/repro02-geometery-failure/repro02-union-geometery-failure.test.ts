@@ -162,7 +162,7 @@ const circuitJson: CircuitJson = [
   },
 ]
 
-test("repro01 - minimal trace/pad union conflict", async () => {
+test("repro02 - union geometry failure", async () => {
   const pcbSvg = await convertCircuitJsonToPcbSvg(circuitJson)
 
   const project = await convertCircuitJsonToLbrn(circuitJson, {
