@@ -1,7 +1,10 @@
-import { Polygon, Box, BooleanOperations, Point } from "@flatten-js/core"
+import { Polygon, Box, Point } from "@flatten-js/core"
 import { ShapePath } from "lbrnts"
 import type { ConvertContext } from "./ConvertContext"
+import { getManifold } from "./getManifold"
 import { polygonToShapePathData } from "./polygon-to-shape-path"
+
+type Contour = Array<[number, number]>
 
 /**
  * Outputs a polygon as a ShapePath.
@@ -64,17 +67,53 @@ const outputIndividualGeometries = (
   }
 }
 
+const geometryToContours = (geom: Polygon | Box): Contour[] => {
+  if (geom instanceof Box) {
+    return [
+      [
+        [geom.xmin, geom.ymin],
+        [geom.xmax, geom.ymin],
+        [geom.xmax, geom.ymax],
+        [geom.xmin, geom.ymax],
+      ],
+    ]
+  }
+
+  const contours: Contour[] = []
+  for (const face of geom.faces) {
+    const contour: Contour = []
+    for (const edge of face) {
+      contour.push([edge.start.x, edge.start.y])
+    }
+    if (contour.length >= 3) {
+      contours.push(contour)
+    }
+  }
+  return contours
+}
+
+const contourToPolygon = (contour: Contour): Polygon | null => {
+  if (contour.length < 3) return null
+
+  try {
+    const polygon = new Polygon(contour.map(([x, y]) => new Point(x, y)))
+    return polygon.faces.size > 0 ? polygon : null
+  } catch {
+    return null
+  }
+}
+
 /**
  * Creates copper shapes for a given layer by unifying net geometries
  * and converting them to LightBurn ShapePath objects (CUT mode)
  */
-export const createCopperShapesForLayer = ({
+export const createCopperShapesForLayer = async ({
   layer,
   ctx,
 }: {
   layer: "top" | "bottom"
   ctx: ConvertContext
-}) => {
+}): Promise<void> => {
   const {
     project,
     connMap,
@@ -100,47 +139,41 @@ export const createCopperShapesForLayer = ({
       continue
     }
 
-    // If there's only one geometry, output it directly without union
-    if (netGeoms.length === 1) {
-      const geom = netGeoms[0]!
-      const poly = geom instanceof Box ? new Polygon(geom) : geom
-      outputPolygon(poly, cutIndex, project)
-      continue
-    }
-
     try {
-      let union = netGeoms[0]!
-      if (union instanceof Box) {
-        union = new Polygon(union)
+      const manifold = await getManifold()
+      const { CrossSection } = manifold
+
+      const allContours: Contour[] = []
+      for (const geom of netGeoms) {
+        allContours.push(...geometryToContours(geom))
       }
 
-      let unionFailed = false
-      for (const geom of netGeoms.slice(1)) {
-        const poly = geom instanceof Polygon ? geom : new Polygon(geom)
-        union = BooleanOperations.unify(union, poly)
-
-        // Check if union produced a degenerate result (0 faces means union failed)
-        if (union.faces.size === 0) {
-          unionFailed = true
-          break
-        }
+      if (allContours.length === 0) {
+        continue
       }
 
-      if (unionFailed) {
-        // Union produced degenerate result - output individual geometries
+      const crossSection = new CrossSection(allContours, "NonZero")
+      const simplified = crossSection.simplify(0.0001)
+      const resultContours: Contour[] = simplified.toPolygons()
+
+      crossSection.delete()
+      simplified.delete()
+
+      if (resultContours.length === 0) {
         outputIndividualGeometries(netGeoms, cutIndex, project)
         continue
       }
 
-      const islands = union.splitToIslands()
-      if (islands.length === 0) {
-        // No islands produced - output individual geometries
-        outputIndividualGeometries(netGeoms, cutIndex, project)
-        continue
+      let hasOutput = false
+      for (const contour of resultContours) {
+        const polygon = contourToPolygon(contour)
+        if (!polygon) continue
+        hasOutput = true
+        outputPolygon(polygon, cutIndex, project)
       }
 
-      for (const island of islands) {
-        outputPolygon(island, cutIndex, project)
+      if (!hasOutput) {
+        outputIndividualGeometries(netGeoms, cutIndex, project)
       }
     } catch (error) {
       console.warn(
