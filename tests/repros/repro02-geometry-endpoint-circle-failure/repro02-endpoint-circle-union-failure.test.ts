@@ -162,7 +162,7 @@ const circuitJson: CircuitJson = [
   },
 ]
 
-test("repro02 - union geometry failure", async () => {
+test("repro02 - endpoint-circle union failure", async () => {
   const pcbSvg = await convertCircuitJsonToPcbSvg(circuitJson)
 
   const project = await convertCircuitJsonToLbrn(circuitJson, {
