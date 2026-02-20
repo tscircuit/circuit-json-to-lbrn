@@ -404,10 +404,10 @@ export const convertCircuitJsonToLbrn = async (
   // Create copper shapes for each layer
   if (includeCopper) {
     if (includeLayers.includes("top")) {
-      createCopperShapesForLayer({ layer: "top", ctx })
+      await createCopperShapesForLayer({ layer: "top", ctx })
     }
     if (includeLayers.includes("bottom")) {
-      createCopperShapesForLayer({ layer: "bottom", ctx })
+      await createCopperShapesForLayer({ layer: "bottom", ctx })
     }
   }
 
