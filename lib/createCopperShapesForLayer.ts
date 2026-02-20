@@ -6,6 +6,21 @@ import { polygonToShapePathData } from "./polygon-to-shape-path"
 
 type Contour = Array<[number, number]>
 
+const signedArea = (contour: Contour): number => {
+  let area = 0
+  for (let i = 0; i < contour.length; i++) {
+    const [x1, y1] = contour[i]!
+    const [x2, y2] = contour[(i + 1) % contour.length]!
+    area += x1 * y2 - x2 * y1
+  }
+  return area / 2
+}
+
+const normalizeContourToCcw = (contour: Contour): Contour => {
+  if (contour.length < 3) return contour
+  return signedArea(contour) < 0 ? [...contour].reverse() : contour
+}
+
 /**
  * Outputs a polygon as a ShapePath.
  * If the polygon has multiple faces, outputs each face as a separate ShapePath.
@@ -145,13 +160,16 @@ export const createCopperShapesForLayer = async ({
 
       const allContours: Contour[] = []
       for (const geom of netGeoms) {
-        allContours.push(...geometryToContours(geom))
+        const contours = geometryToContours(geom).map(normalizeContourToCcw)
+        allContours.push(...contours)
       }
 
       if (allContours.length === 0) {
         continue
       }
 
+      // Keep NonZero fill rule for union robustness with via/circular geometries.
+      // Input contours are normalized to CCW above to avoid winding-related dropouts.
       const crossSection = new CrossSection(allContours, "NonZero")
       const simplified = crossSection.simplify(0.0001)
       const resultContours: Contour[] = simplified.toPolygons()
