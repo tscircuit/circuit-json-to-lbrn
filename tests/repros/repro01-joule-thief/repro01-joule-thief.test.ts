@@ -5,16 +5,9 @@ import { KicadToCircuitJsonConverter } from "kicad-to-circuit-json"
 import { generateLightBurnSvg } from "lbrnts"
 import { convertCircuitJsonToLbrn } from "lib/index"
 import { stackSvgsVertically } from "stack-svgs"
-
-const JOULE_THIEF_PCB_URL =
-  "https://raw.githubusercontent.com/fishPointer/Joule-Thief/main/KiCAD/Joule%20Thief/Joule%20Thief.kicad_pcb"
+import pcbContent from "./Joule Thief.kicad_pcb" with { type: "text" }
 
 test("repro01 - joule thief visual regression", async () => {
-  const response = await fetch(JOULE_THIEF_PCB_URL)
-  expect(response.ok).toBe(true)
-
-  const pcbContent = await response.text()
-
   const converter = new KicadToCircuitJsonConverter()
   converter.addFile("Joule Thief.kicad_pcb", pcbContent)
   converter.runUntilFinished()
