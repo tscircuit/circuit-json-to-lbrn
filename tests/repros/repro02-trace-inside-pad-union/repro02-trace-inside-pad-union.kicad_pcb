@@ -1,0 +1,30 @@
+(kicad_pcb (version 20221018) (generator "pcbnew")
+  (general
+    (thickness 1.6)
+  )
+  (paper "A4")
+  (layers
+    (0 "F.Cu" signal)
+    (31 "B.Cu" signal)
+    (44 "Edge.Cuts" user)
+  )
+  (setup
+    (pad_to_mask_clearance 0)
+  )
+  (net 0 "")
+  (net 1 "Net-(J1-Pad1)")
+  (footprint "Test:SinglePad" (layer "F.Cu")
+    (at 100 100)
+    (attr smd)
+    (fp_text reference "J1" (at 0 -2) (layer "F.SilkS") hide
+      (effects (font (size 1 1) (thickness 0.15)))
+    )
+    (fp_text value "SinglePad" (at 0 2) (layer "F.Fab") hide
+      (effects (font (size 1 1) (thickness 0.15)))
+    )
+    (pad "1" smd rect (at 0 0) (size 2.6 2.6) (layers "F.Cu" "F.Mask") (net 1 "Net-(J1-Pad1)"))
+  )
+  (segment (start 98.7 100) (end 101.3 100) (width 0.4) (layer "F.Cu") (net 1))
+  (gr_rect (start 95 95) (end 105 105)
+    (stroke (width 0.1) (type default)) (fill none) (layer "Edge.Cuts"))
+)
