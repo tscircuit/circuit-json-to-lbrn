@@ -114,22 +114,22 @@ export const createCopperShapesForLayer = ({
         union = new Polygon(union)
       }
 
-      let unionFailed = false
+      const failedPolys: Polygon[] = []
       for (const geom of netGeoms.slice(1)) {
         const poly = geom instanceof Polygon ? geom : new Polygon(geom)
-        union = BooleanOperations.unify(union, poly)
-
-        // Check if union produced a degenerate result (0 faces means union failed)
-        if (union.faces.size === 0) {
-          unionFailed = true
-          break
+        try {
+          const nextUnion = BooleanOperations.unify(union, poly)
+          // If union produced a degenerate result, keep this geometry separate
+          // and continue unifying the rest.
+          if (nextUnion.faces.size === 0) {
+            failedPolys.push(poly)
+            continue
+          }
+          union = nextUnion
+        } catch (_error) {
+          // Keep problematic geometry separate instead of dropping the entire net.
+          failedPolys.push(poly)
         }
-      }
-
-      if (unionFailed) {
-        // Union produced degenerate result - output individual geometries
-        outputIndividualGeometries(netGeoms, cutIndex, project)
-        continue
       }
 
       const islands = union.splitToIslands()
@@ -141,6 +141,11 @@ export const createCopperShapesForLayer = ({
 
       for (const island of islands) {
         outputPolygon(island, cutIndex, project)
+      }
+
+      // Output geometries that could not be merged without failing boolean ops.
+      for (const failedPoly of failedPolys) {
+        outputPolygon(failedPoly, cutIndex, project)
       }
     } catch (error) {
       console.warn(
