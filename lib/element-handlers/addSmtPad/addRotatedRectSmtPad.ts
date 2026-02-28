@@ -3,6 +3,7 @@ import type { ConvertContext } from "../../ConvertContext"
 import { ShapePath } from "lbrnts"
 import { createRoundedRectPath } from "../../helpers/roundedRectShape"
 import { addCopperGeometryToNetOrProject } from "../../helpers/addCopperGeometryToNetOrProject"
+import { mirrorPathData } from "lib/helpers/mirrorPathData"
 
 export const addRotatedRectSmtPad = (
   smtPad: PcbSmtPadRotatedRect,
@@ -20,7 +21,7 @@ export const addRotatedRectSmtPad = (
   } = ctx
 
   // Filter by layer - only process top and bottom layers
-  const padLayer = smtPad.layer || "top"
+  const padLayer = (smtPad.layer || "top") as "top" | "bottom"
   if (padLayer !== "top" && padLayer !== "bottom") {
     return // Skip inner layers
   }
@@ -84,11 +85,14 @@ export const addRotatedRectSmtPad = (
         rotation,
       })
 
+      const pathData =
+        ctx.mirrorBottomLayer && padLayer === "bottom"
+          ? mirrorPathData({ verts: smOuter.verts, prims: smOuter.prims }, ctx)
+          : { verts: smOuter.verts, prims: smOuter.prims }
       project.children.push(
         new ShapePath({
           cutIndex: soldermaskCutSetting.index,
-          verts: smOuter.verts,
-          prims: smOuter.prims,
+          ...pathData,
           isClosed: true,
         }),
       )

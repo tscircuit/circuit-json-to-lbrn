@@ -4,6 +4,7 @@ import { ShapePath } from "lbrnts"
 import { createRoundedRectPath } from "../../helpers/roundedRectShape"
 import { createPillPath } from "../../helpers/pillShape"
 import { addCopperGeometryToNetOrProject } from "../../helpers/addCopperGeometryToNetOrProject"
+import { mirrorPathData } from "../../helpers/mirrorPathData"
 
 export const addRotatedPillHoleWithRectPad = (
   platedHole: PcbHoleRotatedPillWithRectPad,
@@ -86,11 +87,20 @@ export const addRotatedPillHoleWithRectPad = (
         rotation: padRotation,
       })
 
+      const pathData =
+        ctx.mirrorBottomLayer &&
+        !includeLayers.includes("top") &&
+        includeLayers.includes("bottom")
+          ? mirrorPathData(
+              { verts: smPadPath.verts, prims: smPadPath.prims },
+              ctx,
+            )
+          : { verts: smPadPath.verts, prims: smPadPath.prims }
       project.children.push(
         new ShapePath({
           cutIndex: soldermaskCutSetting.index,
-          verts: smPadPath.verts,
-          prims: smPadPath.prims,
+          verts: pathData.verts,
+          prims: pathData.prims,
           isClosed: true,
         }),
       )

@@ -1,5 +1,6 @@
 import { Polygon, Box, Point } from "@flatten-js/core"
 import type { ConvertContext } from "./ConvertContext"
+import { mirrorPathData } from "./helpers/mirrorPathData"
 import { polygonToShapePathData } from "./polygon-to-shape-path"
 import { ShapePath, ShapeGroup } from "lbrnts"
 import { getManifold } from "./getManifold"
@@ -181,13 +182,17 @@ export const createCopperCutFillForLayer = async ({
 
       for (const island of polygon.splitToIslands()) {
         const { verts, prims } = polygonToShapePathData(island)
+        const pathData =
+          ctx.mirrorBottomLayer && layer === "bottom"
+            ? mirrorPathData({ verts, prims }, ctx)
+            : { verts, prims }
 
         if (verts.length > 0) {
           shapeGroup.children.push(
             new ShapePath({
               cutIndex: cutSetting.index,
-              verts,
-              prims,
+              verts: pathData.verts,
+              prims: pathData.prims,
               isClosed: true, // Filled shapes should be closed
             }),
           )

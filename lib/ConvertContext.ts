@@ -36,6 +36,8 @@ export interface ConvertContext {
   includeSoldermask: boolean
   includeSoldermaskCure: boolean
   includeLayers: Array<"top" | "bottom">
+  mirrorBottomLayer: boolean
+  bottomLayerMirrorCenterX?: number
 
   // Global copper soldermask margin adjustment (can be negative)
   globalCopperSoldermaskMarginAdjustment: number

@@ -1,6 +1,7 @@
 import type { PcbPlatedHoleOval } from "circuit-json"
 import type { ConvertContext } from "../../ConvertContext"
 import { ShapePath } from "lbrnts"
+import { mirrorPathData } from "../../helpers/mirrorPathData"
 import { createPillPath } from "../../helpers/pillShape"
 
 export const addPcbPlatedHolePill = (
@@ -49,11 +50,14 @@ export const addPcbPlatedHolePill = (
       )
     }
     if (includeLayers.includes("bottom")) {
+      const pathData = ctx.mirrorBottomLayer
+        ? mirrorPathData(outer, ctx)
+        : outer
       project.children.push(
         new ShapePath({
           cutIndex: bottomCopperCutSetting.index,
-          verts: outer.verts,
-          prims: outer.prims,
+          verts: pathData.verts,
+          prims: pathData.prims,
           isClosed: true,
         }),
       )
@@ -93,11 +97,17 @@ export const addPcbPlatedHolePill = (
       height: smHeight,
       rotation,
     })
+    const pathData =
+      ctx.mirrorBottomLayer &&
+      !includeLayers.includes("top") &&
+      includeLayers.includes("bottom")
+        ? mirrorPathData({ verts: outer.verts, prims: outer.prims }, ctx)
+        : { verts: outer.verts, prims: outer.prims }
     project.children.push(
       new ShapePath({
         cutIndex: soldermaskCutSetting.index,
-        verts: outer.verts,
-        prims: outer.prims,
+        verts: pathData.verts,
+        prims: pathData.prims,
         isClosed: true,
       }),
     )

@@ -4,6 +4,7 @@ import { ShapePath } from "lbrnts"
 import { createPolygonPathFromOutline } from "../../helpers/polygonShape"
 import { addCopperGeometryToNetOrProject } from "../../helpers/addCopperGeometryToNetOrProject"
 import { polygonToShapePathData } from "../../polygon-to-shape-path"
+import { mirrorPathData } from "lib/helpers/mirrorPathData"
 
 export const addPolygonSmtPad = (
   smtPad: PcbSmtPadPolygon,
@@ -21,7 +22,7 @@ export const addPolygonSmtPad = (
   } = ctx
 
   // Filter by layer - only process top and bottom layers
-  const padLayer = smtPad.layer || "top"
+  const padLayer = (smtPad.layer || "top") as "top" | "bottom"
   if (padLayer !== "top" && padLayer !== "bottom") {
     return // Skip inner layers
   }
@@ -53,11 +54,14 @@ export const addPolygonSmtPad = (
       // polygon offsetting. For now, we use the pad vertices directly.
       // Consider using a polygon offsetting library like polygon-offset or
       // implementing offset using @flatten-js/core buffer operations
+      const pathData =
+        ctx.mirrorBottomLayer && padLayer === "bottom"
+          ? mirrorPathData({ verts: pad.verts, prims: pad.prims }, ctx)
+          : { verts: pad.verts, prims: pad.prims }
       project.children.push(
         new ShapePath({
           cutIndex: soldermaskCutSetting.index,
-          verts: pad.verts,
-          prims: pad.prims,
+          ...pathData,
           isClosed: true,
         }),
       )
