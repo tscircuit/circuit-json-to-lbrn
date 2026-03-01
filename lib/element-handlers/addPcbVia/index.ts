@@ -4,7 +4,7 @@ import { ShapePath } from "lbrnts"
 import { createCirclePath } from "../../helpers/circleShape"
 import { Circle, point } from "@flatten-js/core"
 import { circleToPolygon } from "../addPcbTrace/circle-to-polygon"
-import { mirrorPathData } from "lib/helpers/mirrorPathData"
+import { createLayerShapePath } from "../../helpers/createLayerShapePath"
 
 export const addPcbVia = (via: PcbVia, ctx: ConvertContext): void => {
   const {
@@ -72,23 +72,22 @@ export const addPcbVia = (via: PcbVia, ctx: ConvertContext): void => {
       })
       if (includeLayers.includes("top")) {
         project.children.push(
-          new ShapePath({
+          createLayerShapePath({
             cutIndex: topCopperCutSetting.index,
-            verts: outer.verts,
-            prims: outer.prims,
+            pathData: outer,
+            layer: "top",
+            ctx,
             isClosed: true,
           }),
         )
       }
       if (includeLayers.includes("bottom")) {
-        const pathData = ctx.mirrorBottomLayer
-          ? mirrorPathData(outer, ctx)
-          : outer
         project.children.push(
-          new ShapePath({
+          createLayerShapePath({
             cutIndex: bottomCopperCutSetting.index,
-            verts: pathData.verts,
-            prims: pathData.prims,
+            pathData: outer,
+            layer: "bottom",
+            ctx,
             isClosed: true,
           }),
         )
@@ -113,17 +112,11 @@ export const addPcbVia = (via: PcbVia, ctx: ConvertContext): void => {
       centerY,
       radius: smRadius,
     })
-    const pathData =
-      ctx.mirrorBottomLayer &&
-      !includeLayers.includes("top") &&
-      includeLayers.includes("bottom")
-        ? mirrorPathData({ verts: outer.verts, prims: outer.prims }, ctx)
-        : { verts: outer.verts, prims: outer.prims }
     project.children.push(
       new ShapePath({
         cutIndex: soldermaskCutSetting.index,
-        verts: pathData.verts,
-        prims: pathData.prims,
+        verts: outer.verts,
+        prims: outer.prims,
         isClosed: true,
       }),
     )

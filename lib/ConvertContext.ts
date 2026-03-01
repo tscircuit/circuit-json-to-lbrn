@@ -1,5 +1,5 @@
 import type { CircuitJsonUtilObjects } from "@tscircuit/circuit-json-util"
-import type { CutSetting, LightBurnProject } from "lbrnts"
+import type { CutSetting, LightBurnProject, Mat } from "lbrnts"
 import type { Box, Polygon } from "@flatten-js/core"
 import type { ConnectivityMap } from "circuit-json-to-connectivity-map"
 
@@ -37,7 +37,7 @@ export interface ConvertContext {
   includeSoldermaskCure: boolean
   includeLayers: Array<"top" | "bottom">
   mirrorBottomLayer: boolean
-  bottomLayerMirrorCenterX?: number
+  bottomLayerXform?: Mat
 
   // Global copper soldermask margin adjustment (can be negative)
   globalCopperSoldermaskMarginAdjustment: number

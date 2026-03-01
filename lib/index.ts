@@ -303,8 +303,12 @@ export const convertCircuitJsonToLbrn = async (
   if (!origin) {
     origin = calculateOriginFromBounds(bounds, options.margin)
   }
-  const fallbackMirrorCenterX =
+  const fallbackBottomLayerMirrorAxisX =
     (bounds.minX + origin.x + bounds.maxX + origin.x) / 2
+  let bottomLayerMirrorAxisX: number | undefined
+  if (mirrorBottomLayer) {
+    bottomLayerMirrorAxisX = fallbackBottomLayerMirrorAxisX
+  }
 
   // Create conversion context
   const ctx: ConvertContext = {
@@ -339,9 +343,10 @@ export const convertCircuitJsonToLbrn = async (
     topTraceEndpoints: new Set(),
     bottomTraceEndpoints: new Set(),
     mirrorBottomLayer,
-    bottomLayerMirrorCenterX: mirrorBottomLayer
-      ? fallbackMirrorCenterX
-      : undefined,
+    bottomLayerXform:
+      typeof bottomLayerMirrorAxisX === "number"
+        ? [-1, 0, 0, 1, 2 * bottomLayerMirrorAxisX, 0]
+        : undefined,
   }
 
   // Initialize net geometry maps
@@ -368,7 +373,7 @@ export const convertCircuitJsonToLbrn = async (
           maxX = Math.max(maxX, x)
         }
         if (isFinite(minX) && isFinite(maxX)) {
-          ctx.bottomLayerMirrorCenterX = (minX + maxX) / 2
+          bottomLayerMirrorAxisX = (minX + maxX) / 2
         }
       }
     } else if (
@@ -389,11 +394,16 @@ export const convertCircuitJsonToLbrn = async (
         [minX, maxY],
       ]
       if (mirrorBottomLayer) {
-        ctx.bottomLayerMirrorCenterX = (minX + maxX) / 2
+        bottomLayerMirrorAxisX = (minX + maxX) / 2
       }
     }
     break // Only use the first board
   }
+
+  ctx.bottomLayerXform =
+    typeof bottomLayerMirrorAxisX === "number"
+      ? [-1, 0, 0, 1, 2 * bottomLayerMirrorAxisX, 0]
+      : undefined
 
   // Process all PCB elements
   for (const smtpad of db.pcb_smtpad.list()) {

@@ -4,7 +4,6 @@ import { ShapePath } from "lbrnts"
 import { createPolygonPathFromOutline } from "../../helpers/polygonShape"
 import { createCirclePath } from "../../helpers/circleShape"
 import { addCopperGeometryToNetOrProject } from "../../helpers/addCopperGeometryToNetOrProject"
-import { mirrorPathData } from "../../helpers/mirrorPathData"
 
 export const addHoleWithPolygonPad = (
   platedHole: PcbHoleWithPolygonPad,
@@ -18,7 +17,6 @@ export const addHoleWithPolygonPad = (
     includeCopper,
     includeSoldermask,
     globalCopperSoldermaskMarginAdjustment,
-    includeLayers,
   } = ctx
 
   // Create the polygon pad
@@ -50,17 +48,11 @@ export const addHoleWithPolygonPad = (
     if (includeSoldermask) {
       // TODO: For polygon pads with soldermask margin, we need to implement proper
       // polygon offsetting. For now, we use the pad vertices directly.
-      const pathData =
-        ctx.mirrorBottomLayer &&
-        !includeLayers.includes("top") &&
-        includeLayers.includes("bottom")
-          ? mirrorPathData({ verts: pad.verts, prims: pad.prims }, ctx)
-          : { verts: pad.verts, prims: pad.prims }
       project.children.push(
         new ShapePath({
           cutIndex: soldermaskCutSetting.index,
-          verts: pathData.verts,
-          prims: pathData.prims,
+          verts: pad.verts,
+          prims: pad.prims,
           isClosed: true,
         }),
       )

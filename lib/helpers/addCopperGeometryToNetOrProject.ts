@@ -1,6 +1,5 @@
-import { ShapePath } from "lbrnts"
 import type { ConvertContext } from "../ConvertContext"
-import { mirrorPathData } from "./mirrorPathData"
+import { createLayerShapePath } from "./createLayerShapePath"
 import { pathToPolygon } from "./pathToPolygon"
 
 export const addCopperGeometryToNetOrProject = ({
@@ -37,15 +36,12 @@ export const addCopperGeometryToNetOrProject = ({
     netGeoms.get(netId)?.push(polygon)
   } else {
     // No net connection - draw directly to project
-    const pathData =
-      ctx.mirrorBottomLayer && layer === "bottom"
-        ? mirrorPathData(path, ctx)
-        : path
     project.children.push(
-      new ShapePath({
+      createLayerShapePath({
         cutIndex: cutSetting.index,
-        verts: pathData.verts,
-        prims: pathData.prims,
+        pathData: path,
+        layer,
+        ctx,
         isClosed: true,
       }),
     )

@@ -24,9 +24,6 @@ test("keyboard-both-layers-includeSoldermask", async () => {
     copperCutFillMargin: 0.1,
     includeCopperCutFill: true,
   })
-  Bun.write("debug-output/mirrored.lbrn2", mirroredProject.getString(), {
-    createPath: true,
-  })
   const notMirroredLbrnSvg = await generateLightBurnSvg(notMirroredProject)
   const mirroredLbrnSvg = await generateLightBurnSvg(mirroredProject)
 

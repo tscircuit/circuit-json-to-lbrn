@@ -3,7 +3,6 @@ import type { ConvertContext } from "../../ConvertContext"
 import { ShapePath } from "lbrnts"
 import { createCirclePath } from "../../helpers/circleShape"
 import { addCopperGeometryToNetOrProject } from "../../helpers/addCopperGeometryToNetOrProject"
-import { mirrorPathData } from "../../helpers/mirrorPathData"
 
 export const addCircleSmtPad = (
   smtPad: PcbSmtPadCircle,
@@ -78,14 +77,11 @@ export const addCircleSmtPad = (
         centerY,
         radius: smRadius,
       })
-      const pathData =
-        ctx.mirrorBottomLayer && padLayer === "bottom"
-          ? mirrorPathData({ verts: outer.verts, prims: outer.prims }, ctx)
-          : { verts: outer.verts, prims: outer.prims }
       project.children.push(
         new ShapePath({
           cutIndex: soldermaskCutSetting.index,
-          ...pathData,
+          verts: outer.verts,
+          prims: outer.prims,
           isClosed: true,
         }),
       )

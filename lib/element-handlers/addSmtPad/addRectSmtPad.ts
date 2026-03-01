@@ -3,7 +3,6 @@ import type { ConvertContext } from "../../ConvertContext"
 import type { PcbSmtPadRect } from "circuit-json"
 import { ShapePath } from "lbrnts"
 import { addCopperGeometryToNetOrProject } from "../../helpers/addCopperGeometryToNetOrProject"
-import { mirrorPathData } from "lib/helpers/mirrorPathData"
 
 export const addRectSmtPad = (smtPad: PcbSmtPadRect, ctx: ConvertContext) => {
   const {
@@ -88,15 +87,11 @@ export const addRectSmtPad = (smtPad: PcbSmtPadRect, ctx: ConvertContext) => {
       { type: 0 },
       { type: 0 },
     ]
-
-    const pathData =
-      ctx.mirrorBottomLayer && padLayer === "bottom"
-        ? mirrorPathData({ verts, prims }, ctx)
-        : { verts, prims }
     project.children.push(
       new ShapePath({
         cutIndex: soldermaskCutSetting.index,
-        ...pathData,
+        verts,
+        prims,
         isClosed: true,
       }),
     )

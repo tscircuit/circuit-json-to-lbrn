@@ -1,8 +1,8 @@
 import { Point, Polygon } from "@flatten-js/core"
-import { ShapeGroup, ShapePath } from "lbrnts"
+import { ShapeGroup } from "lbrnts"
 import type { ConvertContext } from "./ConvertContext"
 import { getManifold } from "./getManifold"
-import { mirrorPathData } from "./helpers/mirrorPathData"
+import { createLayerShapePath } from "./helpers/createLayerShapePath"
 import { polygonToShapePathData } from "./polygon-to-shape-path"
 
 type Contour = Array<[number, number]>
@@ -90,17 +90,13 @@ export const createOxidationCleaningLayerForLayer = async ({
 
       for (const island of polygon.splitToIslands()) {
         const { verts, prims } = polygonToShapePathData(island)
-        const pathData =
-          ctx.mirrorBottomLayer && layer === "bottom"
-            ? mirrorPathData({ verts, prims }, ctx)
-            : { verts, prims }
-
         if (verts.length > 0) {
           shapeGroup.children.push(
-            new ShapePath({
+            createLayerShapePath({
               cutIndex: cutSetting.index,
-              verts: pathData.verts,
-              prims: pathData.prims,
+              pathData: { verts, prims },
+              layer,
+              ctx,
               isClosed: true, // Filled shapes should be closed
             }),
           )

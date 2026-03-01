@@ -1,8 +1,7 @@
 import { Polygon, Box, Point } from "@flatten-js/core"
-import { ShapePath } from "lbrnts"
 import type { ConvertContext } from "./ConvertContext"
 import { getManifold } from "./getManifold"
-import { mirrorPathData } from "./helpers/mirrorPathData"
+import { createLayerShapePath } from "./helpers/createLayerShapePath"
 import { polygonToShapePathData } from "./polygon-to-shape-path"
 
 type Contour = Array<[number, number]>
@@ -45,16 +44,13 @@ const outputPolygon = (
       if (facePoints.length >= 3) {
         const facePoly = new Polygon(facePoints)
         const { verts, prims } = polygonToShapePathData(facePoly)
-        const pathData =
-          ctx.mirrorBottomLayer && layer === "bottom"
-            ? mirrorPathData({ verts, prims }, ctx)
-            : { verts, prims }
         if (verts.length > 0) {
           project.children.push(
-            new ShapePath({
+            createLayerShapePath({
               cutIndex,
-              verts: pathData.verts,
-              prims: pathData.prims,
+              pathData: { verts, prims },
+              layer,
+              ctx,
               isClosed: false,
             }),
           )
@@ -65,15 +61,12 @@ const outputPolygon = (
   }
 
   const { verts, prims } = polygonToShapePathData(poly)
-  const pathData =
-    ctx.mirrorBottomLayer && layer === "bottom"
-      ? mirrorPathData({ verts, prims }, ctx)
-      : { verts, prims }
   project.children.push(
-    new ShapePath({
+    createLayerShapePath({
       cutIndex,
-      verts: pathData.verts,
-      prims: pathData.prims,
+      pathData: { verts, prims },
+      layer,
+      ctx,
       isClosed: false,
     }),
   )

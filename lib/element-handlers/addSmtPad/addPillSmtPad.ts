@@ -3,7 +3,6 @@ import type { ConvertContext } from "../../ConvertContext"
 import { ShapePath } from "lbrnts"
 import { createPillPath } from "../../helpers/pillShape"
 import { addCopperGeometryToNetOrProject } from "../../helpers/addCopperGeometryToNetOrProject"
-import { mirrorPathData } from "../../helpers/mirrorPathData"
 
 export const addPillSmtPad = (
   smtPad: PcbSmtPadPill,
@@ -76,15 +75,11 @@ export const addPillSmtPad = (
         width: smWidth,
         height: smHeight,
       })
-
-      const pathData =
-        ctx.mirrorBottomLayer && padLayer === "bottom"
-          ? mirrorPathData({ verts: smOuter.verts, prims: smOuter.prims }, ctx)
-          : { verts: smOuter.verts, prims: smOuter.prims }
       project.children.push(
         new ShapePath({
           cutIndex: soldermaskCutSetting.index,
-          ...pathData,
+          verts: smOuter.verts,
+          prims: smOuter.prims,
           isClosed: true,
         }),
       )
