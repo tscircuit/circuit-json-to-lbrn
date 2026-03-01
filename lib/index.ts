@@ -33,6 +33,7 @@ export interface ConvertCircuitJsonToLbrnOptions {
   includeLayers?: Array<"top" | "bottom">
   traceMargin?: number
   laserSpotSize?: number
+  mirrorBottomLayer?: boolean
   /**
    * Whether to generate copper cut fill layers.
    * Creates a ring/band around traces and pads that will be laser cut
@@ -91,6 +92,7 @@ export const convertCircuitJsonToLbrn = async (
   const copperCutFillMargin = options.copperCutFillMargin ?? 0.5
   const includeOxidationCleaningLayer =
     options.includeOxidationCleaningLayer ?? false
+  const mirrorBottomLayer = options.mirrorBottomLayer ?? false
 
   // Default laser settings
   const defaultCopperSettings = {
@@ -296,10 +298,16 @@ export const convertCircuitJsonToLbrn = async (
 
   // Build connectivity map and origin
   const connMap = getFullConnectivityMapFromCircuitJson(circuitJson)
+  const bounds = calculateCircuitBounds(circuitJson)
   let origin = options.origin
   if (!origin) {
-    const bounds = calculateCircuitBounds(circuitJson)
     origin = calculateOriginFromBounds(bounds, options.margin)
+  }
+  const fallbackBottomLayerMirrorAxisX =
+    (bounds.minX + origin.x + bounds.maxX + origin.x) / 2
+  let bottomLayerMirrorAxisX: number | undefined
+  if (mirrorBottomLayer) {
+    bottomLayerMirrorAxisX = fallbackBottomLayerMirrorAxisX
   }
 
   // Create conversion context
@@ -334,6 +342,11 @@ export const convertCircuitJsonToLbrn = async (
     bottomOxidationCleaningCutSetting,
     topTraceEndpoints: new Set(),
     bottomTraceEndpoints: new Set(),
+    mirrorBottomLayer,
+    bottomLayerXform:
+      typeof bottomLayerMirrorAxisX === "number"
+        ? [-1, 0, 0, 1, 2 * bottomLayerMirrorAxisX, 0]
+        : undefined,
   }
 
   // Initialize net geometry maps
@@ -351,6 +364,18 @@ export const convertCircuitJsonToLbrn = async (
         outlinePoint.x + origin.x,
         outlinePoint.y + origin.y,
       ])
+      if (mirrorBottomLayer) {
+        let minX = Infinity
+        let maxX = -Infinity
+        for (const outlinePoint of board.outline) {
+          const x = outlinePoint.x + origin.x
+          minX = Math.min(minX, x)
+          maxX = Math.max(maxX, x)
+        }
+        if (isFinite(minX) && isFinite(maxX)) {
+          bottomLayerMirrorAxisX = (minX + maxX) / 2
+        }
+      }
     } else if (
       typeof board.width === "number" &&
       typeof board.height === "number" &&
@@ -368,9 +393,17 @@ export const convertCircuitJsonToLbrn = async (
         [maxX, maxY],
         [minX, maxY],
       ]
+      if (mirrorBottomLayer) {
+        bottomLayerMirrorAxisX = (minX + maxX) / 2
+      }
     }
     break // Only use the first board
   }
+
+  ctx.bottomLayerXform =
+    typeof bottomLayerMirrorAxisX === "number"
+      ? [-1, 0, 0, 1, 2 * bottomLayerMirrorAxisX, 0]
+      : undefined
 
   // Process all PCB elements
   for (const smtpad of db.pcb_smtpad.list()) {

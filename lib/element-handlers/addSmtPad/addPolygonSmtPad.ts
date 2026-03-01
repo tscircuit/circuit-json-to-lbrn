@@ -3,7 +3,6 @@ import type { ConvertContext } from "../../ConvertContext"
 import { ShapePath } from "lbrnts"
 import { createPolygonPathFromOutline } from "../../helpers/polygonShape"
 import { addCopperGeometryToNetOrProject } from "../../helpers/addCopperGeometryToNetOrProject"
-import { polygonToShapePathData } from "../../polygon-to-shape-path"
 
 export const addPolygonSmtPad = (
   smtPad: PcbSmtPadPolygon,
@@ -21,7 +20,7 @@ export const addPolygonSmtPad = (
   } = ctx
 
   // Filter by layer - only process top and bottom layers
-  const padLayer = smtPad.layer || "top"
+  const padLayer = (smtPad.layer || "top") as "top" | "bottom"
   if (padLayer !== "top" && padLayer !== "bottom") {
     return // Skip inner layers
   }

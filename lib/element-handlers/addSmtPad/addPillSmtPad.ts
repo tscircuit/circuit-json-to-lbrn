@@ -20,7 +20,7 @@ export const addPillSmtPad = (
   } = ctx
 
   // Filter by layer - only process top and bottom layers
-  const padLayer = smtPad.layer || "top"
+  const padLayer = (smtPad.layer || "top") as "top" | "bottom"
   if (padLayer !== "top" && padLayer !== "bottom") {
     return // Skip inner layers
   }
@@ -75,7 +75,6 @@ export const addPillSmtPad = (
         width: smWidth,
         height: smHeight,
       })
-
       project.children.push(
         new ShapePath({
           cutIndex: soldermaskCutSetting.index,

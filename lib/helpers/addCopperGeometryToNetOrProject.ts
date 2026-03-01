@@ -1,5 +1,5 @@
 import type { ConvertContext } from "../ConvertContext"
-import { ShapePath } from "lbrnts"
+import { createLayerShapePath } from "./createLayerShapePath"
 import { pathToPolygon } from "./pathToPolygon"
 
 export const addCopperGeometryToNetOrProject = ({
@@ -37,10 +37,11 @@ export const addCopperGeometryToNetOrProject = ({
   } else {
     // No net connection - draw directly to project
     project.children.push(
-      new ShapePath({
+      createLayerShapePath({
         cutIndex: cutSetting.index,
-        verts: path.verts,
-        prims: path.prims,
+        pathData: path,
+        layer,
+        ctx,
         isClosed: true,
       }),
     )

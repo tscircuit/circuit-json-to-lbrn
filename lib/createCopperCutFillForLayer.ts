@@ -1,7 +1,8 @@
 import { Polygon, Box, Point } from "@flatten-js/core"
 import type { ConvertContext } from "./ConvertContext"
+import { createLayerShapePath } from "./helpers/createLayerShapePath"
 import { polygonToShapePathData } from "./polygon-to-shape-path"
-import { ShapePath, ShapeGroup } from "lbrnts"
+import { ShapeGroup } from "lbrnts"
 import { getManifold } from "./getManifold"
 
 type Contour = Array<[number, number]>
@@ -181,13 +182,13 @@ export const createCopperCutFillForLayer = async ({
 
       for (const island of polygon.splitToIslands()) {
         const { verts, prims } = polygonToShapePathData(island)
-
         if (verts.length > 0) {
           shapeGroup.children.push(
-            new ShapePath({
+            createLayerShapePath({
               cutIndex: cutSetting.index,
-              verts,
-              prims,
+              pathData: { verts, prims },
+              layer,
+              ctx,
               isClosed: true, // Filled shapes should be closed
             }),
           )

@@ -1,7 +1,7 @@
 import { Polygon, Box, BooleanOperations } from "@flatten-js/core"
 import type { ConvertContext } from "./ConvertContext"
 import { polygonToShapePathData } from "./polygon-to-shape-path"
-import { ShapePath } from "lbrnts"
+import { createLayerShapePath } from "./helpers/createLayerShapePath"
 
 /**
  * Creates trace clearance areas for a given layer
@@ -84,12 +84,12 @@ export const createTraceClearanceAreasForLayer = ({
       // Output clearance area as filled shapes
       for (const island of clearanceArea.splitToIslands()) {
         const { verts, prims } = polygonToShapePathData(island)
-
         project.children.push(
-          new ShapePath({
+          createLayerShapePath({
             cutIndex: cutSetting.index,
-            verts,
-            prims,
+            pathData: { verts, prims },
+            layer,
+            ctx,
             isClosed: true, // Filled shapes should be closed
           }),
         )

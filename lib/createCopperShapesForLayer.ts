@@ -1,7 +1,7 @@
 import { Polygon, Box, Point } from "@flatten-js/core"
-import { ShapePath } from "lbrnts"
 import type { ConvertContext } from "./ConvertContext"
 import { getManifold } from "./getManifold"
+import { createLayerShapePath } from "./helpers/createLayerShapePath"
 import { polygonToShapePathData } from "./polygon-to-shape-path"
 
 type Contour = Array<[number, number]>
@@ -29,6 +29,8 @@ const outputPolygon = (
   poly: Polygon,
   cutIndex: number,
   project: ConvertContext["project"],
+  layer: "top" | "bottom",
+  ctx: ConvertContext,
 ) => {
   // If polygon has multiple faces, output each face separately
   // This handles the case where boolean union creates touching but non-overlapping regions
@@ -44,10 +46,11 @@ const outputPolygon = (
         const { verts, prims } = polygonToShapePathData(facePoly)
         if (verts.length > 0) {
           project.children.push(
-            new ShapePath({
+            createLayerShapePath({
               cutIndex,
-              verts,
-              prims,
+              pathData: { verts, prims },
+              layer,
+              ctx,
               isClosed: false,
             }),
           )
@@ -59,10 +62,11 @@ const outputPolygon = (
 
   const { verts, prims } = polygonToShapePathData(poly)
   project.children.push(
-    new ShapePath({
+    createLayerShapePath({
       cutIndex,
-      verts,
-      prims,
+      pathData: { verts, prims },
+      layer,
+      ctx,
       isClosed: false,
     }),
   )
@@ -75,10 +79,12 @@ const outputIndividualGeometries = (
   netGeoms: Array<Polygon | Box>,
   cutIndex: number,
   project: ConvertContext["project"],
+  layer: "top" | "bottom",
+  ctx: ConvertContext,
 ) => {
   for (const geom of netGeoms) {
     const poly = geom instanceof Box ? new Polygon(geom) : geom
-    outputPolygon(poly, cutIndex, project)
+    outputPolygon(poly, cutIndex, project, layer, ctx)
   }
 }
 
@@ -178,7 +184,7 @@ export const createCopperShapesForLayer = async ({
       simplified.delete()
 
       if (resultContours.length === 0) {
-        outputIndividualGeometries(netGeoms, cutIndex, project)
+        outputIndividualGeometries(netGeoms, cutIndex, project, layer, ctx)
         continue
       }
 
@@ -187,11 +193,11 @@ export const createCopperShapesForLayer = async ({
         const polygon = contourToPolygon(contour)
         if (!polygon) continue
         hasOutput = true
-        outputPolygon(polygon, cutIndex, project)
+        outputPolygon(polygon, cutIndex, project, layer, ctx)
       }
 
       if (!hasOutput) {
-        outputIndividualGeometries(netGeoms, cutIndex, project)
+        outputIndividualGeometries(netGeoms, cutIndex, project, layer, ctx)
       }
     } catch (error) {
       console.warn(
@@ -199,7 +205,7 @@ export const createCopperShapesForLayer = async ({
         error,
       )
       // Output individual geometries if union fails
-      outputIndividualGeometries(netGeoms, cutIndex, project)
+      outputIndividualGeometries(netGeoms, cutIndex, project, layer, ctx)
     }
   }
 }

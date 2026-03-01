@@ -1,6 +1,7 @@
 import type { PcbPlatedHoleOval } from "circuit-json"
 import type { ConvertContext } from "../../ConvertContext"
 import { ShapePath } from "lbrnts"
+import { createLayerShapePath } from "../../helpers/createLayerShapePath"
 import { createPillPath } from "../../helpers/pillShape"
 
 export const addPcbPlatedHolePill = (
@@ -40,20 +41,22 @@ export const addPcbPlatedHolePill = (
     })
     if (includeLayers.includes("top")) {
       project.children.push(
-        new ShapePath({
+        createLayerShapePath({
           cutIndex: topCopperCutSetting.index,
-          verts: outer.verts,
-          prims: outer.prims,
+          pathData: outer,
+          layer: "top",
+          ctx,
           isClosed: true,
         }),
       )
     }
     if (includeLayers.includes("bottom")) {
       project.children.push(
-        new ShapePath({
+        createLayerShapePath({
           cutIndex: bottomCopperCutSetting.index,
-          verts: outer.verts,
-          prims: outer.prims,
+          pathData: outer,
+          layer: "bottom",
+          ctx,
           isClosed: true,
         }),
       )

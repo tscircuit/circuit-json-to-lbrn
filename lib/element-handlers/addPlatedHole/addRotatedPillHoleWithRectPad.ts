@@ -18,7 +18,6 @@ export const addRotatedPillHoleWithRectPad = (
     includeSoldermask,
     globalCopperSoldermaskMarginAdjustment,
     solderMaskMarginPercent,
-    includeLayers,
   } = ctx
   const centerX = platedHole.x + origin.x
   const centerY = platedHole.y + origin.y
@@ -85,7 +84,6 @@ export const addRotatedPillHoleWithRectPad = (
         segments: 4,
         rotation: padRotation,
       })
-
       project.children.push(
         new ShapePath({
           cutIndex: soldermaskCutSetting.index,

@@ -4,6 +4,7 @@ import { ShapePath } from "lbrnts"
 import { createCirclePath } from "../../helpers/circleShape"
 import { Circle, point } from "@flatten-js/core"
 import { circleToPolygon } from "../addPcbTrace/circle-to-polygon"
+import { createLayerShapePath } from "../../helpers/createLayerShapePath"
 
 export const addPcbVia = (via: PcbVia, ctx: ConvertContext): void => {
   const {
@@ -71,20 +72,22 @@ export const addPcbVia = (via: PcbVia, ctx: ConvertContext): void => {
       })
       if (includeLayers.includes("top")) {
         project.children.push(
-          new ShapePath({
+          createLayerShapePath({
             cutIndex: topCopperCutSetting.index,
-            verts: outer.verts,
-            prims: outer.prims,
+            pathData: outer,
+            layer: "top",
+            ctx,
             isClosed: true,
           }),
         )
       }
       if (includeLayers.includes("bottom")) {
         project.children.push(
-          new ShapePath({
+          createLayerShapePath({
             cutIndex: bottomCopperCutSetting.index,
-            verts: outer.verts,
-            prims: outer.prims,
+            pathData: outer,
+            layer: "bottom",
+            ctx,
             isClosed: true,
           }),
         )

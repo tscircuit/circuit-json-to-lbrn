@@ -20,7 +20,7 @@ export const addRotatedPillSmtPad = (
   } = ctx
 
   // Filter by layer - only process top and bottom layers
-  const padLayer = smtPad.layer || "top"
+  const padLayer = (smtPad.layer || "top") as "top" | "bottom"
   if (padLayer !== "top" && padLayer !== "bottom") {
     return // Skip inner layers
   }
@@ -77,7 +77,6 @@ export const addRotatedPillSmtPad = (
         height: smHeight,
         rotation: (smtPad.ccw_rotation ?? 0) * (Math.PI / 180),
       })
-
       project.children.push(
         new ShapePath({
           cutIndex: soldermaskCutSetting.index,
