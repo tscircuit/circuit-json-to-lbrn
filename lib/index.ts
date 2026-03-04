@@ -151,35 +151,77 @@ export const convertCircuitJsonToLbrn = async (
   })
   project.children.push(throughBoardCutSetting)
 
-  const soldermaskCutSetting = new CutSetting({
-    type: "Scan",
-    index: LAYER_INDEXES.soldermask,
-    name: "Soldermask",
-    numPasses: 1,
-    speed: 150,
-    scanOpt: "individual",
-    interval: 0.18,
-    angle: 45,
-    qPulseWidth: 1,
-    crossHatch: true,
-  })
-  project.children.push(soldermaskCutSetting)
+  let topSoldermaskCutSetting: CutSetting | undefined
+  let bottomSoldermaskCutSetting: CutSetting | undefined
 
-  let soldermaskCureCutSetting: CutSetting | undefined
+  if (includeSoldermask) {
+    if (includeLayers.includes("top")) {
+      topSoldermaskCutSetting = new CutSetting({
+        type: "Scan",
+        index: LAYER_INDEXES.topSoldermask,
+        name: "Top Soldermask",
+        numPasses: 1,
+        speed: 150,
+        scanOpt: "individual",
+        interval: 0.18,
+        angle: 45,
+        qPulseWidth: 1,
+        crossHatch: true,
+      })
+      project.children.push(topSoldermaskCutSetting)
+    }
+
+    if (includeLayers.includes("bottom")) {
+      bottomSoldermaskCutSetting = new CutSetting({
+        type: "Scan",
+        index: LAYER_INDEXES.bottomSoldermask,
+        name: "Bottom Soldermask",
+        numPasses: 1,
+        speed: 150,
+        scanOpt: "individual",
+        interval: 0.18,
+        angle: 45,
+        qPulseWidth: 1,
+        crossHatch: true,
+      })
+      project.children.push(bottomSoldermaskCutSetting)
+    }
+  }
+
+  let topSoldermaskCureCutSetting: CutSetting | undefined
+  let bottomSoldermaskCureCutSetting: CutSetting | undefined
   if (shouldIncludeSoldermaskCure) {
-    soldermaskCureCutSetting = new CutSetting({
-      type: "Scan",
-      index: LAYER_INDEXES.soldermaskCure,
-      name: "Soldermask Cure",
-      numPasses: 1,
-      speed: 150,
-      scanOpt: "individual",
-      interval: 0.18,
-      angle: 45,
-      qPulseWidth: 1,
-      crossHatch: true,
-    })
-    project.children.push(soldermaskCureCutSetting)
+    if (includeLayers.includes("top")) {
+      topSoldermaskCureCutSetting = new CutSetting({
+        type: "Scan",
+        index: LAYER_INDEXES.topSoldermaskCure,
+        name: "Top Soldermask Cure",
+        numPasses: 1,
+        speed: 150,
+        scanOpt: "individual",
+        interval: 0.18,
+        angle: 45,
+        qPulseWidth: 1,
+        crossHatch: true,
+      })
+      project.children.push(topSoldermaskCureCutSetting)
+    }
+
+    if (includeLayers.includes("bottom")) {
+      bottomSoldermaskCureCutSetting = new CutSetting({
+        type: "Scan",
+        index: LAYER_INDEXES.bottomSoldermaskCure,
+        name: "Bottom Soldermask Cure",
+        numPasses: 1,
+        speed: 150,
+        scanOpt: "individual",
+        interval: 0.18,
+        angle: 45,
+        qPulseWidth: 1,
+        crossHatch: true,
+      })
+      project.children.push(bottomSoldermaskCureCutSetting)
+    }
   }
 
   // Create trace clearance cut settings if needed
@@ -317,8 +359,10 @@ export const convertCircuitJsonToLbrn = async (
     topCopperCutSetting,
     bottomCopperCutSetting,
     throughBoardCutSetting,
-    soldermaskCutSetting,
-    soldermaskCureCutSetting,
+    topSoldermaskCutSetting,
+    bottomSoldermaskCutSetting,
+    topSoldermaskCureCutSetting,
+    bottomSoldermaskCureCutSetting,
     connMap,
     topCutNetGeoms: new Map(),
     bottomCutNetGeoms: new Map(),

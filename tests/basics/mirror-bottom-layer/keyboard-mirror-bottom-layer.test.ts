@@ -12,14 +12,14 @@ test("keyboard-both-layers-includeSoldermask", async () => {
 
   const mirroredProject = await convertCircuitJsonToLbrn(circuitJson, {
     includeLayers: ["top", "bottom"],
-    includeSoldermask: false,
+    includeSoldermask: true,
     mirrorBottomLayer: true,
     copperCutFillMargin: 0.1,
     includeCopperCutFill: true,
   })
   const notMirroredProject = await convertCircuitJsonToLbrn(circuitJson, {
     includeLayers: ["top", "bottom"],
-    includeSoldermask: false,
+    includeSoldermask: true,
     mirrorBottomLayer: false,
     copperCutFillMargin: 0.1,
     includeCopperCutFill: true,

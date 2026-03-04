@@ -41,8 +41,8 @@ export const addCopperGeometryToNetOrProject = ({
         cutIndex: cutSetting.index,
         pathData: path,
         layer,
-        ctx,
         isClosed: true,
+        ctx,
       }),
     )
   }

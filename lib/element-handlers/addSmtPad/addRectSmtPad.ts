@@ -1,13 +1,14 @@
 import { Box } from "@flatten-js/core"
 import type { ConvertContext } from "../../ConvertContext"
 import type { PcbSmtPadRect } from "circuit-json"
-import { ShapePath } from "lbrnts"
 import { addCopperGeometryToNetOrProject } from "../../helpers/addCopperGeometryToNetOrProject"
+import { createLayerShapePath } from "../../helpers/createLayerShapePath"
 
 export const addRectSmtPad = (smtPad: PcbSmtPadRect, ctx: ConvertContext) => {
   const {
     project,
-    soldermaskCutSetting,
+    topSoldermaskCutSetting,
+    bottomSoldermaskCutSetting,
     origin,
     includeCopper,
     includeSoldermask,
@@ -29,6 +30,8 @@ export const addRectSmtPad = (smtPad: PcbSmtPadRect, ctx: ConvertContext) => {
   const centerY = smtPad.y + origin.y
   const halfWidth = smtPad.width / 2
   const halfHeight = smtPad.height / 2
+  const soldermaskCutSetting =
+    padLayer === "top" ? topSoldermaskCutSetting : bottomSoldermaskCutSetting
 
   // Only add to netGeoms if drawing copper
   if (includeCopper) {
@@ -52,7 +55,7 @@ export const addRectSmtPad = (smtPad: PcbSmtPadRect, ctx: ConvertContext) => {
   }
 
   // Add soldermask opening if drawing soldermask
-  if (includeSoldermask) {
+  if (includeSoldermask && soldermaskCutSetting) {
     // Percent margin is additive and may be negative.
     // Absolute per-element margin and global adjustment are always applied.
     const percentMarginX = (solderMaskMarginPercent / 100) * smtPad.width
@@ -88,11 +91,12 @@ export const addRectSmtPad = (smtPad: PcbSmtPadRect, ctx: ConvertContext) => {
       { type: 0 },
     ]
     project.children.push(
-      new ShapePath({
+      createLayerShapePath({
         cutIndex: soldermaskCutSetting.index,
-        verts,
-        prims,
+        pathData: { verts, prims },
+        layer: padLayer,
         isClosed: true,
+        ctx,
       }),
     )
   }

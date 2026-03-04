@@ -15,9 +15,13 @@ test("keyboard-both-layers-includeSoldermask", async () => {
     includeSoldermask: true,
   })
 
-  Bun.write("debug-output/keyboard-both-layers.lbrn2", project.getString(), {
-    createPath: true,
-  })
+  Bun.write(
+    "debug-output/keyboard-both-layers-includeSoldermask.lbrn2",
+    project.getString(),
+    {
+      createPath: true,
+    },
+  )
 
   const lbrnSvg = await generateLightBurnSvg(project)
 

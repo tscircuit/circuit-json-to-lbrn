@@ -1,8 +1,8 @@
 import type { PcbSmtPadPill } from "circuit-json"
 import type { ConvertContext } from "../../ConvertContext"
-import { ShapePath } from "lbrnts"
 import { createPillPath } from "../../helpers/pillShape"
 import { addCopperGeometryToNetOrProject } from "../../helpers/addCopperGeometryToNetOrProject"
+import { createLayerShapePath } from "../../helpers/createLayerShapePath"
 
 export const addPillSmtPad = (
   smtPad: PcbSmtPadPill,
@@ -10,7 +10,8 @@ export const addPillSmtPad = (
 ): void => {
   const {
     project,
-    soldermaskCutSetting,
+    topSoldermaskCutSetting,
+    bottomSoldermaskCutSetting,
     origin,
     includeCopper,
     includeSoldermask,
@@ -30,6 +31,8 @@ export const addPillSmtPad = (
 
   const centerX = smtPad.x + origin.x
   const centerY = smtPad.y + origin.y
+  const soldermaskCutSetting =
+    padLayer === "top" ? topSoldermaskCutSetting : bottomSoldermaskCutSetting
 
   if (smtPad.width > 0 && smtPad.height > 0) {
     const outer = createPillPath({
@@ -50,7 +53,7 @@ export const addPillSmtPad = (
     }
 
     // Add soldermask opening if drawing soldermask
-    if (includeSoldermask) {
+    if (includeSoldermask && soldermaskCutSetting) {
       // Percent margin is additive and may be negative.
       // Absolute per-element margin and global adjustment are always applied.
       const percentMarginX = (solderMaskMarginPercent / 100) * smtPad.width
@@ -76,11 +79,12 @@ export const addPillSmtPad = (
         height: smHeight,
       })
       project.children.push(
-        new ShapePath({
+        createLayerShapePath({
           cutIndex: soldermaskCutSetting.index,
-          verts: smOuter.verts,
-          prims: smOuter.prims,
+          pathData: smOuter,
+          layer: padLayer,
           isClosed: true,
+          ctx,
         }),
       )
     }

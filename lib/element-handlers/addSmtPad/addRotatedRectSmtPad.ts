@@ -1,8 +1,8 @@
 import type { PcbSmtPadRotatedRect } from "circuit-json"
 import type { ConvertContext } from "../../ConvertContext"
-import { ShapePath } from "lbrnts"
 import { createRoundedRectPath } from "../../helpers/roundedRectShape"
 import { addCopperGeometryToNetOrProject } from "../../helpers/addCopperGeometryToNetOrProject"
+import { createLayerShapePath } from "../../helpers/createLayerShapePath"
 
 export const addRotatedRectSmtPad = (
   smtPad: PcbSmtPadRotatedRect,
@@ -10,7 +10,8 @@ export const addRotatedRectSmtPad = (
 ): void => {
   const {
     project,
-    soldermaskCutSetting,
+    topSoldermaskCutSetting,
+    bottomSoldermaskCutSetting,
     origin,
     includeCopper,
     includeSoldermask,
@@ -32,6 +33,8 @@ export const addRotatedRectSmtPad = (
   const centerY = smtPad.y + origin.y
   const rotation = (smtPad.ccw_rotation ?? 0) * (Math.PI / 180)
   const borderRadius = smtPad.rect_border_radius ?? 0
+  const soldermaskCutSetting =
+    padLayer === "top" ? topSoldermaskCutSetting : bottomSoldermaskCutSetting
 
   if (smtPad.width > 0 && smtPad.height > 0) {
     const outer = createRoundedRectPath({
@@ -55,7 +58,7 @@ export const addRotatedRectSmtPad = (
     }
 
     // Add soldermask opening if drawing soldermask
-    if (includeSoldermask) {
+    if (includeSoldermask && soldermaskCutSetting) {
       // Percent margin is additive and may be negative.
       // Absolute per-element margin and global adjustment are always applied.
       const percentMarginX = (solderMaskMarginPercent / 100) * smtPad.width
@@ -84,11 +87,12 @@ export const addRotatedRectSmtPad = (
         rotation,
       })
       project.children.push(
-        new ShapePath({
+        createLayerShapePath({
           cutIndex: soldermaskCutSetting.index,
-          verts: smOuter.verts,
-          prims: smOuter.prims,
+          pathData: smOuter,
+          layer: padLayer,
           isClosed: true,
+          ctx,
         }),
       )
     }

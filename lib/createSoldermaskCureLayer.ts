@@ -2,6 +2,7 @@ import { Point, Polygon } from "@flatten-js/core"
 import { ShapeGroup, ShapePath } from "lbrnts"
 import type { ConvertContext } from "./ConvertContext"
 import { getManifold } from "./getManifold"
+import { createLayerShapePath } from "./helpers/createLayerShapePath"
 import { polygonToShapePathData } from "./polygon-to-shape-path"
 
 type Contour = Array<[number, number]>
@@ -75,28 +76,32 @@ const collectSoldermaskContours = (
   return contours
 }
 
-/**
- * Creates a soldermask cure layer by subtracting soldermask openings from the board outline.
- */
-export const createSoldermaskCureLayer = async ({
+const createSoldermaskCureLayerForLayer = async ({
+  layer,
   ctx,
 }: {
+  layer: "top" | "bottom"
   ctx: ConvertContext
 }): Promise<void> => {
-  const { project, boardOutlineContour, soldermaskCureCutSetting } = ctx
+  const { project, boardOutlineContour } = ctx
+  const soldermaskCutSetting =
+    layer === "top"
+      ? ctx.topSoldermaskCutSetting
+      : ctx.bottomSoldermaskCutSetting
+  const soldermaskCureCutSetting =
+    layer === "top"
+      ? ctx.topSoldermaskCureCutSetting
+      : ctx.bottomSoldermaskCureCutSetting
 
-  if (!soldermaskCureCutSetting) {
+  if (!soldermaskCutSetting || !soldermaskCureCutSetting) {
     return
   }
 
-  if (ctx.soldermaskCutSetting.index === undefined) {
-    return
-  }
-  const soldermaskCutIndex = ctx.soldermaskCutSetting.index
+  const soldermaskCutIndex = soldermaskCutSetting.index
 
   if (!boardOutlineContour || boardOutlineContour.length < 3) {
     console.warn(
-      "Cannot create soldermask cure layer: no board outline available",
+      `Cannot create soldermask cure layer for ${layer}: no board outline available`,
     )
     return
   }
@@ -105,7 +110,7 @@ export const createSoldermaskCureLayer = async ({
     const manifold = await getManifold()
     const { CrossSection } = manifold
 
-    const allContours = collectSoldermaskContours(project, soldermaskCutIndex)
+    const allContours = collectSoldermaskContours(project, soldermaskCutIndex!)
     if (allContours.length === 0) {
       return
     }
@@ -135,11 +140,12 @@ export const createSoldermaskCureLayer = async ({
 
         if (verts.length > 0) {
           shapeGroup.children.push(
-            new ShapePath({
+            createLayerShapePath({
               cutIndex: soldermaskCureCutSetting.index,
-              verts,
-              prims,
+              pathData: { verts, prims },
+              layer,
               isClosed: true,
+              ctx,
             }),
           )
         }
@@ -155,6 +161,20 @@ export const createSoldermaskCureLayer = async ({
     cureArea.delete()
     simplifiedArea.delete()
   } catch (error) {
-    console.warn("Failed to create soldermask cure layer:", error)
+    console.warn(`Failed to create soldermask cure layer for ${layer}:`, error)
+  }
+}
+
+/**
+ * Creates soldermask cure layers by subtracting each layer's soldermask openings
+ * from the board outline.
+ */
+export const createSoldermaskCureLayer = async ({
+  ctx,
+}: {
+  ctx: ConvertContext
+}): Promise<void> => {
+  for (const layer of ctx.includeLayers) {
+    await createSoldermaskCureLayerForLayer({ layer, ctx })
   }
 }

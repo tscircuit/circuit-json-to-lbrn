@@ -1,8 +1,8 @@
 import type { PcbSmtPadCircle } from "circuit-json"
 import type { ConvertContext } from "../../ConvertContext"
-import { ShapePath } from "lbrnts"
 import { createCirclePath } from "../../helpers/circleShape"
 import { addCopperGeometryToNetOrProject } from "../../helpers/addCopperGeometryToNetOrProject"
+import { createLayerShapePath } from "../../helpers/createLayerShapePath"
 
 export const addCircleSmtPad = (
   smtPad: PcbSmtPadCircle,
@@ -10,7 +10,8 @@ export const addCircleSmtPad = (
 ): void => {
   const {
     project,
-    soldermaskCutSetting,
+    topSoldermaskCutSetting,
+    bottomSoldermaskCutSetting,
     origin,
     includeCopper,
     includeSoldermask,
@@ -30,6 +31,8 @@ export const addCircleSmtPad = (
 
   const centerX = smtPad.x + origin.x
   const centerY = smtPad.y + origin.y
+  const soldermaskCutSetting =
+    padLayer === "top" ? topSoldermaskCutSetting : bottomSoldermaskCutSetting
 
   if (smtPad.radius > 0) {
     const outerRadius = smtPad.radius
@@ -51,7 +54,7 @@ export const addCircleSmtPad = (
     }
 
     // Add soldermask opening if drawing soldermask
-    if (includeSoldermask) {
+    if (includeSoldermask && soldermaskCutSetting) {
       // Percent margin is additive and may be negative.
       // Absolute per-element margin and global adjustment are always applied.
       const elementWidth = 2 * outerRadius
@@ -78,11 +81,12 @@ export const addCircleSmtPad = (
         radius: smRadius,
       })
       project.children.push(
-        new ShapePath({
+        createLayerShapePath({
           cutIndex: soldermaskCutSetting.index,
-          verts: outer.verts,
-          prims: outer.prims,
+          pathData: outer,
+          layer: padLayer,
           isClosed: true,
+          ctx,
         }),
       )
     }

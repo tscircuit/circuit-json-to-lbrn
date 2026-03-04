@@ -14,7 +14,8 @@ export const addCirclePlatedHole = (
     project,
     topCopperCutSetting,
     bottomCopperCutSetting,
-    soldermaskCutSetting,
+    topSoldermaskCutSetting,
+    bottomSoldermaskCutSetting,
     throughBoardCutSetting,
     topCutNetGeoms,
     bottomCutNetGeoms,
@@ -58,8 +59,8 @@ export const addCirclePlatedHole = (
             cutIndex: topCopperCutSetting.index,
             pathData: outer,
             layer: "top",
-            ctx,
             isClosed: true,
+            ctx,
           }),
         )
       }
@@ -69,8 +70,8 @@ export const addCirclePlatedHole = (
             cutIndex: bottomCopperCutSetting.index,
             pathData: outer,
             layer: "bottom",
-            ctx,
             isClosed: true,
+            ctx,
           }),
         )
       }
@@ -93,14 +94,28 @@ export const addCirclePlatedHole = (
       centerY,
       radius: smRadius,
     })
-    project.children.push(
-      new ShapePath({
-        cutIndex: soldermaskCutSetting.index,
-        verts: outer.verts,
-        prims: outer.prims,
-        isClosed: true,
-      }),
-    )
+    if (includeLayers.includes("top") && topSoldermaskCutSetting) {
+      project.children.push(
+        createLayerShapePath({
+          cutIndex: topSoldermaskCutSetting.index,
+          pathData: outer,
+          layer: "top",
+          isClosed: true,
+          ctx,
+        }),
+      )
+    }
+    if (includeLayers.includes("bottom") && bottomSoldermaskCutSetting) {
+      project.children.push(
+        createLayerShapePath({
+          cutIndex: bottomSoldermaskCutSetting.index,
+          pathData: outer,
+          layer: "bottom",
+          isClosed: true,
+          ctx,
+        }),
+      )
+    }
   }
 
   if (platedHole.hole_diameter > 0 && includeCopper) {

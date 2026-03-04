@@ -5,14 +5,7 @@ import type { ConvertContext } from "../../ConvertContext"
 import { polygonToShapePathData } from "../../polygon-to-shape-path"
 
 export const addPcbBoard = (board: PcbBoard, ctx: ConvertContext) => {
-  const {
-    origin,
-    project,
-    throughBoardCutSetting,
-    soldermaskCutSetting,
-    includeCopper,
-    includeSoldermask,
-  } = ctx
+  const { origin, project, throughBoardCutSetting, includeCopper } = ctx
 
   let polygon: Polygon | null = null
 

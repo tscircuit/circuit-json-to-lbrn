@@ -89,8 +89,8 @@ export const createTraceClearanceAreasForLayer = ({
             cutIndex: cutSetting.index,
             pathData: { verts, prims },
             layer,
-            ctx,
             isClosed: true, // Filled shapes should be closed
+            ctx,
           }),
         )
       }

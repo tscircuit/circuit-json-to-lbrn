@@ -42,7 +42,7 @@ test("applies custom laserProfile settings", async () => {
   const cutSettings = project.children.filter(
     (child) => child.constructor.name === "_CutSetting",
   ) as CutSetting[]
-  expect(cutSettings.length).toBe(4) // top copper, bottom copper, through board, soldermask
+  expect(cutSettings.length).toBe(3) // top copper, bottom copper, through board
 
   // Verify top copper settings
   const topCopper = cutSettings[0]!
@@ -73,7 +73,7 @@ test("uses default laserProfile settings when not provided", async () => {
   const cutSettings = project.children.filter(
     (child) => child.constructor.name === "_CutSetting",
   ) as CutSetting[]
-  expect(cutSettings.length).toBe(4)
+  expect(cutSettings.length).toBe(3)
 
   // Verify top copper defaults
   const topCopper = cutSettings[0]!

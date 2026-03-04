@@ -4,6 +4,7 @@ import { ShapePath } from "lbrnts"
 import { createPolygonPathFromOutline } from "../../helpers/polygonShape"
 import { createCirclePath } from "../../helpers/circleShape"
 import { addCopperGeometryToNetOrProject } from "../../helpers/addCopperGeometryToNetOrProject"
+import { createLayerShapePath } from "../../helpers/createLayerShapePath"
 
 export const addHoleWithPolygonPad = (
   platedHole: PcbHoleWithPolygonPad,
@@ -11,12 +12,14 @@ export const addHoleWithPolygonPad = (
 ): void => {
   const {
     project,
-    soldermaskCutSetting,
+    topSoldermaskCutSetting,
+    bottomSoldermaskCutSetting,
     throughBoardCutSetting,
     origin,
     includeCopper,
     includeSoldermask,
     globalCopperSoldermaskMarginAdjustment,
+    includeLayers,
   } = ctx
 
   // Create the polygon pad
@@ -48,14 +51,28 @@ export const addHoleWithPolygonPad = (
     if (includeSoldermask) {
       // TODO: For polygon pads with soldermask margin, we need to implement proper
       // polygon offsetting. For now, we use the pad vertices directly.
-      project.children.push(
-        new ShapePath({
-          cutIndex: soldermaskCutSetting.index,
-          verts: pad.verts,
-          prims: pad.prims,
-          isClosed: true,
-        }),
-      )
+      if (includeLayers.includes("top") && topSoldermaskCutSetting) {
+        project.children.push(
+          createLayerShapePath({
+            cutIndex: topSoldermaskCutSetting.index,
+            pathData: pad,
+            layer: "top",
+            isClosed: true,
+            ctx,
+          }),
+        )
+      }
+      if (includeLayers.includes("bottom") && bottomSoldermaskCutSetting) {
+        project.children.push(
+          createLayerShapePath({
+            cutIndex: bottomSoldermaskCutSetting.index,
+            pathData: pad,
+            layer: "bottom",
+            isClosed: true,
+            ctx,
+          }),
+        )
+      }
     }
   }
 

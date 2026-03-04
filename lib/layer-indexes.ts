@@ -10,14 +10,16 @@ export const LAYER_INDEXES = {
   throughBoard: 2,
 
   // Scan layers (raster/fill)
-  soldermask: 3,
+  topSoldermask: 3,
   topTraceClearance: 4,
   bottomTraceClearance: 5,
   topCopperCutFill: 6,
   bottomCopperCutFill: 7,
   topOxidationCleaning: 8,
   bottomOxidationCleaning: 9,
-  soldermaskCure: 10,
+  topSoldermaskCure: 10,
+  bottomSoldermask: 11,
+  bottomSoldermaskCure: 12,
 } as const
 
 export type LayerIndex = (typeof LAYER_INDEXES)[keyof typeof LAYER_INDEXES]

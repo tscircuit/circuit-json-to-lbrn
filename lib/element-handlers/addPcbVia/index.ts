@@ -12,7 +12,8 @@ export const addPcbVia = (via: PcbVia, ctx: ConvertContext): void => {
     project,
     topCopperCutSetting,
     bottomCopperCutSetting,
-    soldermaskCutSetting,
+    topSoldermaskCutSetting,
+    bottomSoldermaskCutSetting,
     throughBoardCutSetting,
     topCutNetGeoms,
     bottomCutNetGeoms,
@@ -76,8 +77,8 @@ export const addPcbVia = (via: PcbVia, ctx: ConvertContext): void => {
             cutIndex: topCopperCutSetting.index,
             pathData: outer,
             layer: "top",
-            ctx,
             isClosed: true,
+            ctx,
           }),
         )
       }
@@ -87,8 +88,8 @@ export const addPcbVia = (via: PcbVia, ctx: ConvertContext): void => {
             cutIndex: bottomCopperCutSetting.index,
             pathData: outer,
             layer: "bottom",
-            ctx,
             isClosed: true,
+            ctx,
           }),
         )
       }
@@ -112,14 +113,28 @@ export const addPcbVia = (via: PcbVia, ctx: ConvertContext): void => {
       centerY,
       radius: smRadius,
     })
-    project.children.push(
-      new ShapePath({
-        cutIndex: soldermaskCutSetting.index,
-        verts: outer.verts,
-        prims: outer.prims,
-        isClosed: true,
-      }),
-    )
+    if (includeLayers.includes("top") && topSoldermaskCutSetting) {
+      project.children.push(
+        createLayerShapePath({
+          cutIndex: topSoldermaskCutSetting.index,
+          pathData: outer,
+          layer: "top",
+          isClosed: true,
+          ctx,
+        }),
+      )
+    }
+    if (includeLayers.includes("bottom") && bottomSoldermaskCutSetting) {
+      project.children.push(
+        createLayerShapePath({
+          cutIndex: bottomSoldermaskCutSetting.index,
+          pathData: outer,
+          layer: "bottom",
+          isClosed: true,
+          ctx,
+        }),
+      )
+    }
   }
 
   // Add inner circle (hole) - always cut through the board regardless of mode

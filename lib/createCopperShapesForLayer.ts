@@ -50,8 +50,8 @@ const outputPolygon = (
               cutIndex,
               pathData: { verts, prims },
               layer,
-              ctx,
               isClosed: false,
+              ctx,
             }),
           )
         }
@@ -66,8 +66,8 @@ const outputPolygon = (
       cutIndex,
       pathData: { verts, prims },
       layer,
-      ctx,
       isClosed: false,
+      ctx,
     }),
   )
 }

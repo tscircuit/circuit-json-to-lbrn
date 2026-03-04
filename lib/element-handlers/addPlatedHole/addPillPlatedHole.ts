@@ -3,6 +3,7 @@ import type { ConvertContext } from "../../ConvertContext"
 import { ShapePath } from "lbrnts"
 import { createPillPath } from "../../helpers/pillShape"
 import { addCopperGeometryToNetOrProject } from "../../helpers/addCopperGeometryToNetOrProject"
+import { createLayerShapePath } from "../../helpers/createLayerShapePath"
 
 export const addPcbPlatedHolePill = (
   platedHole: PcbPlatedHoleOval,
@@ -10,7 +11,8 @@ export const addPcbPlatedHolePill = (
 ): void => {
   const {
     project,
-    soldermaskCutSetting,
+    topSoldermaskCutSetting,
+    bottomSoldermaskCutSetting,
     throughBoardCutSetting,
     origin,
     includeCopper,
@@ -84,14 +86,28 @@ export const addPcbPlatedHolePill = (
       height: smHeight,
       rotation,
     })
-    project.children.push(
-      new ShapePath({
-        cutIndex: soldermaskCutSetting.index,
-        verts: outer.verts,
-        prims: outer.prims,
-        isClosed: true,
-      }),
-    )
+    if (includeLayers.includes("top") && topSoldermaskCutSetting) {
+      project.children.push(
+        createLayerShapePath({
+          cutIndex: topSoldermaskCutSetting.index,
+          pathData: outer,
+          layer: "top",
+          isClosed: true,
+          ctx,
+        }),
+      )
+    }
+    if (includeLayers.includes("bottom") && bottomSoldermaskCutSetting) {
+      project.children.push(
+        createLayerShapePath({
+          cutIndex: bottomSoldermaskCutSetting.index,
+          pathData: outer,
+          layer: "bottom",
+          isClosed: true,
+          ctx,
+        }),
+      )
+    }
   }
 
   // Add inner pill shape (hole)
