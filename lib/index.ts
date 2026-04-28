@@ -1,5 +1,5 @@
 import type { CircuitJson } from "circuit-json"
-import { LightBurnProject, CutSetting } from "lbrnts"
+import { LightBurnProject, CutSetting, ShapePath } from "lbrnts"
 import { cju, getBoardBounds } from "@tscircuit/circuit-json-util"
 import type { ConvertContext } from "./ConvertContext"
 import { addPlatedHole } from "./element-handlers/addPlatedHole"
@@ -66,6 +66,43 @@ export interface ConvertCircuitJsonToLbrnOptions {
     }
   }
 }
+
+const cloneShapePath = (shape: ShapePath, cutIndex: number) =>
+  new ShapePath({
+    cutIndex,
+    verts: shape.verts.map((vert) => ({ ...vert })),
+    prims: shape.prims.map((prim) => ({ ...prim })),
+    isClosed: shape.isClosed,
+    locked: shape.locked,
+    xform: shape.xform ? ([...shape.xform] as typeof shape.xform) : undefined,
+  })
+
+const addReflectedBottomBoardCutLayerShapes = (ctx: ConvertContext) => {
+  const {
+    project,
+    throughBoardCutSetting,
+    reflectedBottomBoardCutSetting,
+    bottomLayerXform,
+  } = ctx
+
+  if (!reflectedBottomBoardCutSetting || !bottomLayerXform) return
+
+  const throughBoardShapes = project.children.filter(
+    (child): child is ShapePath =>
+      child instanceof ShapePath &&
+      child.cutIndex === throughBoardCutSetting.index,
+  )
+
+  for (const shape of throughBoardShapes) {
+    const reflectedShape = cloneShapePath(
+      shape,
+      LAYER_INDEXES.reflectedBottomBoardCut,
+    )
+    reflectedShape.xform = [...bottomLayerXform] as typeof reflectedShape.xform
+    project.children.push(reflectedShape)
+  }
+}
+
 export const convertCircuitJsonToLbrn = async (
   circuitJson: CircuitJson,
   options: ConvertCircuitJsonToLbrnOptions = {},
@@ -150,6 +187,19 @@ export const convertCircuitJsonToLbrn = async (
     qPulseWidth: boardSettings.pulseWidth,
   })
   project.children.push(throughBoardCutSetting)
+
+  let reflectedBottomBoardCutSetting: CutSetting | undefined
+  if (mirrorBottomLayer && includeLayers.includes("bottom")) {
+    reflectedBottomBoardCutSetting = new CutSetting({
+      index: LAYER_INDEXES.reflectedBottomBoardCut,
+      name: "Reflected Bottom Board Cut",
+      numPasses: boardSettings.numPasses,
+      speed: boardSettings.speed,
+      frequency: boardSettings.frequency,
+      qPulseWidth: boardSettings.pulseWidth,
+    })
+    project.children.push(reflectedBottomBoardCutSetting)
+  }
 
   let topSoldermaskCutSetting: CutSetting | undefined
   let bottomSoldermaskCutSetting: CutSetting | undefined
@@ -363,6 +413,7 @@ export const convertCircuitJsonToLbrn = async (
     bottomSoldermaskCutSetting,
     topSoldermaskCureCutSetting,
     bottomSoldermaskCureCutSetting,
+    reflectedBottomBoardCutSetting,
     connMap,
     topCutNetGeoms: new Map(),
     bottomCutNetGeoms: new Map(),
@@ -483,6 +534,8 @@ export const convertCircuitJsonToLbrn = async (
   for (const cutout of db.pcb_cutout.list()) {
     addPcbCutout(cutout, ctx)
   }
+
+  addReflectedBottomBoardCutLayerShapes(ctx)
 
   // Create copper shapes for each layer
   if (includeCopper) {

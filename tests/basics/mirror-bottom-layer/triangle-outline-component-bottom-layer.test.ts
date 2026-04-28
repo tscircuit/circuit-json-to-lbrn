@@ -1,9 +1,10 @@
 import { test, expect } from "bun:test"
 import { convertCircuitJsonToPcbSvg } from "circuit-to-svg"
-import { generateLightBurnSvg } from "lbrnts"
+import { CutSetting, ShapePath, generateLightBurnSvg } from "lbrnts"
 import { convertCircuitJsonToLbrn } from "../../../lib"
 import { stackSvgsVertically } from "stack-svgs"
 import type { CircuitJson } from "circuit-json"
+import { LAYER_INDEXES } from "../../../lib/layer-indexes"
 
 const circuitJson: CircuitJson = [
   {
@@ -146,4 +147,33 @@ test("triangle outline bottom component is mirrored in lbrn output", async () =>
   expect(stackSvgsVertically([pcbSvg, lbrnSvg])).toMatchSvgSnapshot(
     import.meta.filename,
   )
+})
+
+test("creates reflected bottom board cut layer when bottom layer is mirrored", async () => {
+  const project = await convertCircuitJsonToLbrn(circuitJson, {
+    includeLayers: ["bottom"],
+    mirrorBottomLayer: true,
+  })
+
+  const reflectedBoardCutSetting = project.children.find(
+    (child): child is CutSetting =>
+      child instanceof CutSetting &&
+      child.index === LAYER_INDEXES.reflectedBottomBoardCut,
+  )
+  expect(reflectedBoardCutSetting?.name).toBe("Reflected Bottom Board Cut")
+
+  const reflectedBoardCutShapes = project.children.filter(
+    (child): child is ShapePath =>
+      child instanceof ShapePath &&
+      child.cutIndex === LAYER_INDEXES.reflectedBottomBoardCut,
+  )
+  expect(reflectedBoardCutShapes.length).toBeGreaterThan(0)
+  expect(reflectedBoardCutShapes[0]?.xform).toEqual([-1, 0, 0, 1, 24, 0])
+
+  const throughBoardCutShapes = project.children.filter(
+    (child): child is ShapePath =>
+      child instanceof ShapePath &&
+      child.cutIndex === LAYER_INDEXES.throughBoard,
+  )
+  expect(reflectedBoardCutShapes.length).toBe(throughBoardCutShapes.length)
 })

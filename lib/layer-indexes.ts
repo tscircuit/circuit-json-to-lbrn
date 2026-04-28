@@ -20,6 +20,7 @@ export const LAYER_INDEXES = {
   topSoldermaskCure: 10,
   bottomSoldermask: 11,
   bottomSoldermaskCure: 12,
+  reflectedBottomBoardCut: 13,
 } as const
 
 export type LayerIndex = (typeof LAYER_INDEXES)[keyof typeof LAYER_INDEXES]
