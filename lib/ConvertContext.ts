@@ -1,4 +1,7 @@
-import type { CircuitJsonUtilObjects } from "@tscircuit/circuit-json-util"
+import type {
+  BoardBounds,
+  CircuitJsonUtilObjects,
+} from "@tscircuit/circuit-json-util"
 import type { CutSetting, LightBurnProject, Mat } from "lbrnts"
 import type { Box, Polygon } from "@flatten-js/core"
 import type { ConnectivityMap } from "circuit-json-to-connectivity-map"
@@ -73,4 +76,7 @@ export interface ConvertContext {
 
   // Board outline as a contour for clipping copper cut fill
   boardOutlineContour?: Contour
+
+  // Board bounds for full-board scan operations
+  boardBounds?: BoardBounds
 }
