@@ -41,6 +41,7 @@ const defaultLbrn = convertCircuitJsonToLbrn(circuitJson)
 - `laserProfile?: { copper?: { speed?: number; numPasses?: number; frequency?: number; pulseWidth?: number }; board?: { speed?: number; numPasses?: number; frequency?: number; pulseWidth?: number } }` - Custom laser cut settings for copper and board operations. Defaults from GitHub issue: copper (speed: 300 mm/s, numPasses: 100, frequency: 20 kHz, pulseWidth: 1 ns), board (speed: 20 mm/s, numPasses: 100, frequency: 20 kHz, pulseWidth: 1 ns). Pulse width is specified in ns. Allows per-user customization for different lasers/lenses.
 - `includeLayers?: Array<"top" | "bottom">` - Specify which layers to include (default: `["top", "bottom"]`)
 - `mirrorBottomLayer?: boolean` - Mirror bottom layer across the board X-center for flipped-board cutting (default: `false`)
+- `includeHolePunch?: boolean` - Include "Hole Punch Top" / "Hole Punch Bottom" layers that mark hole centers for drilling (default: `true`)
 
 ## Soldermask Support
 

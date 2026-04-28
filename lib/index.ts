@@ -21,6 +21,7 @@ import { createOxidationCleaningLayerForLayer } from "./createOxidationCleaningL
 import { LAYER_INDEXES } from "./layer-indexes"
 import { createSoldermaskCureLayer } from "./createSoldermaskCureLayer"
 import { addReflectedBottomBoardCutLayerShapes } from "./addReflectedBottomBoardCutLayerShapes"
+import { createHolePunchLayers } from "./createHolePunchLayers"
 
 export interface ConvertCircuitJsonToLbrnOptions {
   includeSilkscreen?: boolean
@@ -35,6 +36,7 @@ export interface ConvertCircuitJsonToLbrnOptions {
   traceMargin?: number
   laserSpotSize?: number
   mirrorBottomLayer?: boolean
+  includeHolePunch?: boolean
   /**
    * Whether to generate copper cut fill layers.
    * Creates a ring/band around traces and pads that will be laser cut
@@ -85,6 +87,7 @@ export const convertCircuitJsonToLbrn = async (
   const includeCopper = options.includeCopper ?? true
   const includeSoldermask = options.includeSoldermask ?? false
   const includeSoldermaskCure = options.includeSoldermaskCure ?? false
+  const includeHolePunch = options.includeHolePunch ?? true
   const shouldIncludeSoldermaskCure = includeSoldermask && includeSoldermaskCure
   const globalCopperSoldermaskMarginAdjustment =
     options.globalCopperSoldermaskMarginAdjustment ?? 0
@@ -113,6 +116,12 @@ export const convertCircuitJsonToLbrn = async (
   // Merge user settings with defaults
   const copperSettings = { ...defaultCopperSettings, ...laserProfile?.copper }
   const boardSettings = { ...defaultBoardSettings, ...laserProfile?.board }
+  const hasHolePunchTargets =
+    db.pcb_via.list().length > 0 ||
+    db.pcb_plated_hole.list().length > 0 ||
+    db.pcb_hole.list().length > 0
+  const shouldIncludeHolePunchLayers =
+    includeCopper && includeHolePunch && hasHolePunchTargets
 
   // Determine if we should generate trace clearance zones
   const shouldGenerateTraceClearanceZones = traceMargin > 0 && includeCopper
@@ -152,6 +161,34 @@ export const convertCircuitJsonToLbrn = async (
     qPulseWidth: boardSettings.pulseWidth,
   })
   project.children.push(throughBoardCutSetting)
+
+  let topHolePunchCutSetting: CutSetting | undefined
+  let bottomHolePunchCutSetting: CutSetting | undefined
+  if (shouldIncludeHolePunchLayers) {
+    if (includeLayers.includes("top")) {
+      topHolePunchCutSetting = new CutSetting({
+        index: LAYER_INDEXES.topHolePunch,
+        name: "Hole Punch Top",
+        numPasses: 1,
+        speed: boardSettings.speed,
+        frequency: boardSettings.frequency,
+        qPulseWidth: boardSettings.pulseWidth,
+      })
+      project.children.push(topHolePunchCutSetting)
+    }
+
+    if (includeLayers.includes("bottom")) {
+      bottomHolePunchCutSetting = new CutSetting({
+        index: LAYER_INDEXES.bottomHolePunch,
+        name: "Hole Punch Bottom",
+        numPasses: 1,
+        speed: boardSettings.speed,
+        frequency: boardSettings.frequency,
+        qPulseWidth: boardSettings.pulseWidth,
+      })
+      project.children.push(bottomHolePunchCutSetting)
+    }
+  }
 
   let reflectedBottomBoardCutSetting: CutSetting | undefined
   if (mirrorBottomLayer && includeLayers.includes("bottom")) {
@@ -374,6 +411,8 @@ export const convertCircuitJsonToLbrn = async (
     topCopperCutSetting,
     bottomCopperCutSetting,
     throughBoardCutSetting,
+    topHolePunchCutSetting,
+    bottomHolePunchCutSetting,
     topSoldermaskCutSetting,
     bottomSoldermaskCutSetting,
     topSoldermaskCureCutSetting,
@@ -498,6 +537,10 @@ export const convertCircuitJsonToLbrn = async (
 
   for (const cutout of db.pcb_cutout.list()) {
     addPcbCutout(cutout, ctx)
+  }
+
+  if (shouldIncludeHolePunchLayers) {
+    createHolePunchLayers(ctx)
   }
 
   addReflectedBottomBoardCutLayerShapes(ctx)
