@@ -1,6 +1,6 @@
 import type { CircuitJson } from "circuit-json"
 import { LightBurnProject, CutSetting } from "lbrnts"
-import { cju } from "@tscircuit/circuit-json-util"
+import { cju, getBoardBounds } from "@tscircuit/circuit-json-util"
 import type { ConvertContext } from "./ConvertContext"
 import { addPlatedHole } from "./element-handlers/addPlatedHole"
 import { addSmtPad } from "./element-handlers/addSmtPad"
@@ -401,45 +401,51 @@ export const convertCircuitJsonToLbrn = async (
     ctx.bottomScanNetGeoms.set(net, [])
   }
 
-  // Extract board outline for clipping copper cut fill
+  // Extract board outline for clipping copper cut fill and board bounds for scans
   for (const board of db.pcb_board.list()) {
+    let originAdjustedBoardBounds: ConvertContext["boardBounds"]
+    try {
+      const boardBounds = getBoardBounds(board)
+      originAdjustedBoardBounds = {
+        minX: boardBounds.minX + origin.x,
+        minY: boardBounds.minY + origin.y,
+        maxX: boardBounds.maxX + origin.x,
+        maxY: boardBounds.maxY + origin.y,
+        width: boardBounds.width,
+        height: boardBounds.height,
+        center: {
+          x: boardBounds.center.x + origin.x,
+          y: boardBounds.center.y + origin.y,
+        },
+      }
+      ctx.boardBounds = originAdjustedBoardBounds
+    } catch (error) {
+      console.warn("Cannot extract board bounds:", error)
+      break
+    }
+
     if (board.outline?.length) {
       ctx.boardOutlineContour = board.outline.map((outlinePoint) => [
         outlinePoint.x + origin.x,
         outlinePoint.y + origin.y,
       ])
-      if (mirrorBottomLayer) {
-        let minX = Infinity
-        let maxX = -Infinity
-        for (const outlinePoint of board.outline) {
-          const x = outlinePoint.x + origin.x
-          minX = Math.min(minX, x)
-          maxX = Math.max(maxX, x)
-        }
-        if (isFinite(minX) && isFinite(maxX)) {
-          bottomLayerMirrorAxisX = (minX + maxX) / 2
-        }
-      }
     } else if (
       typeof board.width === "number" &&
       typeof board.height === "number" &&
       board.center
     ) {
-      const halfWidth = board.width / 2
-      const halfHeight = board.height / 2
-      const minX = board.center.x - halfWidth + origin.x
-      const minY = board.center.y - halfHeight + origin.y
-      const maxX = board.center.x + halfWidth + origin.x
-      const maxY = board.center.y + halfHeight + origin.y
+      const { minX, minY, maxX, maxY } = originAdjustedBoardBounds
       ctx.boardOutlineContour = [
         [minX, minY],
         [maxX, minY],
         [maxX, maxY],
         [minX, maxY],
       ]
-      if (mirrorBottomLayer) {
-        bottomLayerMirrorAxisX = (minX + maxX) / 2
-      }
+    }
+
+    if (mirrorBottomLayer) {
+      bottomLayerMirrorAxisX =
+        (originAdjustedBoardBounds.minX + originAdjustedBoardBounds.maxX) / 2
     }
     break // Only use the first board
   }
