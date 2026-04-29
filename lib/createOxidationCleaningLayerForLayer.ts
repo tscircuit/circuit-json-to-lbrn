@@ -4,13 +4,12 @@ import { createLayerShapePath } from "./helpers/createLayerShapePath"
 /**
  * Creates an oxidation cleaning layer for a given layer.
  *
- * This generates a filled area covering the board outline
- * that can be used to laser clean oxidation from the copper surface.
+ * This adds the board outline path to the oxidation cleaning layer.
  *
  * The algorithm:
  * 1. Use the board outline contour if present
  * 2. Fall back to rectangular board bounds
- * 3. Create a single SCAN mode shape that fills that board-only outline
+ * 3. Create a single closed outline path on the oxidation cleaning layer
  */
 export const createOxidationCleaningLayerForLayer = async ({
   layer,

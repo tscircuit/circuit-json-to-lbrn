@@ -1,14 +1,14 @@
 import { expect, test } from "bun:test"
 import type { CircuitJson } from "circuit-json"
 import { convertCircuitJsonToPcbSvg } from "circuit-to-svg"
-import { generateLightBurnSvg } from "lbrnts"
+import { CutSetting, generateLightBurnSvg } from "lbrnts"
 import { stackSvgsVertically } from "stack-svgs"
 import { convertCircuitJsonToLbrn } from "../../../lib"
+import { LAYER_INDEXES } from "../../../lib/layer-indexes"
 
 /**
  * Test basic oxidation cleaning layer functionality.
- * The oxidation cleaning layer should fill the entire board area
- * for laser ablation to clean oxidation from the copper surface.
+ * The oxidation cleaning layer should add only the board outline.
  */
 test("oxidation-cleaning-basic", async () => {
   const circuitJson = [
@@ -27,6 +27,14 @@ test("oxidation-cleaning-basic", async () => {
     includeOxidationCleaningLayer: true,
     includeLayers: ["top"],
   })
+  const topOxidationCutSetting = project.children.find(
+    (child): child is CutSetting =>
+      child instanceof CutSetting &&
+      child.index === LAYER_INDEXES.topOxidationCleaning,
+  )
+
+  expect(topOxidationCutSetting?.type).toBe("Cut")
+  expect(topOxidationCutSetting?.scanOpt).toBeUndefined()
 
   Bun.write(
     "debug-output/oxidation-cleaning-basic.lbrn2",
@@ -35,6 +43,7 @@ test("oxidation-cleaning-basic", async () => {
   )
 
   const lbrnSvg = await generateLightBurnSvg(project)
+  expect(lbrnSvg).not.toContain('fill="url(')
 
   expect(stackSvgsVertically([pcbSvg, lbrnSvg])).toMatchSvgSnapshot(
     import.meta.filename,
