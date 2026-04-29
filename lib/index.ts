@@ -50,8 +50,7 @@ export interface ConvertCircuitJsonToLbrnOptions {
   copperCutFillMargin?: number
   /**
    * Whether to generate an oxidation cleaning layer.
-   * Creates a filled area covering the entire "inside" of the board outline
-   * for laser ablation to clean oxidation from the copper surface.
+   * Adds the board outline to oxidation cleaning layers.
    */
   includeOxidationCleaningLayer?: boolean
   laserProfile?: {
@@ -359,32 +358,22 @@ export const convertCircuitJsonToLbrn = async (
   if (includeOxidationCleaningLayer) {
     if (includeLayers.includes("top")) {
       topOxidationCleaningCutSetting = new CutSetting({
-        type: "Scan",
         index: LAYER_INDEXES.topOxidationCleaning,
         name: "Top Oxidation Cleaning",
         numPasses: copperSettings.numPasses,
         speed: 500,
-        scanOpt: "individual",
-        interval: laserSpotSize,
-        angle: 45,
         qPulseWidth: 1,
-        crossHatch: true,
       })
       project.children.push(topOxidationCleaningCutSetting)
     }
 
     if (includeLayers.includes("bottom")) {
       bottomOxidationCleaningCutSetting = new CutSetting({
-        type: "Scan",
         index: LAYER_INDEXES.bottomOxidationCleaning,
         name: "Bottom Oxidation Cleaning",
         numPasses: copperSettings.numPasses,
         speed: 500,
-        scanOpt: "individual",
-        interval: laserSpotSize,
-        angle: 45,
         qPulseWidth: 1,
-        crossHatch: true,
       })
       project.children.push(bottomOxidationCleaningCutSetting)
     }

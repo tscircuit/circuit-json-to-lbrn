@@ -1,6 +1,6 @@
 import { test, expect } from "bun:test"
 import { convertCircuitJsonToPcbSvg } from "circuit-to-svg"
-import { generateLightBurnSvg } from "lbrnts"
+import { CutSetting, generateLightBurnSvg } from "lbrnts"
 import { convertCircuitJsonToLbrn } from "../../lib"
 import { stackSvgsVertically } from "stack-svgs"
 import type { CircuitJson } from "circuit-json"
@@ -29,6 +29,12 @@ const collectPathsForCutIndex = (
 
   return paths
 }
+
+const getCutSettingForIndex = (projectChildren: unknown[], cutIndex: number) =>
+  projectChildren.find(
+    (child): child is CutSetting =>
+      child instanceof CutSetting && child.index === cutIndex,
+  )
 
 const circuitJson: CircuitJson = [
   {
@@ -120,6 +126,16 @@ test("creates board outline cut with oxidation cleaning layer", async () => {
       LAYER_INDEXES.bottomOxidationCleaning,
     )[0]?.verts,
   ).toEqual(expectedOxidationOutline)
+  expect(
+    getCutSettingForIndex(project.children, LAYER_INDEXES.topOxidationCleaning)
+      ?.type,
+  ).toBe("Cut")
+  expect(
+    getCutSettingForIndex(
+      project.children,
+      LAYER_INDEXES.bottomOxidationCleaning,
+    )?.type,
+  ).toBe("Cut")
 
   Bun.write(
     "debug-output/board-outline-with-oxidation.lbrn2",
