@@ -7,6 +7,21 @@ import { getManifold } from "./getManifold"
 
 type Contour = Array<[number, number]>
 
+const signedArea = (contour: Contour): number => {
+  let area = 0
+  for (let i = 0; i < contour.length; i++) {
+    const [x1, y1] = contour[i]!
+    const [x2, y2] = contour[(i + 1) % contour.length]!
+    area += x1 * y2 - x2 * y1
+  }
+  return area / 2
+}
+
+const normalizeContourToCcw = (contour: Contour): Contour =>
+  contour.length >= 3 && signedArea(contour) < 0
+    ? [...contour].reverse()
+    : contour
+
 /**
  * Converts a flatten-js Polygon to an array of contours for manifold CrossSection
  * Each contour is an array of [x, y] coordinates
@@ -121,16 +136,16 @@ export const createCopperCutFillForLayer = async ({
     const allContours: Contour[] = []
     for (const geom of allGeoms) {
       const contours = polygonToContours(geom)
-      allContours.push(...contours)
+      allContours.push(...contours.map(normalizeContourToCcw))
     }
 
     if (allContours.length === 0) {
       return
     }
 
-    // Create a unified CrossSection from all copper contours (the "inside")
-    // The constructor performs a boolean union with Positive fill rule
-    const copperInside = new CrossSection(allContours, "Positive")
+    // Create a unified CrossSection from all copper contours (the "inside").
+    // NonZero with normalized winding avoids dropouts from mixed CW/CCW input.
+    const copperInside = new CrossSection(allContours, "NonZero")
 
     // Offset (expand) the copper outward by the margin to get the "outer boundary"
     // Positive delta expands outward
@@ -147,7 +162,10 @@ export const createCopperCutFillForLayer = async ({
 
     // Clip to board outline if available
     if (boardOutlineContour && boardOutlineContour.length >= 3) {
-      const boardOutline = new CrossSection([boardOutlineContour], "Positive")
+      const boardOutline = new CrossSection(
+        [normalizeContourToCcw(boardOutlineContour)],
+        "NonZero",
+      )
       const clippedArea = cutFillArea.intersect(boardOutline)
       cutFillArea.delete()
       cutFillArea = clippedArea
