@@ -11,6 +11,8 @@ test("repro04 - motor controller", async () => {
 
   const project = await convertCircuitJsonToLbrn(circuitJson as CircuitJson, {
     includeLayers: ["top"],
+    includeCopperCutFill: true,
+    copperCutFillMargin: 0.5,
   })
 
   Bun.write(
