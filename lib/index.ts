@@ -130,14 +130,11 @@ export const convertCircuitJsonToLbrn = async (
     throw new Error("traceMargin requires includeCopper to be true")
   }
 
-  // Keep every generated LightBurn layer at one pass, regardless of profile input.
-  const layerNumPasses = 1
-
   // Create cut settings
   const topCopperCutSetting = new CutSetting({
     index: LAYER_INDEXES.topCopper,
     name: "Cut Top Copper",
-    numPasses: layerNumPasses,
+    numPasses: copperSettings.numPasses,
     speed: copperSettings.speed,
     frequency: copperSettings.frequency,
     qPulseWidth: copperSettings.pulseWidth,
@@ -147,7 +144,7 @@ export const convertCircuitJsonToLbrn = async (
   const bottomCopperCutSetting = new CutSetting({
     index: LAYER_INDEXES.bottomCopper,
     name: "Cut Bottom Copper",
-    numPasses: layerNumPasses,
+    numPasses: copperSettings.numPasses,
     speed: copperSettings.speed,
     frequency: copperSettings.frequency,
     qPulseWidth: copperSettings.pulseWidth,
@@ -157,7 +154,7 @@ export const convertCircuitJsonToLbrn = async (
   const throughBoardCutSetting = new CutSetting({
     index: LAYER_INDEXES.throughBoard,
     name: "Cut Through Board",
-    numPasses: layerNumPasses,
+    numPasses: boardSettings.numPasses,
     speed: boardSettings.speed,
     frequency: boardSettings.frequency,
     qPulseWidth: boardSettings.pulseWidth,
@@ -171,7 +168,7 @@ export const convertCircuitJsonToLbrn = async (
       topHolePunchCutSetting = new CutSetting({
         index: LAYER_INDEXES.topHolePunch,
         name: "Hole Punch Top",
-        numPasses: layerNumPasses,
+        numPasses: 1,
         speed: boardSettings.speed,
         frequency: boardSettings.frequency,
         qPulseWidth: boardSettings.pulseWidth,
@@ -183,7 +180,7 @@ export const convertCircuitJsonToLbrn = async (
       bottomHolePunchCutSetting = new CutSetting({
         index: LAYER_INDEXES.bottomHolePunch,
         name: "Hole Punch Bottom",
-        numPasses: layerNumPasses,
+        numPasses: 1,
         speed: boardSettings.speed,
         frequency: boardSettings.frequency,
         qPulseWidth: boardSettings.pulseWidth,
@@ -197,7 +194,7 @@ export const convertCircuitJsonToLbrn = async (
     reflectedBottomBoardCutSetting = new CutSetting({
       index: LAYER_INDEXES.reflectedBottomBoardCut,
       name: "Reflected Bottom Board Cut",
-      numPasses: layerNumPasses,
+      numPasses: boardSettings.numPasses,
       speed: boardSettings.speed,
       frequency: boardSettings.frequency,
       qPulseWidth: boardSettings.pulseWidth,
@@ -214,7 +211,7 @@ export const convertCircuitJsonToLbrn = async (
         type: "Scan",
         index: LAYER_INDEXES.topSoldermask,
         name: "Top Soldermask",
-        numPasses: layerNumPasses,
+        numPasses: 1,
         speed: 150,
         scanOpt: "individual",
         interval: 0.18,
@@ -230,7 +227,7 @@ export const convertCircuitJsonToLbrn = async (
         type: "Scan",
         index: LAYER_INDEXES.bottomSoldermask,
         name: "Bottom Soldermask",
-        numPasses: layerNumPasses,
+        numPasses: 1,
         speed: 150,
         scanOpt: "individual",
         interval: 0.18,
@@ -250,7 +247,7 @@ export const convertCircuitJsonToLbrn = async (
         type: "Scan",
         index: LAYER_INDEXES.topSoldermaskCure,
         name: "Top Soldermask Cure",
-        numPasses: layerNumPasses,
+        numPasses: 1,
         speed: 150,
         scanOpt: "individual",
         interval: 0.18,
@@ -266,7 +263,7 @@ export const convertCircuitJsonToLbrn = async (
         type: "Scan",
         index: LAYER_INDEXES.bottomSoldermaskCure,
         name: "Bottom Soldermask Cure",
-        numPasses: layerNumPasses,
+        numPasses: 1,
         speed: 150,
         scanOpt: "individual",
         interval: 0.18,
@@ -288,7 +285,7 @@ export const convertCircuitJsonToLbrn = async (
         type: "Scan",
         index: LAYER_INDEXES.topTraceClearance,
         name: "Clear Top Trace Clearance Areas",
-        numPasses: layerNumPasses,
+        numPasses: 12,
         speed: 100,
         scanOpt: "individual",
         interval: laserSpotSize,
@@ -304,7 +301,7 @@ export const convertCircuitJsonToLbrn = async (
         type: "Scan",
         index: LAYER_INDEXES.bottomTraceClearance,
         name: "Clear Bottom Trace Clearance Areas",
-        numPasses: layerNumPasses,
+        numPasses: 12,
         speed: 100,
         scanOpt: "individual",
         interval: laserSpotSize,
@@ -326,7 +323,7 @@ export const convertCircuitJsonToLbrn = async (
         type: "Scan",
         index: LAYER_INDEXES.topCopperCutFill,
         name: "Top Copper Cut Fill",
-        numPasses: layerNumPasses,
+        numPasses: copperSettings.numPasses,
         speed: copperSettings.speed,
         scanOpt: "individual",
         interval: 0.03,
@@ -342,7 +339,7 @@ export const convertCircuitJsonToLbrn = async (
         type: "Scan",
         index: LAYER_INDEXES.bottomCopperCutFill,
         name: "Bottom Copper Cut Fill",
-        numPasses: layerNumPasses,
+        numPasses: copperSettings.numPasses,
         speed: copperSettings.speed,
         scanOpt: "individual",
         interval: 0.03,
@@ -363,7 +360,7 @@ export const convertCircuitJsonToLbrn = async (
       topOxidationCleaningCutSetting = new CutSetting({
         index: LAYER_INDEXES.topOxidationCleaning,
         name: "Top Oxidation Cleaning",
-        numPasses: layerNumPasses,
+        numPasses: copperSettings.numPasses,
         speed: 500,
         qPulseWidth: 1,
       })
@@ -374,7 +371,7 @@ export const convertCircuitJsonToLbrn = async (
       bottomOxidationCleaningCutSetting = new CutSetting({
         index: LAYER_INDEXES.bottomOxidationCleaning,
         name: "Bottom Oxidation Cleaning",
-        numPasses: layerNumPasses,
+        numPasses: copperSettings.numPasses,
         speed: 500,
         qPulseWidth: 1,
       })
