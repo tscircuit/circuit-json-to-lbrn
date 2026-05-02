@@ -1,6 +1,12 @@
 import type { ConvertContext } from "../ConvertContext"
-import { createLayerShapePath } from "./createLayerShapePath"
 import { pathToPolygon } from "./pathToPolygon"
+
+const ensureGeometryMapsHaveNet = (ctx: ConvertContext, netId: string) => {
+  if (!ctx.topCutNetGeoms.has(netId)) ctx.topCutNetGeoms.set(netId, [])
+  if (!ctx.bottomCutNetGeoms.has(netId)) ctx.bottomCutNetGeoms.set(netId, [])
+  if (!ctx.topScanNetGeoms.has(netId)) ctx.topScanNetGeoms.set(netId, [])
+  if (!ctx.bottomScanNetGeoms.has(netId)) ctx.bottomScanNetGeoms.set(netId, [])
+}
 
 export const addCopperGeometryToNetOrProject = ({
   geometryId,
@@ -13,37 +19,14 @@ export const addCopperGeometryToNetOrProject = ({
   layer: "top" | "bottom"
   ctx: ConvertContext
 }) => {
-  const {
-    project,
-    connMap,
-    topCutNetGeoms,
-    bottomCutNetGeoms,
-    topCopperCutSetting,
-    bottomCopperCutSetting,
-    includeLayers,
-  } = ctx
+  const { connMap, topCutNetGeoms, bottomCutNetGeoms, includeLayers } = ctx
 
   if (!includeLayers.includes(layer)) return
 
-  const netId = connMap.getNetConnectedToId(geometryId)
-  const cutSetting =
-    layer === "top" ? topCopperCutSetting : bottomCopperCutSetting
+  const netId =
+    connMap.getNetConnectedToId(geometryId) ?? `unconnected:${geometryId}`
   const netGeoms = layer === "top" ? topCutNetGeoms : bottomCutNetGeoms
 
-  if (netId) {
-    // Add to netGeoms for union with other elements on same net
-    const polygon = pathToPolygon(path.verts)
-    netGeoms.get(netId)?.push(polygon)
-  } else {
-    // No net connection - draw directly to project
-    project.children.push(
-      createLayerShapePath({
-        cutIndex: cutSetting.index,
-        pathData: path,
-        layer,
-        isClosed: true,
-        ctx,
-      }),
-    )
-  }
+  ensureGeometryMapsHaveNet(ctx, netId)
+  netGeoms.get(netId)!.push(pathToPolygon(path.verts))
 }

@@ -1,9 +1,9 @@
-import { Polygon, Box, Point } from "@flatten-js/core"
+import { Box, Point, Polygon } from "@flatten-js/core"
+import { ShapeGroup } from "lbrnts"
 import type { ConvertContext } from "./ConvertContext"
+import { getManifold } from "./getManifold"
 import { createLayerShapePath } from "./helpers/createLayerShapePath"
 import { polygonToShapePathData } from "./polygon-to-shape-path"
-import { ShapeGroup } from "lbrnts"
-import { getManifold } from "./getManifold"
 
 type Contour = Array<[number, number]>
 
@@ -94,7 +94,6 @@ export const createCopperCutFillForLayer = async ({
 }): Promise<void> => {
   const {
     project,
-    connMap,
     topCutNetGeoms,
     bottomCutNetGeoms,
     topCopperCutFillCutSetting,
@@ -116,9 +115,8 @@ export const createCopperCutFillForLayer = async ({
 
   // Collect all geometries for this layer across all nets
   const allGeoms: Array<Polygon | Box> = []
-  for (const net of Object.keys(connMap.netMap)) {
-    const netGeoms = netGeomMap.get(net)
-    if (netGeoms && netGeoms.length > 0) {
+  for (const netGeoms of netGeomMap.values()) {
+    if (netGeoms.length > 0) {
       allGeoms.push(...netGeoms)
     }
   }

@@ -1,4 +1,4 @@
-import { Polygon, Box, Point } from "@flatten-js/core"
+import { Box, Point, Polygon } from "@flatten-js/core"
 import type { ConvertContext } from "./ConvertContext"
 import { getManifold } from "./getManifold"
 import { createLayerShapePath } from "./helpers/createLayerShapePath"
@@ -137,7 +137,6 @@ export const createCopperShapesForLayer = async ({
 }): Promise<void> => {
   const {
     project,
-    connMap,
     topCutNetGeoms,
     bottomCutNetGeoms,
     topCopperCutSetting,
@@ -153,9 +152,7 @@ export const createCopperShapesForLayer = async ({
   }
   const cutIndex = cutSetting.index!
 
-  for (const net of Object.keys(connMap.netMap)) {
-    const netGeoms = netGeomMap.get(net)!
-
+  for (const [net, netGeoms] of netGeomMap) {
     if (netGeoms.length === 0) {
       continue
     }

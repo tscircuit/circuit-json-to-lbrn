@@ -1,7 +1,7 @@
-import { Polygon, Box, BooleanOperations } from "@flatten-js/core"
+import { BooleanOperations, Box, Polygon } from "@flatten-js/core"
 import type { ConvertContext } from "./ConvertContext"
-import { polygonToShapePathData } from "./polygon-to-shape-path"
 import { createLayerShapePath } from "./helpers/createLayerShapePath"
+import { polygonToShapePathData } from "./polygon-to-shape-path"
 
 /**
  * Creates trace clearance areas for a given layer
@@ -17,7 +17,6 @@ export const createTraceClearanceAreasForLayer = ({
 }) => {
   const {
     project,
-    connMap,
     topCutNetGeoms,
     bottomCutNetGeoms,
     topScanNetGeoms,
@@ -42,12 +41,11 @@ export const createTraceClearanceAreasForLayer = ({
   const innerGeomMap = layer === "top" ? topCutNetGeoms : bottomCutNetGeoms
   const outerGeomMap = layer === "top" ? topScanNetGeoms : bottomScanNetGeoms
 
-  // Process each net
-  for (const net of Object.keys(connMap.netMap)) {
-    const innerGeoms = innerGeomMap.get(net)!
-    const outerGeoms = outerGeomMap.get(net)!
+  // Process each net with both normal and margin geometries.
+  for (const [net, innerGeoms] of innerGeomMap) {
+    const outerGeoms = outerGeomMap.get(net)
 
-    if (innerGeoms.length === 0 || outerGeoms.length === 0) {
+    if (innerGeoms.length === 0 || !outerGeoms || outerGeoms.length === 0) {
       continue
     }
 

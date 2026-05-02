@@ -1,7 +1,7 @@
-import { test, expect } from "bun:test"
-import { convertCircuitJsonToLbrn } from "../../lib"
-import { CutSetting } from "lbrnts"
+import { expect, test } from "bun:test"
 import type { CircuitJson } from "circuit-json"
+import type { CutSetting } from "lbrnts"
+import { convertCircuitJsonToLbrn } from "../../lib"
 
 const circuitJson: CircuitJson = [
   {
@@ -78,14 +78,14 @@ test("uses default laserProfile settings when not provided", async () => {
   // Verify top copper defaults
   const topCopper = cutSettings[0]!
   expect(topCopper.speed).toBe(300)
-  expect(topCopper.numPasses).toBe(100)
+  expect(topCopper.numPasses).toBe(1)
   expect(topCopper.frequency).toBe(20000)
   expect(topCopper.qPulseWidth).toBe(1)
 
   // Verify through board defaults
   const throughBoard = cutSettings[2]!
   expect(throughBoard.speed).toBe(20)
-  expect(throughBoard.numPasses).toBe(100)
+  expect(throughBoard.numPasses).toBe(1)
   expect(throughBoard.frequency).toBe(20000)
   expect(throughBoard.qPulseWidth).toBe(1)
 })

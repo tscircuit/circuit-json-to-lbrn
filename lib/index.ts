@@ -1,27 +1,27 @@
-import type { CircuitJson } from "circuit-json"
-import { LightBurnProject, CutSetting } from "lbrnts"
 import { cju, getBoardBounds } from "@tscircuit/circuit-json-util"
-import type { ConvertContext } from "./ConvertContext"
-import { addPlatedHole } from "./element-handlers/addPlatedHole"
-import { addSmtPad } from "./element-handlers/addSmtPad"
-import { addPcbTrace } from "./element-handlers/addPcbTrace"
-import { addPcbBoard } from "./element-handlers/addPcbBoard"
+import type { CircuitJson } from "circuit-json"
 import { getFullConnectivityMapFromCircuitJson } from "circuit-json-to-connectivity-map"
+import { CutSetting, LightBurnProject } from "lbrnts"
+import { addReflectedBottomBoardCutLayerShapes } from "./addReflectedBottomBoardCutLayerShapes"
+import type { ConvertContext } from "./ConvertContext"
 import {
   calculateCircuitBounds,
   calculateOriginFromBounds,
 } from "./calculateBounds"
-import { addPcbVia } from "./element-handlers/addPcbVia"
-import { addPcbHole } from "./element-handlers/addPcbHole"
-import { addPcbCutout } from "./element-handlers/addPcbCutout"
-import { createCopperShapesForLayer } from "./createCopperShapesForLayer"
-import { createTraceClearanceAreasForLayer } from "./createTraceClearanceAreasForLayer"
 import { createCopperCutFillForLayer } from "./createCopperCutFillForLayer"
-import { createOxidationCleaningLayerForLayer } from "./createOxidationCleaningLayerForLayer"
-import { LAYER_INDEXES } from "./layer-indexes"
-import { createSoldermaskCureLayer } from "./createSoldermaskCureLayer"
-import { addReflectedBottomBoardCutLayerShapes } from "./addReflectedBottomBoardCutLayerShapes"
+import { createCopperShapesForLayer } from "./createCopperShapesForLayer"
 import { createHolePunchLayers } from "./createHolePunchLayers"
+import { createOxidationCleaningLayerForLayer } from "./createOxidationCleaningLayerForLayer"
+import { createSoldermaskCureLayer } from "./createSoldermaskCureLayer"
+import { createTraceClearanceAreasForLayer } from "./createTraceClearanceAreasForLayer"
+import { addPcbBoard } from "./element-handlers/addPcbBoard"
+import { addPcbCutout } from "./element-handlers/addPcbCutout"
+import { addPcbHole } from "./element-handlers/addPcbHole"
+import { addPcbTrace } from "./element-handlers/addPcbTrace"
+import { addPcbVia } from "./element-handlers/addPcbVia"
+import { addPlatedHole } from "./element-handlers/addPlatedHole"
+import { addSmtPad } from "./element-handlers/addSmtPad"
+import { LAYER_INDEXES } from "./layer-indexes"
 
 export interface ConvertCircuitJsonToLbrnOptions {
   includeSilkscreen?: boolean
@@ -101,13 +101,13 @@ export const convertCircuitJsonToLbrn = async (
   // Default laser settings
   const defaultCopperSettings = {
     speed: 300,
-    numPasses: 100,
+    numPasses: 1,
     frequency: 20000,
     pulseWidth: 1,
   }
   const defaultBoardSettings = {
     speed: 20,
-    numPasses: 100,
+    numPasses: 1,
     frequency: 20000,
     pulseWidth: 1,
   }

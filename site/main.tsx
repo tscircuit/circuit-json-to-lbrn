@@ -1,7 +1,7 @@
-import { convertCircuitJsonToLbrn } from "../lib/index.ts"
+import type { CircuitJson } from "circuit-json"
 import { convertCircuitJsonToPcbSvg } from "circuit-to-svg"
 import { generateLightBurnSvg } from "lbrnts"
-import type { CircuitJson } from "circuit-json"
+import { convertCircuitJsonToLbrn } from "../lib/index.ts"
 
 // Global state
 let currentLbrnProject: any = null
@@ -162,13 +162,13 @@ function getConversionOptions() {
     laserProfile: {
       copper: {
         speed: parseFloat(copperSpeedInput.value) || 300,
-        numPasses: parseInt(copperNumPassesInput.value) || 100,
+        numPasses: parseInt(copperNumPassesInput.value, 10) || 1,
         frequency: kHzToHz(parseFloat(copperFrequencyInput.value) || 20),
         pulseWidth: parseFloat(copperPulseWidthInput.value) || 1,
       },
       board: {
         speed: parseFloat(boardSpeedInput.value) || 20,
-        numPasses: parseInt(boardNumPassesInput.value) || 100,
+        numPasses: parseInt(boardNumPassesInput.value, 10) || 1,
         frequency: kHzToHz(parseFloat(boardFrequencyInput.value) || 20),
         pulseWidth: parseFloat(boardPulseWidthInput.value) || 1,
       },
