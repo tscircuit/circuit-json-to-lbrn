@@ -3,7 +3,6 @@ import { LightBurnProject, CutSetting } from "lbrnts"
 import { cju } from "@tscircuit/circuit-json-util"
 import type { ConvertContext } from "./ConvertContext"
 import { addPlatedHole } from "./element-handlers/addPlatedHole"
-import { addSmtPad } from "./element-handlers/addSmtPad"
 import { addPcbTrace } from "./element-handlers/addPcbTrace"
 import { groupElementsByConnectivity } from "./utils/group-elements-by-connectivity"
 import { elementToPolygon } from "./geometry/convert-element-to-polygon"
@@ -36,10 +35,22 @@ export const convertCircuitJsonToLbrn = (
 
   // Group elements by connectivity (net)
   const grouped = groupElementsByConnectivity(db)
+  const addCopperPolygonsToProject = (
+    polygons: Array<NonNullable<ReturnType<typeof elementToPolygon>>>,
+  ) => {
+    // Union all polygons and split into islands
+    const unifiedPolygons = unionPolygons(polygons)
+
+    // Create a ShapePath for each island
+    for (const polygon of unifiedPolygons) {
+      const shapePath = polygonToShapePath(polygon, copperCutSetting.index ?? 0)
+      project.children.push(shapePath)
+    }
+  }
 
   // Process each net group with boolean union operations
   for (const netGroup of grouped.netGroups) {
-    const polygons = []
+    const polygons: Array<NonNullable<ReturnType<typeof elementToPolygon>>> = []
 
     // Convert all pads to polygons
     for (const pad of netGroup.pads) {
@@ -59,24 +70,27 @@ export const convertCircuitJsonToLbrn = (
       if (poly) polygons.push(poly)
     }
 
-    // Union all polygons and split into islands
-    const unifiedPolygons = unionPolygons(polygons)
-
-    // Create a ShapePath for each island
-    for (const polygon of unifiedPolygons) {
-      const shapePath = polygonToShapePath(
-        polygon,
-        copperCutSetting.index ?? 0,
-      )
-      project.children.push(shapePath)
-    }
+    addCopperPolygonsToProject(polygons)
   }
 
-  // Process unconnected elements individually (backward compatible)
+  // Include manually inserted no-net pads in the copper fill pipeline.
+  const unconnectedPadPolygonsByLayer = new Map<
+    string,
+    Array<NonNullable<ReturnType<typeof elementToPolygon>>>
+  >()
   for (const pad of grouped.unconnectedPads) {
-    addSmtPad(pad, ctx)
+    const poly = elementToPolygon(pad)
+    if (!poly) continue
+
+    const layerPolygons = unconnectedPadPolygonsByLayer.get(pad.layer) ?? []
+    layerPolygons.push(poly)
+    unconnectedPadPolygonsByLayer.set(pad.layer, layerPolygons)
+  }
+  for (const polygons of unconnectedPadPolygonsByLayer.values()) {
+    addCopperPolygonsToProject(polygons)
   }
 
+  // Process other unconnected elements individually (backward compatible)
   for (const hole of grouped.unconnectedPlatedHoles) {
     addPlatedHole(hole, ctx)
   }
