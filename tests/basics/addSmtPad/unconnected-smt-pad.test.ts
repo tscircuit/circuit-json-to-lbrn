@@ -1,5 +1,7 @@
 import { expect, test } from "bun:test"
+import type { CircuitJson } from "circuit-json"
 import { CutSetting, LightBurnProject, ShapePath } from "lbrnts"
+import { convertCircuitJsonToLbrn } from "../../../lib"
 import type { ConvertContext } from "../../../lib/ConvertContext"
 import { createCopperCutFillForLayer } from "../../../lib/createCopperCutFillForLayer"
 import { createCopperShapesForLayer } from "../../../lib/createCopperShapesForLayer"
@@ -85,6 +87,48 @@ test("renders unconnected smt pad as its own copper net", async () => {
 
   await createCopperShapesForLayer({ layer: "top", ctx })
   await createCopperCutFillForLayer({ layer: "top", ctx })
+
+  expect(
+    countShapePathsForCutIndex(
+      project.children as LightBurnNode[],
+      LAYER_INDEXES.topCopper,
+    ),
+  ).toBeGreaterThan(0)
+  expect(
+    countShapePathsForCutIndex(
+      project.children as LightBurnNode[],
+      LAYER_INDEXES.topCopperCutFill,
+    ),
+  ).toBeGreaterThan(0)
+})
+
+test("includes manually inserted no-net smt pad in copper cut fill", async () => {
+  const circuitJson = [
+    {
+      type: "pcb_board",
+      pcb_board_id: "board_1",
+      width: 10,
+      height: 10,
+      center: { x: 0, y: 0 },
+    },
+    {
+      type: "pcb_smtpad",
+      pcb_smtpad_id: "manual_pad_1",
+      shape: "rect",
+      x: 0,
+      y: 0,
+      width: 1.5,
+      height: 1,
+      layer: "top",
+    },
+  ] as CircuitJson
+
+  const project = await convertCircuitJsonToLbrn(circuitJson, {
+    includeCopper: true,
+    includeCopperCutFill: true,
+    includeLayers: ["top"],
+    copperCutFillMargin: 0.25,
+  })
 
   expect(
     countShapePathsForCutIndex(

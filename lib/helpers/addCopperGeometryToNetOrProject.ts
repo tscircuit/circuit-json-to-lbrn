@@ -14,7 +14,7 @@ export const addCopperGeometryToNetOrProject = ({
   layer,
   ctx,
 }: {
-  geometryId: string
+  geometryId?: string
   path: { verts: { x: number; y: number }[]; prims: Array<{ type: number }> }
   layer: "top" | "bottom"
   ctx: ConvertContext
@@ -23,8 +23,14 @@ export const addCopperGeometryToNetOrProject = ({
 
   if (!includeLayers.includes(layer)) return
 
+  const fallbackGeometryId =
+    geometryId ??
+    `${layer}:${path.verts
+      .map((vert) => `${vert.x.toFixed(6)},${vert.y.toFixed(6)}`)
+      .join(";")}`
   const netId =
-    connMap.getNetConnectedToId(geometryId) ?? `unconnected:${geometryId}`
+    (geometryId ? connMap.getNetConnectedToId(geometryId) : undefined) ??
+    `unconnected:${fallbackGeometryId}`
   const netGeoms = layer === "top" ? topCutNetGeoms : bottomCutNetGeoms
 
   ensureGeometryMapsHaveNet(ctx, netId)
