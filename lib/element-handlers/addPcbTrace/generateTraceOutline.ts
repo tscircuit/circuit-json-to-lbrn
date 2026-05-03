@@ -25,6 +25,7 @@ export const generateTraceOutline = ({
   if (cleanedInputPoints.length < 2) return null
 
   const radius = width / 2
+  const miterLimit = radius * 4
   const outlinePoints: Array<{ x: number; y: number }> = []
 
   // Calculate perpendicular offset for a segment
@@ -60,6 +61,13 @@ export const generateTraceOutline = ({
       y: p1.y + t * d1.y,
     }
   }
+
+  const isAcceptableMiter = (
+    intersection: { x: number; y: number },
+    corner: { x: number; y: number },
+  ) =>
+    Math.hypot(intersection.x - corner.x, intersection.y - corner.y) <=
+    miterLimit
 
   // Calculate offset points and directions for each segment
   const segmentData: Array<{
@@ -114,11 +122,13 @@ export const generateTraceOutline = ({
         seg.leftP1,
         seg.dir,
       )
+      const corner = seg.p1
 
-      if (intersection) {
+      if (intersection && isAcceptableMiter(intersection, corner)) {
         outlinePoints.push(intersection)
       } else {
-        // Lines are parallel, use the segment's start point
+        // Bevel near-parallel or reversing corners to avoid long miter spikes.
+        outlinePoints.push(prevSeg.leftP2)
         outlinePoints.push(seg.leftP1)
       }
     }
@@ -146,11 +156,13 @@ export const generateTraceOutline = ({
         nextSeg.rightP1,
         nextSeg.dir,
       )
+      const corner = seg.p2
 
-      if (intersection) {
+      if (intersection && isAcceptableMiter(intersection, corner)) {
         outlinePoints.push(intersection)
       } else {
-        // Lines are parallel, use the segment's end point
+        // Bevel near-parallel or reversing corners to avoid long miter spikes.
+        outlinePoints.push(nextSeg.rightP1)
         outlinePoints.push(seg.rightP2)
       }
     }
