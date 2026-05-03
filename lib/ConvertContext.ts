@@ -71,13 +71,14 @@ export interface ConvertContext {
 
   // Copper cut fill margin (how far to expand the copper outline for the cut fill band)
   copperCutFillMargin: number
+  clipCopperCutFillToBoardOutline: boolean
 
   // Track trace endpoint positions to avoid duplicate circles
   // Key is "x,y" rounded to 6 decimal places
   topTraceEndpoints: Set<string>
   bottomTraceEndpoints: Set<string>
 
-  // Board outline as a contour for clipping copper cut fill
+  // Board outline as a contour for board-relative scan layers
   boardOutlineContour?: Contour
 
   // Board bounds for full-board scan operations

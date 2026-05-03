@@ -49,6 +49,11 @@ export interface ConvertCircuitJsonToLbrnOptions {
    */
   copperCutFillMargin?: number
   /**
+   * Whether to clip copper cut fill geometry to the board outline.
+   * Defaults to false so external test/connectivity pads can still get cut fill.
+   */
+  clipCopperCutFillToBoardOutline?: boolean
+  /**
    * Whether to generate an oxidation cleaning layer.
    * Adds the board outline to oxidation cleaning layers.
    */
@@ -94,6 +99,8 @@ export const convertCircuitJsonToLbrn = async (
   const laserProfile = options.laserProfile
   const includeCopperCutFill = options.includeCopperCutFill ?? false
   const copperCutFillMargin = options.copperCutFillMargin ?? 0.5
+  const clipCopperCutFillToBoardOutline =
+    options.clipCopperCutFillToBoardOutline ?? false
   const includeOxidationCleaningLayer =
     options.includeOxidationCleaningLayer ?? false
   const mirrorBottomLayer = options.mirrorBottomLayer ?? false
@@ -426,6 +433,7 @@ export const convertCircuitJsonToLbrn = async (
     topCopperCutFillCutSetting,
     bottomCopperCutFillCutSetting,
     copperCutFillMargin,
+    clipCopperCutFillToBoardOutline,
     topOxidationCleaningCutSetting,
     bottomOxidationCleaningCutSetting,
     topTraceEndpoints: new Set(),
@@ -445,7 +453,7 @@ export const convertCircuitJsonToLbrn = async (
     ctx.bottomScanNetGeoms.set(net, [])
   }
 
-  // Extract board outline for clipping copper cut fill and board bounds for scans
+  // Extract board outline for board-relative scan layers and bounds for scans
   for (const board of db.pcb_board.list()) {
     let originAdjustedBoardBounds: ConvertContext["boardBounds"]
     try {

@@ -99,6 +99,7 @@ export const createCopperCutFillForLayer = async ({
     topCopperCutFillCutSetting,
     bottomCopperCutFillCutSetting,
     copperCutFillMargin,
+    clipCopperCutFillToBoardOutline,
     boardOutlineContour,
   } = ctx
 
@@ -158,8 +159,11 @@ export const createCopperCutFillForLayer = async ({
     // This gives us the ring/band area to laser cut
     let cutFillArea = outerBoundary.subtract(copperInside)
 
-    // Clip to board outline if available
-    if (boardOutlineContour && boardOutlineContour.length >= 3) {
+    if (
+      clipCopperCutFillToBoardOutline &&
+      boardOutlineContour &&
+      boardOutlineContour.length >= 3
+    ) {
       const boardOutline = new CrossSection(
         [normalizeContourToCcw(boardOutlineContour)],
         "NonZero",
