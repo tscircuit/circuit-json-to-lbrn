@@ -64,19 +64,29 @@ export const convertCircuitJsonToLbrn = (
 
     // Create a ShapePath for each island
     for (const polygon of unifiedPolygons) {
-      const shapePath = polygonToShapePath(
-        polygon,
-        copperCutSetting.index ?? 0,
-      )
+      const shapePath = polygonToShapePath(polygon, copperCutSetting.index ?? 0)
       project.children.push(shapePath)
     }
   }
 
-  // Process unconnected elements individually (backward compatible)
+  // Netless manual SMT pads still need to participate in the copper fill.
+  const unconnectedPadPolygons = []
   for (const pad of grouped.unconnectedPads) {
-    addSmtPad(pad, ctx)
+    const poly = elementToPolygon(pad)
+    if (poly) {
+      unconnectedPadPolygons.push(poly)
+    } else {
+      addSmtPad(pad, ctx)
+    }
   }
 
+  const unifiedUnconnectedPadPolygons = unionPolygons(unconnectedPadPolygons)
+  for (const polygon of unifiedUnconnectedPadPolygons) {
+    const shapePath = polygonToShapePath(polygon, copperCutSetting.index ?? 0)
+    project.children.push(shapePath)
+  }
+
+  // Process remaining unconnected elements individually (backward compatible)
   for (const hole of grouped.unconnectedPlatedHoles) {
     addPlatedHole(hole, ctx)
   }

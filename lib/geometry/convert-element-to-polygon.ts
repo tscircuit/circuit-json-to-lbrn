@@ -5,26 +5,188 @@ import type {
   PcbTrace,
   PcbPlatedHole,
   PcbSmtPadRect,
+  PcbSmtPadCircle,
+  PcbSmtPadRotatedRect,
+  PcbSmtPadPill,
+  PcbSmtPadRotatedPill,
+  PcbSmtPadPolygon,
   PcbPlatedHoleCircle,
 } from "circuit-json"
+
+interface PointLike {
+  x: number
+  y: number
+}
+
+const DEFAULT_CURVE_SEGMENTS = 64
+const DEFAULT_ARC_SEGMENTS = 16
+
+function pointsToPolygon(points: PointLike[]): Polygon {
+  return new Polygon(points.map((p) => point(p.x, p.y)))
+}
+
+function rotatePointAroundCenter(
+  p: PointLike,
+  center: PointLike,
+  ccwRotationDegrees: number,
+): PointLike {
+  if (ccwRotationDegrees === 0) return p
+
+  const angle = (ccwRotationDegrees * Math.PI) / 180
+  const cos = Math.cos(angle)
+  const sin = Math.sin(angle)
+  const dx = p.x - center.x
+  const dy = p.y - center.y
+
+  return {
+    x: center.x + dx * cos - dy * sin,
+    y: center.y + dx * sin + dy * cos,
+  }
+}
+
+function rectPoints(
+  centerX: number,
+  centerY: number,
+  width: number,
+  height: number,
+): PointLike[] {
+  const halfWidth = width / 2
+  const halfHeight = height / 2
+
+  return [
+    { x: centerX - halfWidth, y: centerY - halfHeight },
+    { x: centerX + halfWidth, y: centerY - halfHeight },
+    { x: centerX + halfWidth, y: centerY + halfHeight },
+    { x: centerX - halfWidth, y: centerY + halfHeight },
+  ]
+}
+
+function circlePoints(
+  centerX: number,
+  centerY: number,
+  radius: number,
+  numSegments = DEFAULT_CURVE_SEGMENTS,
+): PointLike[] {
+  const points: PointLike[] = []
+
+  for (let i = 0; i < numSegments; i++) {
+    const angle = (i / numSegments) * 2 * Math.PI
+    points.push({
+      x: centerX + radius * Math.cos(angle),
+      y: centerY + radius * Math.sin(angle),
+    })
+  }
+
+  return points
+}
+
+function arcPoints(
+  centerX: number,
+  centerY: number,
+  radius: number,
+  startDegrees: number,
+  endDegrees: number,
+  numSegments = DEFAULT_ARC_SEGMENTS,
+): PointLike[] {
+  const points: PointLike[] = []
+
+  for (let i = 0; i <= numSegments; i++) {
+    const t = i / numSegments
+    const angleDegrees = startDegrees + (endDegrees - startDegrees) * t
+    const angle = (angleDegrees * Math.PI) / 180
+    points.push({
+      x: centerX + radius * Math.cos(angle),
+      y: centerY + radius * Math.sin(angle),
+    })
+  }
+
+  return points
+}
+
+function pillPoints(
+  centerX: number,
+  centerY: number,
+  width: number,
+  height: number,
+  radius: number,
+  ccwRotationDegrees = 0,
+): PointLike[] {
+  const halfWidth = width / 2
+  const halfHeight = height / 2
+  const safeRadius = Math.min(radius, halfWidth, halfHeight)
+  const localPoints =
+    width >= height
+      ? [
+          ...arcPoints(halfWidth - safeRadius, 0, safeRadius, -90, 90),
+          ...arcPoints(-halfWidth + safeRadius, 0, safeRadius, 90, 270),
+        ]
+      : [
+          ...arcPoints(0, -halfHeight + safeRadius, safeRadius, 180, 0),
+          ...arcPoints(0, halfHeight - safeRadius, safeRadius, 0, 180),
+        ]
+
+  return localPoints.map((p) =>
+    rotatePointAroundCenter(
+      { x: p.x + centerX, y: p.y + centerY },
+      { x: centerX, y: centerY },
+      ccwRotationDegrees,
+    ),
+  )
+}
 
 /**
  * Convert a rectangular SMT pad to a flatten-js Polygon
  */
 export function rectPadToPolygon(pad: PcbSmtPadRect): Polygon {
-  const halfWidth = pad.width / 2
-  const halfHeight = pad.height / 2
-  const cx = pad.x
-  const cy = pad.y
+  return pointsToPolygon(rectPoints(pad.x, pad.y, pad.width, pad.height))
+}
 
-  const points = [
-    point(cx - halfWidth, cy - halfHeight), // Top-left
-    point(cx + halfWidth, cy - halfHeight), // Top-right
-    point(cx + halfWidth, cy + halfHeight), // Bottom-right
-    point(cx - halfWidth, cy + halfHeight), // Bottom-left
-  ]
+/**
+ * Convert a rotated rectangular SMT pad to a flatten-js Polygon
+ */
+export function rotatedRectPadToPolygon(pad: PcbSmtPadRotatedRect): Polygon {
+  const center = { x: pad.x, y: pad.y }
+  const points = rectPoints(pad.x, pad.y, pad.width, pad.height).map((p) =>
+    rotatePointAroundCenter(p, center, pad.ccw_rotation),
+  )
 
-  return new Polygon(points)
+  return pointsToPolygon(points)
+}
+
+/**
+ * Convert a circular SMT pad to a flatten-js Polygon (approximated)
+ */
+export function circlePadToPolygon(pad: PcbSmtPadCircle): Polygon {
+  return pointsToPolygon(circlePoints(pad.x, pad.y, pad.radius))
+}
+
+/**
+ * Convert a pill-shaped SMT pad to a flatten-js Polygon (approximated)
+ */
+export function pillPadToPolygon(
+  pad: PcbSmtPadPill | PcbSmtPadRotatedPill,
+): Polygon {
+  return pointsToPolygon(
+    pillPoints(
+      pad.x,
+      pad.y,
+      pad.width,
+      pad.height,
+      pad.radius,
+      pad.shape === "rotated_pill" ? pad.ccw_rotation : 0,
+    ),
+  )
+}
+
+/**
+ * Convert a polygonal SMT pad to a flatten-js Polygon
+ */
+export function polygonPadToPolygon(pad: PcbSmtPadPolygon): Polygon | null {
+  if (pad.points.length < 3) {
+    return null
+  }
+
+  return pointsToPolygon(pad.points)
 }
 
 /**
@@ -32,21 +194,8 @@ export function rectPadToPolygon(pad: PcbSmtPadRect): Polygon {
  */
 export function circlePlatedHoleToPolygon(hole: PcbPlatedHoleCircle): Polygon {
   const radius = hole.outer_diameter / 2
-  const cx = hole.x
-  const cy = hole.y
 
-  // Create polygon approximation of circle with 64 segments
-  const numSegments = 64
-  const points = []
-
-  for (let i = 0; i < numSegments; i++) {
-    const angle = (i / numSegments) * 2 * Math.PI
-    const x = cx + radius * Math.cos(angle)
-    const y = cy + radius * Math.sin(angle)
-    points.push(point(x, y))
-  }
-
-  return new Polygon(points)
+  return pointsToPolygon(circlePoints(hole.x, hole.y, radius))
 }
 
 /**
@@ -137,11 +286,19 @@ export function elementToPolygon(
   element: PcbSmtPad | PcbTrace | PcbPlatedHole,
 ): Polygon | null {
   if (element.type === "pcb_smtpad") {
-    if (element.shape === "rect") {
-      return rectPadToPolygon(element)
+    switch (element.shape) {
+      case "rect":
+        return rectPadToPolygon(element)
+      case "rotated_rect":
+        return rotatedRectPadToPolygon(element)
+      case "circle":
+        return circlePadToPolygon(element)
+      case "pill":
+      case "rotated_pill":
+        return pillPadToPolygon(element)
+      case "polygon":
+        return polygonPadToPolygon(element)
     }
-    // TODO: Support other pad shapes (circle, etc.)
-    return null
   } else if (element.type === "pcb_trace") {
     return traceToPolygon(element)
   } else if (element.type === "pcb_plated_hole") {
