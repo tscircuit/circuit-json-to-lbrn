@@ -1,5 +1,6 @@
 import type { CircuitJson } from "circuit-json"
 import { cju } from "@tscircuit/circuit-json-util"
+import { createPillPath } from "./helpers/pillShape"
 
 export interface Bounds {
   minX: number
@@ -76,6 +77,40 @@ export const calculateCircuitBounds = (circuitJson: CircuitJson): Bounds => {
       maxX = Math.max(maxX, hole.x + radius)
       maxY = Math.max(maxY, hole.y + radius)
     }
+  }
+
+  // Calculate bounds from (unplated) holes
+  for (const hole of db.pcb_hole.list()) {
+    // A rotated pill's real extents depend on its rotation, so measure the same
+    // path the exporter renders instead of its unrotated width/height.
+    if (hole.hole_shape === "rotated_pill") {
+      const { verts } = createPillPath({
+        centerX: hole.x,
+        centerY: hole.y,
+        width: hole.hole_width,
+        height: hole.hole_height,
+        rotation: ((hole.ccw_rotation ?? 0) * Math.PI) / 180,
+      })
+
+      for (const vert of verts) {
+        minX = Math.min(minX, vert.x)
+        minY = Math.min(minY, vert.y)
+        maxX = Math.max(maxX, vert.x)
+        maxY = Math.max(maxY, vert.y)
+      }
+
+      continue
+    }
+
+    const halfWidth =
+      "hole_diameter" in hole ? hole.hole_diameter / 2 : hole.hole_width / 2
+    const halfHeight =
+      "hole_diameter" in hole ? hole.hole_diameter / 2 : hole.hole_height / 2
+
+    minX = Math.min(minX, hole.x - halfWidth)
+    minY = Math.min(minY, hole.y - halfHeight)
+    maxX = Math.max(maxX, hole.x + halfWidth)
+    maxY = Math.max(maxY, hole.y + halfHeight)
   }
 
   // If no elements were found, return a default bounds
