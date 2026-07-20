@@ -78,6 +78,16 @@ export const calculateCircuitBounds = (circuitJson: CircuitJson): Bounds => {
     }
   }
 
+  // Calculate bounds from unplated holes
+  for (const hole of db.pcb_hole.list()) {
+    const radius = hole.hole_diameter / 2
+
+    minX = Math.min(minX, hole.x - radius)
+    minY = Math.min(minY, hole.y - radius)
+    maxX = Math.max(maxX, hole.x + radius)
+    maxY = Math.max(maxY, hole.y + radius)
+  }
+
   // If no elements were found, return a default bounds
   if (
     !isFinite(minX) ||
