@@ -11,6 +11,7 @@ import { convertCircuitJsonToLbrn } from "circuit-json-to-lbrn"
 const copperLbrn = convertCircuitJsonToLbrn(circuitJson, {
   includeCopper: true,
   includeSoldermask: false,
+  toolingLayerIncludeRefs: [".TP1", ".TP2", ".TP3"],
 })
 
 // Generate soldermask layer only (for cutting polyimide sheet)
@@ -42,6 +43,7 @@ const defaultLbrn = convertCircuitJsonToLbrn(circuitJson)
 - `includeLayers?: Array<"top" | "bottom">` - Specify which layers to include (default: `["top", "bottom"]`)
 - `mirrorBottomLayer?: boolean` - Mirror bottom layer across the board X-center for flipped-board cutting (default: `false`)
 - `includeHolePunch?: boolean` - Include "Hole Punch Top" / "Hole Punch Bottom" layers that mark hole centers for drilling (default: `true`)
+- `toolingLayerIncludeRefs?: string[]` - Copy the PCB copper lands for component selectors such as `".U1"` or `".TP1"` to LightBurn's native, non-output T1 tooling layer (default: `[]`)
 
 ## Soldermask Support
 

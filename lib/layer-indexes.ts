@@ -23,6 +23,9 @@ export const LAYER_INDEXES = {
   reflectedBottomBoardCut: 13,
   topHolePunch: 14,
   bottomHolePunch: 15,
+
+  // Native LightBurn non-output tool layers
+  tool1: 30,
 } as const
 
 export type LayerIndex = (typeof LAYER_INDEXES)[keyof typeof LAYER_INDEXES]

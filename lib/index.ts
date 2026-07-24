@@ -13,6 +13,10 @@ import { createCopperShapesForLayer } from "./createCopperShapesForLayer"
 import { createHolePunchLayers } from "./createHolePunchLayers"
 import { createOxidationCleaningLayerForLayer } from "./createOxidationCleaningLayerForLayer"
 import { createSoldermaskCureLayer } from "./createSoldermaskCureLayer"
+import {
+  createToolingLayerForComponents,
+  getToolingLayerPcbComponents,
+} from "./createToolingLayerForComponents"
 import { createTraceClearanceAreasForLayer } from "./createTraceClearanceAreasForLayer"
 import { addPcbBoard } from "./element-handlers/addPcbBoard"
 import { addPcbCutout } from "./element-handlers/addPcbCutout"
@@ -37,6 +41,13 @@ export interface ConvertCircuitJsonToLbrnOptions {
   laserSpotSize?: number
   mirrorBottomLayer?: boolean
   includeHolePunch?: boolean
+  /**
+   * Source component selectors whose PCB copper lands should be copied to
+   * LightBurn's native, non-output T1 tooling layer.
+   *
+   * @example [".U1", ".TP1"]
+   */
+  toolingLayerIncludeRefs?: string[]
   /**
    * Whether to generate copper cut fill layers.
    * Creates a ring/band around traces and pads that will be laser cut
@@ -104,6 +115,12 @@ export const convertCircuitJsonToLbrn = async (
   const includeOxidationCleaningLayer =
     options.includeOxidationCleaningLayer ?? false
   const mirrorBottomLayer = options.mirrorBottomLayer ?? false
+  const toolingLayerIncludeRefs = options.toolingLayerIncludeRefs ?? []
+  const toolingLayerPcbComponents = getToolingLayerPcbComponents({
+    db,
+    includeLayers,
+    selectors: toolingLayerIncludeRefs,
+  })
 
   // Default laser settings
   const defaultCopperSettings = {
@@ -167,6 +184,16 @@ export const convertCircuitJsonToLbrn = async (
     qPulseWidth: boardSettings.pulseWidth,
   })
   project.children.push(throughBoardCutSetting)
+
+  let tool1CutSetting: CutSetting | undefined
+  if (toolingLayerPcbComponents.length > 0) {
+    tool1CutSetting = new CutSetting({
+      type: "Tool",
+      index: LAYER_INDEXES.tool1,
+      name: "T1",
+    })
+    project.children.push(tool1CutSetting)
+  }
 
   let topHolePunchCutSetting: CutSetting | undefined
   let bottomHolePunchCutSetting: CutSetting | undefined
@@ -414,6 +441,7 @@ export const convertCircuitJsonToLbrn = async (
     topSoldermaskCureCutSetting,
     bottomSoldermaskCureCutSetting,
     reflectedBottomBoardCutSetting,
+    tool1CutSetting,
     connMap,
     topCutNetGeoms: new Map(),
     bottomCutNetGeoms: new Map(),
@@ -535,6 +563,11 @@ export const convertCircuitJsonToLbrn = async (
   for (const cutout of db.pcb_cutout.list()) {
     addPcbCutout(cutout, ctx)
   }
+
+  await createToolingLayerForComponents({
+    ctx,
+    pcbComponents: toolingLayerPcbComponents,
+  })
 
   if (shouldIncludeHolePunchLayers) {
     createHolePunchLayers(ctx)
