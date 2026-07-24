@@ -1,10 +1,10 @@
+import type { Box, Polygon } from "@flatten-js/core"
 import type {
   BoardBounds,
   CircuitJsonUtilObjects,
 } from "@tscircuit/circuit-json-util"
-import type { CutSetting, LightBurnProject, Mat } from "lbrnts"
-import type { Box, Polygon } from "@flatten-js/core"
 import type { ConnectivityMap } from "circuit-json-to-connectivity-map"
+import type { CutSetting, LightBurnProject, Mat } from "lbrnts"
 
 type Contour = Array<[number, number]>
 
@@ -14,8 +14,8 @@ export interface ConvertContext {
   db: CircuitJsonUtilObjects
   project: LightBurnProject
 
-  topCopperCutSetting: CutSetting
-  bottomCopperCutSetting: CutSetting
+  topCopperCutSetting?: CutSetting
+  bottomCopperCutSetting?: CutSetting
   throughBoardCutSetting: CutSetting
   topHolePunchCutSetting?: CutSetting
   bottomHolePunchCutSetting?: CutSetting
@@ -63,6 +63,11 @@ export interface ConvertContext {
   // Cut settings for copper cut fill layers
   topCopperCutFillCutSetting?: CutSetting
   bottomCopperCutFillCutSetting?: CutSetting
+  topCopperCutFillExcludedNetIds: Set<ConnectivityMapKey>
+  bottomCopperCutFillExcludedNetIds: Set<ConnectivityMapKey>
+
+  // Cut setting for the outer soldermask ablation outline
+  topSoldermaskAblationCutSetting?: CutSetting
 
   // Cut settings for oxidation cleaning layer
   topOxidationCleaningCutSetting?: CutSetting

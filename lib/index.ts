@@ -3,12 +3,21 @@ import type { CircuitJson } from "circuit-json"
 import { getFullConnectivityMapFromCircuitJson } from "circuit-json-to-connectivity-map"
 import { CutSetting, LightBurnProject } from "lbrnts"
 import { addReflectedBottomBoardCutLayerShapes } from "./addReflectedBottomBoardCutLayerShapes"
+import { AdvancedFillCutSetting } from "./advanced-fill-cut-setting"
 import type { ConvertContext } from "./ConvertContext"
 import {
   calculateCircuitBounds,
   calculateOriginFromBounds,
 } from "./calculateBounds"
+import {
+  addCopperCutFillReplacementShapes,
+  getCopperCutFillReplacementPaths,
+} from "./create-copper-cut-fill-replacement-paths"
 import { createSoldermaskAblationOutline } from "./create-soldermask-ablation-outline"
+import {
+  addToolingLayerShapes,
+  getToolingFabricationPaths,
+} from "./create-tooling-layer"
 import { createCopperCutFillForLayer } from "./createCopperCutFillForLayer"
 import { createCopperShapesForLayer } from "./createCopperShapesForLayer"
 import { createHolePunchLayers } from "./createHolePunchLayers"
@@ -102,6 +111,12 @@ export const convertCircuitJsonToLbrn = async (
 
   // Parse options
   const includeLayers = options.includeLayers ?? ["top", "bottom"]
+  const toolingFabricationPaths = getToolingFabricationPaths(
+    circuitJson,
+  ).filter((path) => includeLayers.includes(path.layer))
+  const copperCutFillReplacementPaths = getCopperCutFillReplacementPaths(
+    circuitJson,
+  ).filter((path) => includeLayers.includes(path.layer))
   const traceMargin = options.traceMargin ?? 0
   const laserSpotSize = options.laserSpotSize ?? 0.005
   const includeCopper = options.includeCopper ?? true
@@ -165,25 +180,31 @@ export const convertCircuitJsonToLbrn = async (
   }
 
   // Create cut settings
-  const topCopperCutSetting = new CutSetting({
-    index: LAYER_INDEXES.topCopper,
-    name: "Cut Top Copper",
-    numPasses: copperSettings.numPasses,
-    speed: copperSettings.speed,
-    frequency: copperSettings.frequency,
-    qPulseWidth: copperSettings.pulseWidth,
-  })
-  project.children.push(topCopperCutSetting)
+  let topCopperCutSetting: CutSetting | undefined
+  if (includeLayers.includes("top")) {
+    topCopperCutSetting = new CutSetting({
+      index: LAYER_INDEXES.topCopper,
+      name: "Cut Top Copper",
+      numPasses: copperSettings.numPasses,
+      speed: copperSettings.speed,
+      frequency: copperSettings.frequency,
+      qPulseWidth: copperSettings.pulseWidth,
+    })
+    project.children.push(topCopperCutSetting)
+  }
 
-  const bottomCopperCutSetting = new CutSetting({
-    index: LAYER_INDEXES.bottomCopper,
-    name: "Cut Bottom Copper",
-    numPasses: copperSettings.numPasses,
-    speed: copperSettings.speed,
-    frequency: copperSettings.frequency,
-    qPulseWidth: copperSettings.pulseWidth,
-  })
-  project.children.push(bottomCopperCutSetting)
+  let bottomCopperCutSetting: CutSetting | undefined
+  if (includeLayers.includes("bottom")) {
+    bottomCopperCutSetting = new CutSetting({
+      index: LAYER_INDEXES.bottomCopper,
+      name: "Cut Bottom Copper",
+      numPasses: copperSettings.numPasses,
+      speed: copperSettings.speed,
+      frequency: copperSettings.frequency,
+      qPulseWidth: copperSettings.pulseWidth,
+    })
+    project.children.push(bottomCopperCutSetting)
+  }
 
   const throughBoardCutSetting = new CutSetting({
     index: LAYER_INDEXES.throughBoard,
@@ -196,7 +217,10 @@ export const convertCircuitJsonToLbrn = async (
   project.children.push(throughBoardCutSetting)
 
   let tool1CutSetting: CutSetting | undefined
-  if (toolingLayerPcbComponents.length > 0) {
+  if (
+    toolingLayerPcbComponents.length > 0 ||
+    toolingFabricationPaths.length > 0
+  ) {
     tool1CutSetting = new CutSetting({
       type: "Tool",
       index: LAYER_INDEXES.tool1,
@@ -363,17 +387,20 @@ export const convertCircuitJsonToLbrn = async (
 
   if (includeCopperCutFill && includeCopper) {
     if (includeLayers.includes("top")) {
-      topCopperCutFillCutSetting = new CutSetting({
+      topCopperCutFillCutSetting = new AdvancedFillCutSetting({
         type: "Scan",
         index: LAYER_INDEXES.topCopperCutFill,
         name: "Top Copper Cut Fill",
-        numPasses: copperSettings.numPasses,
-        speed: copperSettings.speed,
-        scanOpt: "individual",
+        numPasses: 50,
+        speed: 700,
+        frequency: 20000,
+        scanOpt: "mergeAll",
         interval: 0.03,
         angle: 45,
         qPulseWidth: 1,
         crossHatch: true,
+        wobbleEnable: true,
+        anglePerPass: 1,
       })
       project.children.push(topCopperCutFillCutSetting)
     }
@@ -401,7 +428,7 @@ export const convertCircuitJsonToLbrn = async (
     includeCopper &&
     includeLayers.includes("top")
   ) {
-    topSoldermaskAblationCutSetting = new CutSetting({
+    topSoldermaskAblationCutSetting = new AdvancedFillCutSetting({
       type: "Scan",
       index: LAYER_INDEXES.topSoldermaskAblation,
       name: "Top Soldermask Ablation",
@@ -448,6 +475,37 @@ export const convertCircuitJsonToLbrn = async (
 
   // Build connectivity map and origin
   const connMap = getFullConnectivityMapFromCircuitJson(circuitJson)
+  const topCopperCutFillExcludedNetIds = new Set<string>()
+  const bottomCopperCutFillExcludedNetIds = new Set<string>()
+  if (includeCopperCutFill && includeCopper) {
+    for (const replacementPath of copperCutFillReplacementPaths) {
+      const replacedTrace = circuitJson.find(
+        (element) =>
+          element.type === "pcb_trace" &&
+          element.pcb_trace_id === replacementPath.replaces_pcb_trace_id,
+      )
+      if (replacedTrace?.type !== "pcb_trace") {
+        throw new Error(
+          `Copper cut fill replacement references unknown trace ${replacementPath.replaces_pcb_trace_id}`,
+        )
+      }
+
+      const connectivityId =
+        replacedTrace.source_trace_id ?? replacedTrace.pcb_trace_id
+      const netId = connMap.getNetConnectedToId(connectivityId)
+      if (!netId) {
+        throw new Error(
+          `Cannot resolve the net for copper cut fill replacement trace ${replacementPath.replaces_pcb_trace_id}`,
+        )
+      }
+
+      const excludedNetIds =
+        replacementPath.layer === "top"
+          ? topCopperCutFillExcludedNetIds
+          : bottomCopperCutFillExcludedNetIds
+      excludedNetIds.add(netId)
+    }
+  }
   const bounds = calculateCircuitBounds(circuitJson)
   let origin = options.origin
   if (!origin) {
@@ -494,6 +552,9 @@ export const convertCircuitJsonToLbrn = async (
     solderMaskMarginPercent,
     topCopperCutFillCutSetting,
     bottomCopperCutFillCutSetting,
+    topCopperCutFillExcludedNetIds,
+    bottomCopperCutFillExcludedNetIds,
+    topSoldermaskAblationCutSetting,
     copperCutFillMargin,
     clipCopperCutFillToBoardOutline,
     soldermaskAblationClearance,
@@ -603,6 +664,7 @@ export const convertCircuitJsonToLbrn = async (
     ctx,
     pcbComponents: toolingLayerPcbComponents,
   })
+  addToolingLayerShapes(toolingFabricationPaths, ctx)
 
   if (shouldIncludeHolePunchLayers) {
     createHolePunchLayers(ctx)
@@ -638,6 +700,15 @@ export const convertCircuitJsonToLbrn = async (
     if (includeLayers.includes("bottom")) {
       await createCopperCutFillForLayer({ layer: "bottom", ctx })
     }
+    addCopperCutFillReplacementShapes(copperCutFillReplacementPaths, ctx)
+  }
+
+  if (
+    includeSoldermaskAblation &&
+    includeCopper &&
+    includeLayers.includes("top")
+  ) {
+    await createSoldermaskAblationOutline(ctx)
   }
 
   if (

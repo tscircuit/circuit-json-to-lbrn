@@ -47,6 +47,48 @@ const defaultLbrn = convertCircuitJsonToLbrn(circuitJson)
 - `soldermaskAblationClearance?: number` - Clearance from copper to the soldermask ablation outline in mm (default: `1`)
 - `toolingLayerIncludeRefs?: string[]` - Copy the PCB copper lands for component selectors such as `".U1"` or `".TP1"` to LightBurn's native, non-output T1 tooling layer (default: `[]`)
 
+## Tooling paths
+
+Fabrication note paths marked with `role: "tooling"` are automatically emitted
+on LightBurn's native, non-output T1 tool layer. No converter option is needed:
+
+```json
+{
+  "type": "pcb_fabrication_note_path",
+  "pcb_fabrication_note_path_id": "pcb_fabrication_note_path_tooling_0",
+  "pcb_component_id": "pcb_component_0",
+  "layer": "top",
+  "route": [
+    { "x": 0, "y": 0 },
+    { "x": 2, "y": 0 }
+  ],
+  "stroke_width": 1,
+  "role": "tooling"
+}
+```
+
+The generated T1 geometry follows the full stroked outline of the path. It is
+included only when the path's `layer` is present in `includeLayers`.
+
+## Copper cut fill replacement paths
+
+Fabrication note paths with `role: "copper_cut_fill"` replace the normal copper
+fill geometry for the referenced trace's net on that board layer. Their stroked
+paths are emitted as closed shapes on the Copper Cut Fill scan layer:
+
+```json
+{
+  "type": "pcb_fabrication_note_path",
+  "pcb_fabrication_note_path_id": "pcb_fabrication_note_path_cross_cut_0",
+  "pcb_component_id": "pcb_component_0",
+  "layer": "top",
+  "route": [{ "x": 0, "y": -0.75 }, { "x": 0, "y": 0.75 }],
+  "stroke_width": 0.5,
+  "role": "copper_cut_fill",
+  "replaces_pcb_trace_id": "pcb_trace_test_short_0"
+}
+```
+
 ## Soldermask Support
 
 The `includeSoldermask` flag enables generation of soldermask openings for cutting Kapton tape (polyimide sheet). When enabled:
