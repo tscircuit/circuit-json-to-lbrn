@@ -24,6 +24,7 @@ export interface ConvertContext {
   topSoldermaskCureCutSetting?: CutSetting
   bottomSoldermaskCureCutSetting?: CutSetting
   reflectedBottomBoardCutSetting?: CutSetting
+  topSoldermaskAblationCutSetting?: CutSetting
   tool1CutSetting?: CutSetting
 
   connMap: ConnectivityMap
@@ -73,6 +74,7 @@ export interface ConvertContext {
   // Copper cut fill margin (how far to expand the copper outline for the cut fill band)
   copperCutFillMargin: number
   clipCopperCutFillToBoardOutline: boolean
+  soldermaskAblationClearance: number
 
   // Track trace endpoint positions to avoid duplicate circles
   // Key is "x,y" rounded to 6 decimal places

@@ -43,6 +43,8 @@ const defaultLbrn = convertCircuitJsonToLbrn(circuitJson)
 - `includeLayers?: Array<"top" | "bottom">` - Specify which layers to include (default: `["top", "bottom"]`)
 - `mirrorBottomLayer?: boolean` - Mirror bottom layer across the board X-center for flipped-board cutting (default: `false`)
 - `includeHolePunch?: boolean` - Include "Hole Punch Top" / "Hole Punch Bottom" layers that mark hole centers for drilling (default: `true`)
+- `includeSoldermaskAblation?: boolean` - Include a top-layer scan outline around all copper for soldermask ablation (default: `false`)
+- `soldermaskAblationClearance?: number` - Clearance from copper to the soldermask ablation outline in mm (default: `1`)
 - `toolingLayerIncludeRefs?: string[]` - Copy the PCB copper lands for component selectors such as `".U1"` or `".TP1"` to LightBurn's native, non-output T1 tooling layer (default: `[]`)
 
 ## Soldermask Support

@@ -23,6 +23,7 @@ export const LAYER_INDEXES = {
   reflectedBottomBoardCut: 13,
   topHolePunch: 14,
   bottomHolePunch: 15,
+  topSoldermaskAblation: 16,
 
   // Native LightBurn non-output tool layers
   tool1: 30,

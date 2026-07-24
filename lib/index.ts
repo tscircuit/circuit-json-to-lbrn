@@ -8,6 +8,7 @@ import {
   calculateCircuitBounds,
   calculateOriginFromBounds,
 } from "./calculateBounds"
+import { createSoldermaskAblationOutline } from "./create-soldermask-ablation-outline"
 import { createCopperCutFillForLayer } from "./createCopperCutFillForLayer"
 import { createCopperShapesForLayer } from "./createCopperShapesForLayer"
 import { createHolePunchLayers } from "./createHolePunchLayers"
@@ -34,6 +35,10 @@ export interface ConvertCircuitJsonToLbrnOptions {
   includeCopper?: boolean
   includeSoldermask?: boolean
   includeSoldermaskCure?: boolean
+  /** Generate a top-layer outer contour around copper for soldermask ablation. */
+  includeSoldermaskAblation?: boolean
+  /** Clearance between copper and the soldermask ablation outline, in mm. Defaults to 1. */
+  soldermaskAblationClearance?: number
   globalCopperSoldermaskMarginAdjustment?: number
   solderMaskMarginPercent?: number
   includeLayers?: Array<"top" | "bottom">
@@ -102,6 +107,8 @@ export const convertCircuitJsonToLbrn = async (
   const includeCopper = options.includeCopper ?? true
   const includeSoldermask = options.includeSoldermask ?? false
   const includeSoldermaskCure = options.includeSoldermaskCure ?? false
+  const includeSoldermaskAblation = options.includeSoldermaskAblation ?? false
+  const soldermaskAblationClearance = options.soldermaskAblationClearance ?? 1
   const includeHolePunch = options.includeHolePunch ?? true
   const shouldIncludeSoldermaskCure = includeSoldermask && includeSoldermaskCure
   const globalCopperSoldermaskMarginAdjustment =
@@ -152,6 +159,9 @@ export const convertCircuitJsonToLbrn = async (
   // Validate options
   if (traceMargin > 0 && !includeCopper) {
     throw new Error("traceMargin requires includeCopper to be true")
+  }
+  if (soldermaskAblationClearance < 0) {
+    throw new Error("soldermaskAblationClearance must not be negative")
   }
 
   // Create cut settings
@@ -385,6 +395,29 @@ export const convertCircuitJsonToLbrn = async (
     }
   }
 
+  let topSoldermaskAblationCutSetting: CutSetting | undefined
+  if (
+    includeSoldermaskAblation &&
+    includeCopper &&
+    includeLayers.includes("top")
+  ) {
+    topSoldermaskAblationCutSetting = new CutSetting({
+      type: "Scan",
+      index: LAYER_INDEXES.topSoldermaskAblation,
+      name: "Top Soldermask Ablation",
+      numPasses: 5,
+      speed: 7000,
+      frequency: 40000,
+      scanOpt: "mergeAll",
+      interval: 0.1,
+      qPulseWidth: 1,
+      crossHatch: true,
+      wobbleEnable: true,
+      anglePerPass: 1,
+    })
+    project.children.push(topSoldermaskAblationCutSetting)
+  }
+
   // Create oxidation cleaning layer cut settings if needed
   let topOxidationCleaningCutSetting: CutSetting | undefined
   let bottomOxidationCleaningCutSetting: CutSetting | undefined
@@ -441,6 +474,7 @@ export const convertCircuitJsonToLbrn = async (
     topSoldermaskCureCutSetting,
     bottomSoldermaskCureCutSetting,
     reflectedBottomBoardCutSetting,
+    topSoldermaskAblationCutSetting,
     tool1CutSetting,
     connMap,
     topCutNetGeoms: new Map(),
@@ -462,6 +496,7 @@ export const convertCircuitJsonToLbrn = async (
     bottomCopperCutFillCutSetting,
     copperCutFillMargin,
     clipCopperCutFillToBoardOutline,
+    soldermaskAblationClearance,
     topOxidationCleaningCutSetting,
     bottomOxidationCleaningCutSetting,
     topTraceEndpoints: new Set(),
@@ -603,6 +638,14 @@ export const convertCircuitJsonToLbrn = async (
     if (includeLayers.includes("bottom")) {
       await createCopperCutFillForLayer({ layer: "bottom", ctx })
     }
+  }
+
+  if (
+    includeSoldermaskAblation &&
+    includeCopper &&
+    includeLayers.includes("top")
+  ) {
+    await createSoldermaskAblationOutline(ctx)
   }
 
   // Create oxidation cleaning layer for each layer
