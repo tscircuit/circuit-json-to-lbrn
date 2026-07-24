@@ -5,9 +5,9 @@ import { getManifold } from "./getManifold"
 import { createLayerShapePath } from "./helpers/createLayerShapePath"
 import { polygonToShapePathData } from "./polygon-to-shape-path"
 
-type Contour = Array<[number, number]>
+export type Contour = Array<[number, number]>
 
-const signedArea = (contour: Contour): number => {
+export const signedArea = (contour: Contour): number => {
   let area = 0
   for (let i = 0; i < contour.length; i++) {
     const [x1, y1] = contour[i]!
@@ -17,7 +17,7 @@ const signedArea = (contour: Contour): number => {
   return area / 2
 }
 
-const normalizeContourToCcw = (contour: Contour): Contour =>
+export const normalizeContourToCcw = (contour: Contour): Contour =>
   contour.length >= 3 && signedArea(contour) < 0
     ? [...contour].reverse()
     : contour
@@ -26,7 +26,7 @@ const normalizeContourToCcw = (contour: Contour): Contour =>
  * Converts a flatten-js Polygon to an array of contours for manifold CrossSection
  * Each contour is an array of [x, y] coordinates
  */
-const polygonToContours = (polygon: Polygon | Box): Contour[] => {
+export const polygonToContours = (polygon: Polygon | Box): Contour[] => {
   const contours: Contour[] = []
 
   if (polygon instanceof Box) {
@@ -57,7 +57,7 @@ const polygonToContours = (polygon: Polygon | Box): Contour[] => {
 /**
  * Converts a single contour to a flatten-js Polygon
  */
-const contourToPolygon = (contour: Contour): Polygon | null => {
+export const contourToPolygon = (contour: Contour): Polygon | null => {
   if (contour.length < 3) return null
 
   const points = contour.map(([x, y]) => new Point(x, y))
