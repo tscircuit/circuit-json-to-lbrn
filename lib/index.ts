@@ -3,7 +3,6 @@ import type { CircuitJson } from "circuit-json"
 import { getFullConnectivityMapFromCircuitJson } from "circuit-json-to-connectivity-map"
 import { CutSetting, LightBurnProject } from "lbrnts"
 import { addReflectedBottomBoardCutLayerShapes } from "./addReflectedBottomBoardCutLayerShapes"
-import { AdvancedFillCutSetting } from "./advanced-fill-cut-setting"
 import type { ConvertContext } from "./ConvertContext"
 import {
   calculateCircuitBounds,
@@ -375,7 +374,7 @@ export const convertCircuitJsonToLbrn = async (
     includeCopper &&
     includeLayers.includes("top")
   ) {
-    topSoldermaskAblationCutSetting = new AdvancedFillCutSetting({
+    topSoldermaskAblationCutSetting = new CutSetting({
       type: "Scan",
       index: LAYER_INDEXES.topSoldermaskAblation,
       name: "Top Soldermask Ablation",
