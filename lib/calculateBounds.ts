@@ -78,6 +78,34 @@ export const calculateCircuitBounds = (circuitJson: CircuitJson): Bounds => {
     }
   }
 
+  // Calculate bounds from unplated holes
+  for (const hole of db.pcb_hole.list()) {
+    let halfWidth: number
+    let halfHeight: number
+
+    if (hole.hole_shape === "circle" || hole.hole_shape === "square") {
+      halfWidth = hole.hole_diameter / 2
+      halfHeight = hole.hole_diameter / 2
+    } else if (hole.hole_shape === "rotated_pill") {
+      // Expand the half extents to the axis-aligned bounding box of the
+      // rotated pill
+      const rotation = ((hole.ccw_rotation ?? 0) * Math.PI) / 180
+      const cos = Math.abs(Math.cos(rotation))
+      const sin = Math.abs(Math.sin(rotation))
+      halfWidth = (hole.hole_width * cos + hole.hole_height * sin) / 2
+      halfHeight = (hole.hole_width * sin + hole.hole_height * cos) / 2
+    } else {
+      // rect, oval and pill holes are axis-aligned
+      halfWidth = hole.hole_width / 2
+      halfHeight = hole.hole_height / 2
+    }
+
+    minX = Math.min(minX, hole.x - halfWidth)
+    minY = Math.min(minY, hole.y - halfHeight)
+    maxX = Math.max(maxX, hole.x + halfWidth)
+    maxY = Math.max(maxY, hole.y + halfHeight)
+  }
+
   // If no elements were found, return a default bounds
   if (
     !isFinite(minX) ||
