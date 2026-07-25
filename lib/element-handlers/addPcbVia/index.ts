@@ -1,10 +1,10 @@
-import type { PcbVia } from "circuit-json"
-import type { ConvertContext } from "../../ConvertContext"
-import { ShapePath } from "lbrnts"
-import { createCirclePath } from "../../helpers/circleShape"
 import { Circle, point } from "@flatten-js/core"
-import { circleToPolygon } from "../addPcbTrace/circle-to-polygon"
+import type { PcbVia } from "circuit-json"
+import { ShapePath } from "lbrnts"
+import type { ConvertContext } from "../../ConvertContext"
+import { createCirclePath } from "../../helpers/circleShape"
 import { createLayerShapePath } from "../../helpers/createLayerShapePath"
+import { circleToPolygon } from "../addPcbTrace/circle-to-polygon"
 
 export const addPcbVia = (via: PcbVia, ctx: ConvertContext): void => {
   const {
@@ -58,10 +58,10 @@ export const addPcbVia = (via: PcbVia, ctx: ConvertContext): void => {
 
     if (netId) {
       // Add to netGeoms so it can be unified with traces on the same net
-      if (includeLayers.includes("top")) {
+      if (includeLayers.includes("top") && topCopperCutSetting) {
         topCutNetGeoms.get(netId)?.push(polygon.clone())
       }
-      if (includeLayers.includes("bottom")) {
+      if (includeLayers.includes("bottom") && bottomCopperCutSetting) {
         bottomCutNetGeoms.get(netId)?.push(polygon.clone())
       }
     } else {
@@ -71,7 +71,7 @@ export const addPcbVia = (via: PcbVia, ctx: ConvertContext): void => {
         centerY,
         radius: outerRadius,
       })
-      if (includeLayers.includes("top")) {
+      if (includeLayers.includes("top") && topCopperCutSetting) {
         project.children.push(
           createLayerShapePath({
             cutIndex: topCopperCutSetting.index,
@@ -82,7 +82,7 @@ export const addPcbVia = (via: PcbVia, ctx: ConvertContext): void => {
           }),
         )
       }
-      if (includeLayers.includes("bottom")) {
+      if (includeLayers.includes("bottom") && bottomCopperCutSetting) {
         project.children.push(
           createLayerShapePath({
             cutIndex: bottomCopperCutSetting.index,

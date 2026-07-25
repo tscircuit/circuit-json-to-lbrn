@@ -1,6 +1,6 @@
 import type { PcbPlatedHoleOval } from "circuit-json"
-import type { ConvertContext } from "../../ConvertContext"
 import { ShapePath } from "lbrnts"
+import type { ConvertContext } from "../../ConvertContext"
 import { createLayerShapePath } from "../../helpers/createLayerShapePath"
 import { createOvalPath } from "../../helpers/ovalShape"
 
@@ -45,7 +45,7 @@ export const addOvalPlatedHole = (
       height: platedHole.outer_height,
       rotation,
     })
-    if (includeLayers.includes("top")) {
+    if (includeLayers.includes("top") && topCopperCutSetting) {
       project.children.push(
         createLayerShapePath({
           cutIndex: topCopperCutSetting.index,
@@ -56,7 +56,7 @@ export const addOvalPlatedHole = (
         }),
       )
     }
-    if (includeLayers.includes("bottom")) {
+    if (includeLayers.includes("bottom") && bottomCopperCutSetting) {
       project.children.push(
         createLayerShapePath({
           cutIndex: bottomCopperCutSetting.index,

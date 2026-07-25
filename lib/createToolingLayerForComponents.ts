@@ -20,7 +20,7 @@ export const getToolingLayerPcbComponents = ({
   const selectedSourceComponentIds = new Set(
     selectors
       .map((selector) => db.source_component.select(selector))
-      .filter((component) => component !== null)
+      .filter((component) => component != null)
       .map((component) => component.source_component_id),
   )
 

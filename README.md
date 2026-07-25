@@ -45,7 +45,57 @@ const defaultLbrn = convertCircuitJsonToLbrn(circuitJson)
 - `includeHolePunch?: boolean` - Include "Hole Punch Top" / "Hole Punch Bottom" layers that mark hole centers for drilling (default: `true`)
 - `includeSoldermaskAblation?: boolean` - Include a top-layer scan outline around all copper for soldermask ablation (default: `false`)
 - `soldermaskAblationClearance?: number` - Clearance from copper to the soldermask ablation outline in mm (default: `1`)
-- `toolingLayerIncludeRefs?: string[]` - Copy the PCB copper lands for component selectors such as `".U1"` or `".TP1"` to LightBurn's native, non-output T1 tooling layer (default: `[]`)
+- `toolingLayerIncludeRefs?: string[]` - Copy PCB copper lands selected by component selectors such as `".TP1"`, or tooling fabrication paths selected by exact refs such as `"test_short_top_left_top_trace"`, to LightBurn's native, non-output T1 tooling layer (default: `[]`)
+
+## Tooling paths
+
+Use an exact fabrication path ref in `toolingLayerIncludeRefs` to emit a path
+marked with `role: "tooling"` on LightBurn's native, non-output T1 tool layer:
+
+```tsx
+convertCircuitJsonToLbrn(circuitJson, {
+  toolingLayerIncludeRefs: ["test_short_top_left_top_trace"],
+})
+```
+
+```json
+{
+  "type": "pcb_fabrication_note_path",
+  "pcb_fabrication_note_path_id": "pcb_fabrication_note_path_test_short_top_left_top_trace",
+  "pcb_component_id": "pcb_component_0",
+  "layer": "top",
+  "route": [
+    { "x": 0, "y": 0 },
+    { "x": 2, "y": 0 }
+  ],
+  "stroke_width": 1,
+  "role": "tooling"
+}
+```
+
+The ref is the path ID without the `pcb_fabrication_note_path_` prefix. Matching
+is exact; wildcard patterns are not supported. The generated T1 geometry follows
+the full stroked outline of the path and is included only when the path's
+`layer` is present in `includeLayers`.
+
+## Copper cut fill replacement paths
+
+Fabrication note paths with `role: "copper_cut_fill"` replace the normal copper
+fill geometry for the referenced trace's net on that board layer. Their stroked
+paths are emitted as closed shapes on the Copper Cut Fill scan layer:
+
+```json
+{
+  "type": "pcb_fabrication_note_path",
+  "pcb_fabrication_note_path_id": "pcb_fabrication_note_path_cross_cut_0",
+  "pcb_component_id": "pcb_component_0",
+  "layer": "top",
+  "route": [{ "x": 0, "y": -0.75 }, { "x": 0, "y": 0.75 }],
+  "stroke_width": 0.5,
+  "role": "copper_cut_fill",
+  "replaces_pcb_trace_id": "pcb_trace_test_short_0"
+}
+```
 
 ## Soldermask Support
 

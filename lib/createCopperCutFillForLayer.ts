@@ -98,6 +98,8 @@ export const createCopperCutFillForLayer = async ({
     bottomCutNetGeoms,
     topCopperCutFillCutSetting,
     bottomCopperCutFillCutSetting,
+    topCopperCutFillExcludedNetIds,
+    bottomCopperCutFillExcludedNetIds,
     copperCutFillMargin,
     clipCopperCutFillToBoardOutline,
     boardOutlineContour,
@@ -113,10 +115,15 @@ export const createCopperCutFillForLayer = async ({
 
   // Get the appropriate geometry map
   const netGeomMap = layer === "top" ? topCutNetGeoms : bottomCutNetGeoms
+  const excludedNetIds =
+    (layer === "top"
+      ? topCopperCutFillExcludedNetIds
+      : bottomCopperCutFillExcludedNetIds) ?? new Set<string>()
 
   // Collect all geometries for this layer across all nets
   const allGeoms: Array<Polygon | Box> = []
-  for (const netGeoms of netGeomMap.values()) {
+  for (const [netId, netGeoms] of netGeomMap) {
+    if (excludedNetIds.has(netId)) continue
     if (netGeoms.length > 0) {
       allGeoms.push(...netGeoms)
     }
