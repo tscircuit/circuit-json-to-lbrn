@@ -101,14 +101,60 @@ export const calculateCircuitBounds = (circuitJson: CircuitJson): Bounds => {
 
   // Calculate bounds from plated holes
   for (const hole of db.pcb_plated_hole.list()) {
-    if (hole.shape === "circle") {
-      const radius = hole.outer_diameter / 2
+    // The outer copper is what defines the extent, not the drill. Each shape
+    // names it differently, so pick the right pair of dimensions per shape.
+    let halfWidth: number | undefined
+    let halfHeight: number | undefined
 
-      minX = Math.min(minX, hole.x - radius)
-      minY = Math.min(minY, hole.y - radius)
-      maxX = Math.max(maxX, hole.x + radius)
-      maxY = Math.max(maxY, hole.y + radius)
+    if (hole.shape === "circle") {
+      halfWidth = hole.outer_diameter / 2
+      halfHeight = hole.outer_diameter / 2
+    } else if (hole.shape === "oval" || hole.shape === "pill") {
+      halfWidth = hole.outer_width / 2
+      halfHeight = hole.outer_height / 2
+    } else if (
+      hole.shape === "circular_hole_with_rect_pad" ||
+      hole.shape === "pill_hole_with_rect_pad"
+    ) {
+      halfWidth = hole.rect_pad_width / 2
+      halfHeight = hole.rect_pad_height / 2
+    } else if (hole.shape === "rotated_pill_hole_with_rect_pad") {
+      // The rect pad carries its own rotation; expand to its axis-aligned box.
+      const rotation =
+        (((hole as { rect_ccw_rotation?: number }).rect_ccw_rotation ?? 0) *
+          Math.PI) /
+        180
+      const cos = Math.abs(Math.cos(rotation))
+      const sin = Math.abs(Math.sin(rotation))
+      halfWidth = (hole.rect_pad_width * cos + hole.rect_pad_height * sin) / 2
+      halfHeight = (hole.rect_pad_width * sin + hole.rect_pad_height * cos) / 2
+    } else if (hole.shape === "hole_with_polygon_pad") {
+      // The polygon pad outline is relative to the hole's own position.
+      for (const point of hole.pad_outline ?? []) {
+        minX = Math.min(minX, hole.x + point.x)
+        minY = Math.min(minY, hole.y + point.y)
+        maxX = Math.max(maxX, hole.x + point.x)
+        maxY = Math.max(maxY, hole.y + point.y)
+      }
     }
+
+    if (halfWidth !== undefined && halfHeight !== undefined) {
+      minX = Math.min(minX, hole.x - halfWidth)
+      minY = Math.min(minY, hole.y - halfHeight)
+      maxX = Math.max(maxX, hole.x + halfWidth)
+      maxY = Math.max(maxY, hole.y + halfHeight)
+    }
+  }
+
+  // Calculate bounds from vias. These are rendered by the converter but were
+  // never counted, so a via near the board edge could sit outside the bounds.
+  for (const via of db.pcb_via.list()) {
+    const radius = (via.outer_diameter ?? 0) / 2
+
+    minX = Math.min(minX, via.x - radius)
+    minY = Math.min(minY, via.y - radius)
+    maxX = Math.max(maxX, via.x + radius)
+    maxY = Math.max(maxY, via.y + radius)
   }
 
   // Calculate bounds from the board outline.
