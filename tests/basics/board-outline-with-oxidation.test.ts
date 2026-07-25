@@ -107,12 +107,16 @@ test("creates board outline cut with oxidation cleaning layer", async () => {
   })
 
   const expectedOxidationOutline = [
-    { x: 20, y: 0 },
-    { x: 40, y: 12 },
-    { x: 32, y: 30 },
-    { x: 8, y: 30 },
-    { x: 0, y: 12 },
-    { x: 20, y: 0 },
+    // The board outline now participates in the bounds, so the origin shift
+    // applies the default 0.1mm margin to it as well. Previously the board's
+    // left/top edges sat exactly on x=0 / y=0 with no margin, because the
+    // outline was not counted when computing the origin.
+    { x: 20.1, y: 0.1 },
+    { x: 40.1, y: 12.1 },
+    { x: 32.1, y: 30.1 },
+    { x: 8.1, y: 30.1 },
+    { x: 0.1, y: 12.1 },
+    { x: 20.1, y: 0.1 },
   ]
   expect(
     collectPathsForCutIndex(

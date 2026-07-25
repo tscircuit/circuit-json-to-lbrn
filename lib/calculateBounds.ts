@@ -1,5 +1,5 @@
 import type { CircuitJson } from "circuit-json"
-import { cju } from "@tscircuit/circuit-json-util"
+import { cju, getBoardBounds } from "@tscircuit/circuit-json-util"
 
 export interface Bounds {
   minX: number
@@ -75,6 +75,29 @@ export const calculateCircuitBounds = (circuitJson: CircuitJson): Bounds => {
       minY = Math.min(minY, hole.y - radius)
       maxX = Math.max(maxX, hole.x + radius)
       maxY = Math.max(maxY, hole.y + radius)
+    }
+  }
+
+  // Calculate bounds from the board outline.
+  //
+  // The board is the largest thing in the file and is what actually gets cut, so
+  // leaving it out lets the origin shift place the board outline at negative
+  // coordinates — off the LightBurn canvas — whenever the board extends past the
+  // copper on it (which is the normal case, since components sit inside the
+  // board edge). It also skewed the bottom-layer mirror axis, which is derived
+  // from these bounds, towards wherever the pads happened to cluster.
+  for (const board of db.pcb_board.list()) {
+    try {
+      const boardBounds = getBoardBounds(board)
+
+      minX = Math.min(minX, boardBounds.minX)
+      minY = Math.min(minY, boardBounds.minY)
+      maxX = Math.max(maxX, boardBounds.maxX)
+      maxY = Math.max(maxY, boardBounds.maxY)
+    } catch {
+      // getBoardBounds throws for boards it cannot resolve (e.g. an outline with
+      // too few points). index.ts already warns and continues in that case, so
+      // bounds do the same rather than failing the whole conversion.
     }
   }
 
