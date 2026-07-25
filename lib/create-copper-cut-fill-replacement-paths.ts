@@ -1,6 +1,6 @@
 import type { CircuitJson } from "circuit-json"
 import type { ConvertContext } from "./ConvertContext"
-import { createStrokedSegmentPath } from "./helpers/create-stroked-segment-path"
+import { createStrokedRoutePaths } from "./helpers/create-stroked-route-paths"
 import { createLayerShapePath } from "./helpers/createLayerShapePath"
 
 export interface CopperCutFillReplacementPath {
@@ -20,6 +20,8 @@ const isCopperCutFillReplacementPath = (
   element.role === "copper_cut_fill" &&
   "replaces_pcb_trace_id" in element &&
   typeof element.replaces_pcb_trace_id === "string" &&
+  Array.isArray(element.route) &&
+  typeof element.stroke_width === "number" &&
   (element.layer === "top" || element.layer === "bottom")
 
 export const getCopperCutFillReplacementPaths = (
@@ -43,25 +45,21 @@ export const addCopperCutFillReplacementShapes = (
       )
     }
 
-    for (let index = 0; index < path.route.length - 1; index += 1) {
-      const start = path.route[index]!
-      const end = path.route[index + 1]!
-      const segmentPath = createStrokedSegmentPath({
-        start,
-        end,
-        strokeWidth: path.stroke_width,
-        origin: ctx.origin,
-      })
-      if (!segmentPath) {
-        throw new Error(
-          `Zero-length copper cut fill replacement for ${path.replaces_pcb_trace_id}`,
-        )
-      }
-
+    const routePaths = createStrokedRoutePaths({
+      route: path.route,
+      strokeWidth: path.stroke_width,
+      origin: ctx.origin,
+    })
+    if (routePaths.length === 0) {
+      throw new Error(
+        `Zero-length copper cut fill replacement for ${path.replaces_pcb_trace_id}`,
+      )
+    }
+    for (const routePath of routePaths) {
       ctx.project.children.push(
         createLayerShapePath({
           cutIndex: cutSetting.index,
-          pathData: segmentPath,
+          pathData: routePath,
           layer: path.layer,
           isClosed: true,
           ctx,

@@ -26,7 +26,8 @@ const board = {
 
 const toolingPath = {
   type: "pcb_fabrication_note_path",
-  pcb_fabrication_note_path_id: "pcb_fabrication_note_path_tooling_0",
+  pcb_fabrication_note_path_id:
+    "pcb_fabrication_note_path_test_short_top_left_top_trace",
   pcb_component_id: "pcb_component_0",
   layer: "top",
   route: [
@@ -70,7 +71,11 @@ test("copies selected component copper lands to native LightBurn T1", async () =
 test("puts tooling fabrication paths on native LightBurn T1", async () => {
   const project = await convertCircuitJsonToLbrn(
     [board, toolingPath] as unknown as CircuitJson,
-    { origin: { x: 0, y: 0 }, includeLayers: ["top"] },
+    {
+      origin: { x: 0, y: 0 },
+      includeLayers: ["top"],
+      toolingLayerIncludeRefs: ["test_short_top_left_top_trace"],
+    },
   )
 
   const toolSetting = project.children.find(
@@ -97,6 +102,19 @@ test("puts tooling fabrication paths on native LightBurn T1", async () => {
   expect(xml).toContain('Shape Type="Path" CutIndex="30"')
 })
 
+test("supports component selectors and exact fabrication path refs together", async () => {
+  const project = await convertCircuitJsonToLbrn(
+    [...circuitJson, toolingPath] as unknown as CircuitJson,
+    {
+      origin: { x: 0, y: 0 },
+      includeLayers: ["top"],
+      toolingLayerIncludeRefs: [".TP1", "test_short_top_left_top_trace"],
+    },
+  )
+
+  expect(getToolingShapes(project.children)).toHaveLength(2)
+})
+
 test("supports multiple ref selectors without changing Circuit JSON", async () => {
   const inputBeforeConversion = JSON.stringify(circuitJson)
   const project = await convertCircuitJsonToLbrn(circuitJson as CircuitJson, {
@@ -107,6 +125,46 @@ test("supports multiple ref selectors without changing Circuit JSON", async () =
 
   expect(getToolingShapes(project.children)).toHaveLength(3)
   expect(JSON.stringify(circuitJson)).toBe(inputBeforeConversion)
+})
+
+test("matches fabrication path refs exactly without wildcard support", async () => {
+  for (const toolingLayerIncludeRefs of [
+    [],
+    ["unrelated_trace"],
+    ["test_short_*"],
+  ]) {
+    const project = await convertCircuitJsonToLbrn(
+      [board, toolingPath] as unknown as CircuitJson,
+      { toolingLayerIncludeRefs },
+    )
+
+    expect(project.getString()).not.toContain('<CutSetting type="Tool">')
+    expect(getToolingShapes(project.children)).toHaveLength(0)
+  }
+})
+
+test("merges a multi-segment tooling route into one closed outline", async () => {
+  const multiSegmentPath = {
+    ...toolingPath,
+    pcb_fabrication_note_path_id:
+      "pcb_fabrication_note_path_test_short_multi_segment",
+    route: [
+      { x: 0, y: 0 },
+      { x: 2, y: 0 },
+      { x: 2, y: 2 },
+    ],
+  }
+  const project = await convertCircuitJsonToLbrn(
+    [board, multiSegmentPath] as unknown as CircuitJson,
+    {
+      origin: { x: 0, y: 0 },
+      toolingLayerIncludeRefs: ["test_short_multi_segment"],
+    },
+  )
+
+  const toolShapes = getToolingShapes(project.children)
+  expect(toolShapes).toHaveLength(1)
+  expect(toolShapes[0]?.isClosed).toBe(true)
 })
 
 test("omits T1 when the circuit has no selected tooling", async () => {
@@ -131,7 +189,10 @@ test("omits T1 when tooling paths are on an excluded board layer", async () => {
   const bottomToolingPath = { ...toolingPath, layer: "bottom" }
   const project = await convertCircuitJsonToLbrn(
     [board, bottomToolingPath] as unknown as CircuitJson,
-    { includeLayers: ["top"] },
+    {
+      includeLayers: ["top"],
+      toolingLayerIncludeRefs: ["test_short_top_left_top_trace"],
+    },
   )
   const xml = project.getString()
 

@@ -53,6 +53,9 @@ test("replaces normal copper fill with one filled cross-cut pill", async () => {
 
   expect(copperFillShapes).toHaveLength(1)
   expect(copperFillShapes[0]?.isClosed).toBe(true)
+  expect(copperFillShapes[0]?.verts.at(-1)).toEqual(
+    copperFillShapes[0]?.verts[0],
+  )
 
   const xs = copperFillShapes[0]!.verts.map((vertex) => vertex.x)
   const ys = copperFillShapes[0]!.verts.map((vertex) => vertex.y)

@@ -55,10 +55,10 @@ export interface ConvertCircuitJsonToLbrnOptions {
   mirrorBottomLayer?: boolean
   includeHolePunch?: boolean
   /**
-   * Source component selectors whose PCB copper lands should be copied to
+   * Source component selectors or exact fabrication path refs to copy to
    * LightBurn's native, non-output T1 tooling layer.
    *
-   * @example [".U1", ".TP1"]
+   * @example [".TP1", "test_short_top_left_top_trace"]
    */
   toolingLayerIncludeRefs?: string[]
   /**
@@ -110,8 +110,10 @@ export const convertCircuitJsonToLbrn = async (
 
   // Parse options
   const includeLayers = options.includeLayers ?? ["top", "bottom"]
+  const toolingLayerIncludeRefs = options.toolingLayerIncludeRefs ?? []
   const toolingFabricationPaths = getToolingFabricationPaths(
     circuitJson,
+    toolingLayerIncludeRefs,
   ).filter((path) => includeLayers.includes(path.layer))
   const copperCutFillReplacementPaths = getCopperCutFillReplacementPaths(
     circuitJson,
@@ -136,7 +138,6 @@ export const convertCircuitJsonToLbrn = async (
   const includeOxidationCleaningLayer =
     options.includeOxidationCleaningLayer ?? false
   const mirrorBottomLayer = options.mirrorBottomLayer ?? false
-  const toolingLayerIncludeRefs = options.toolingLayerIncludeRefs ?? []
   const toolingLayerPcbComponents = getToolingLayerPcbComponents({
     db,
     includeLayers,
@@ -427,7 +428,7 @@ export const convertCircuitJsonToLbrn = async (
     includeCopper &&
     includeLayers.includes("top")
   ) {
-    topSoldermaskAblationCutSetting = new AdvancedFillCutSetting({
+    topSoldermaskAblationCutSetting = new CutSetting({
       type: "Scan",
       index: LAYER_INDEXES.topSoldermaskAblation,
       name: "Top Soldermask Ablation",
@@ -531,7 +532,6 @@ export const convertCircuitJsonToLbrn = async (
     topSoldermaskCureCutSetting,
     bottomSoldermaskCureCutSetting,
     reflectedBottomBoardCutSetting,
-    topSoldermaskAblationCutSetting,
     tool1CutSetting,
     connMap,
     topCutNetGeoms: new Map(),
@@ -700,14 +700,6 @@ export const convertCircuitJsonToLbrn = async (
       await createCopperCutFillForLayer({ layer: "bottom", ctx })
     }
     addCopperCutFillReplacementShapes(copperCutFillReplacementPaths, ctx)
-  }
-
-  if (
-    includeSoldermaskAblation &&
-    includeCopper &&
-    includeLayers.includes("top")
-  ) {
-    await createSoldermaskAblationOutline(ctx)
   }
 
   if (

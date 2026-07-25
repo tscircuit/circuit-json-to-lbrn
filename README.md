@@ -45,17 +45,23 @@ const defaultLbrn = convertCircuitJsonToLbrn(circuitJson)
 - `includeHolePunch?: boolean` - Include "Hole Punch Top" / "Hole Punch Bottom" layers that mark hole centers for drilling (default: `true`)
 - `includeSoldermaskAblation?: boolean` - Include a top-layer scan outline around all copper for soldermask ablation (default: `false`)
 - `soldermaskAblationClearance?: number` - Clearance from copper to the soldermask ablation outline in mm (default: `1`)
-- `toolingLayerIncludeRefs?: string[]` - Copy the PCB copper lands for component selectors such as `".U1"` or `".TP1"` to LightBurn's native, non-output T1 tooling layer (default: `[]`)
+- `toolingLayerIncludeRefs?: string[]` - Copy PCB copper lands selected by component selectors such as `".TP1"`, or tooling fabrication paths selected by exact refs such as `"test_short_top_left_top_trace"`, to LightBurn's native, non-output T1 tooling layer (default: `[]`)
 
 ## Tooling paths
 
-Fabrication note paths marked with `role: "tooling"` are automatically emitted
-on LightBurn's native, non-output T1 tool layer. No converter option is needed:
+Use an exact fabrication path ref in `toolingLayerIncludeRefs` to emit a path
+marked with `role: "tooling"` on LightBurn's native, non-output T1 tool layer:
+
+```tsx
+convertCircuitJsonToLbrn(circuitJson, {
+  toolingLayerIncludeRefs: ["test_short_top_left_top_trace"],
+})
+```
 
 ```json
 {
   "type": "pcb_fabrication_note_path",
-  "pcb_fabrication_note_path_id": "pcb_fabrication_note_path_tooling_0",
+  "pcb_fabrication_note_path_id": "pcb_fabrication_note_path_test_short_top_left_top_trace",
   "pcb_component_id": "pcb_component_0",
   "layer": "top",
   "route": [
@@ -67,8 +73,10 @@ on LightBurn's native, non-output T1 tool layer. No converter option is needed:
 }
 ```
 
-The generated T1 geometry follows the full stroked outline of the path. It is
-included only when the path's `layer` is present in `includeLayers`.
+The ref is the path ID without the `pcb_fabrication_note_path_` prefix. Matching
+is exact; wildcard patterns are not supported. The generated T1 geometry follows
+the full stroked outline of the path and is included only when the path's
+`layer` is present in `includeLayers`.
 
 ## Copper cut fill replacement paths
 

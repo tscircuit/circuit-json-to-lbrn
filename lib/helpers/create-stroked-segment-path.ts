@@ -1,6 +1,6 @@
 import { createPillPath, type PillPath, type Point } from "./pillShape"
 
-interface CreateStrokedSegmentPathParams {
+export interface CreateStrokedSegmentPathParams {
   start: Point
   end: Point
   strokeWidth: number

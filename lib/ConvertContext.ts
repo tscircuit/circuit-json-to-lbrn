@@ -24,7 +24,6 @@ export interface ConvertContext {
   topSoldermaskCureCutSetting?: CutSetting
   bottomSoldermaskCureCutSetting?: CutSetting
   reflectedBottomBoardCutSetting?: CutSetting
-  topSoldermaskAblationCutSetting?: CutSetting
   tool1CutSetting?: CutSetting
 
   connMap: ConnectivityMap
