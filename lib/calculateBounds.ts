@@ -36,6 +36,39 @@ export const calculateCircuitBounds = (circuitJson: CircuitJson): Bounds => {
       minY = Math.min(minY, smtpad.y - radius)
       maxX = Math.max(maxX, smtpad.x + radius)
       maxY = Math.max(maxY, smtpad.y + radius)
+    } else if (smtpad.shape === "pill") {
+      // A pill is a rect with rounded ends; its extent is the rect's.
+      const halfWidth = smtpad.width / 2
+      const halfHeight = smtpad.height / 2
+
+      minX = Math.min(minX, smtpad.x - halfWidth)
+      minY = Math.min(minY, smtpad.y - halfHeight)
+      maxX = Math.max(maxX, smtpad.x + halfWidth)
+      maxY = Math.max(maxY, smtpad.y + halfHeight)
+    } else if (
+      smtpad.shape === "rotated_rect" ||
+      smtpad.shape === "rotated_pill"
+    ) {
+      // Expand to the axis-aligned bounding box of the rotated rect/pill, the
+      // same way the pcb_hole rotated_pill case does.
+      const rotation = ((smtpad.ccw_rotation ?? 0) * Math.PI) / 180
+      const cos = Math.abs(Math.cos(rotation))
+      const sin = Math.abs(Math.sin(rotation))
+      const halfWidth = (smtpad.width * cos + smtpad.height * sin) / 2
+      const halfHeight = (smtpad.width * sin + smtpad.height * cos) / 2
+
+      minX = Math.min(minX, smtpad.x - halfWidth)
+      minY = Math.min(minY, smtpad.y - halfHeight)
+      maxX = Math.max(maxX, smtpad.x + halfWidth)
+      maxY = Math.max(maxY, smtpad.y + halfHeight)
+    } else if (smtpad.shape === "polygon") {
+      // Polygon pads carry absolute points and have no x/y of their own.
+      for (const point of smtpad.points ?? []) {
+        minX = Math.min(minX, point.x)
+        minY = Math.min(minY, point.y)
+        maxX = Math.max(maxX, point.x)
+        maxY = Math.max(maxY, point.y)
+      }
     }
   }
 
