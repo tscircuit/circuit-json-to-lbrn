@@ -31,7 +31,7 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "lbrnts": "^0.0.22",
-    "manifold-3d": "^3.3.2"
+    "@tscircuit/manifold-2d": "^0.0.6",
+    "lbrnts": "^0.0.22"
   }
 }
