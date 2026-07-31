@@ -1,8 +1,10 @@
 {
   "name": "circuit-json-to-lbrn",
   "main": "dist/index.js",
-  "files": ["dist"],
-  "version": "0.0.85",
+  "files": [
+    "dist"
+  ],
+  "version": "0.0.87",
   "type": "module",
   "scripts": {
     "start": "bun run site/index.html",
