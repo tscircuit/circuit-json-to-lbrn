@@ -168,7 +168,12 @@ test("creates reflected bottom board cut layer when bottom layer is mirrored", a
       child.cutIndex === LAYER_INDEXES.reflectedBottomBoardCut,
   )
   expect(reflectedBoardCutShapes.length).toBeGreaterThan(0)
-  expect(reflectedBoardCutShapes[0]?.xform).toEqual([-1, 0, 0, 1, 24, 0])
+  // The board outline spans x 0..24, so the origin shift adds the default
+  // 0.1mm margin and the mirror axis is the board center at 12.1
+  const reflectedXform = reflectedBoardCutShapes[0]?.xform
+  expect(reflectedXform?.slice(0, 4)).toEqual([-1, 0, 0, 1])
+  expect(reflectedXform?.[4]).toBeCloseTo(24.2, 6)
+  expect(reflectedXform?.[5]).toBe(0)
 
   const throughBoardCutShapes = project.children.filter(
     (child): child is ShapePath =>
