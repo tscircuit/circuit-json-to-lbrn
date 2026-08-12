@@ -6,7 +6,7 @@ import Flatten from "@flatten-js/core"
  *
  * The algorithm:
  * 1. Walk along the "left" side of the trace (offset by width/2 perpendicular to direction)
- * 2. At corners, compute the intersection of adjacent offset lines (miter join)
+ * 2. At corners, intersect the inner offsets and arc between the outer offsets
  * 3. Add corner point at the end cap
  * 4. Walk back along the "right" side with proper corner intersections
  * 5. The polygon closes back to the start (start cap is implicit)
@@ -69,6 +69,30 @@ export const generateTraceOutline = ({
     Math.hypot(intersection.x - corner.x, intersection.y - corner.y) <=
     miterLimit
 
+  const addClockwiseArc = (
+    center: { x: number; y: number },
+    start: { x: number; y: number },
+    end: { x: number; y: number },
+  ) => {
+    const startAngle = Math.atan2(start.y - center.y, start.x - center.x)
+    const endAngle = Math.atan2(end.y - center.y, end.x - center.x)
+    let sweep = endAngle - startAngle
+    while (sweep >= 0) sweep -= 2 * Math.PI
+
+    const segmentCount = Math.max(
+      1,
+      Math.ceil((Math.abs(sweep) / (2 * Math.PI)) * 32),
+    )
+    outlinePoints.push(start)
+    for (let index = 1; index <= segmentCount; index++) {
+      const angle = startAngle + sweep * (index / segmentCount)
+      outlinePoints.push({
+        x: center.x + radius * Math.cos(angle),
+        y: center.y + radius * Math.sin(angle),
+      })
+    }
+  }
+
   // Calculate offset points and directions for each segment
   const segmentData: Array<{
     p1: { x: number; y: number }
@@ -123,8 +147,11 @@ export const generateTraceOutline = ({
         seg.dir,
       )
       const corner = seg.p1
+      const turn = prevSeg.dir.x * seg.dir.y - prevSeg.dir.y * seg.dir.x
 
-      if (intersection && isAcceptableMiter(intersection, corner)) {
+      if (turn < -1e-10) {
+        addClockwiseArc(corner, prevSeg.leftP2, seg.leftP1)
+      } else if (intersection && isAcceptableMiter(intersection, corner)) {
         outlinePoints.push(intersection)
       } else {
         // Bevel near-parallel or reversing corners to avoid long miter spikes.
@@ -157,8 +184,11 @@ export const generateTraceOutline = ({
         nextSeg.dir,
       )
       const corner = seg.p2
+      const turn = seg.dir.x * nextSeg.dir.y - seg.dir.y * nextSeg.dir.x
 
-      if (intersection && isAcceptableMiter(intersection, corner)) {
+      if (turn > 1e-10) {
+        addClockwiseArc(corner, nextSeg.rightP1, seg.rightP2)
+      } else if (intersection && isAcceptableMiter(intersection, corner)) {
         outlinePoints.push(intersection)
       } else {
         // Bevel near-parallel or reversing corners to avoid long miter spikes.
