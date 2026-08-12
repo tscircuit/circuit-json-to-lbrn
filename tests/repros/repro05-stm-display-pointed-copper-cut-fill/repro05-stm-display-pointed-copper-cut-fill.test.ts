@@ -1,25 +1,65 @@
 import { expect, test } from "bun:test"
-import type { CircuitJson, PcbBoard, PcbComponent } from "circuit-json"
+import type { CircuitJson, PcbComponent } from "circuit-json"
 import { convertCircuitJsonToPcbSvg } from "circuit-to-svg"
 import { generateLightBurnSvg } from "lbrnts"
 import { convertCircuitJsonToLbrn } from "lib/index"
 import { stackSvgsVertically } from "stack-svgs"
-import circuitJson from "./stm-display-btn1.circuit.json"
+import circuitJson from "./stm32c071-display.circuit.json"
 
 const VISUAL_PADDING_MM = 5
+const TARGET_COMPONENT_NAMES = new Set(["SW_BTN1", "R_BTN1"])
+
+interface Bounds {
+  minX: number
+  minY: number
+  maxX: number
+  maxY: number
+}
+
+const addPixelFrame = (svg: string, width: number, height: number) =>
+  svg.replace(
+    "</svg>",
+    `<rect x="1" y="1" width="${width - 2}" height="${height - 2}" fill="none" stroke="#888" stroke-width="2"/></svg>`,
+  )
+
+const cropLightBurnSvg = (
+  svg: string,
+  bounds: Bounds,
+  width: number,
+  height: number,
+) => {
+  const yFlipMatch = svg.match(/matrix\(1 0 0 -1 0 ([^)]+)\)/)
+  if (!yFlipMatch) throw new Error("Expected a Y-flip transform in LBRN SVG")
+
+  const yFlipOffset = Number(yFlipMatch[1])
+  const viewBoxY = yFlipOffset - bounds.maxY
+  const viewBoxWidth = bounds.maxX - bounds.minX
+  const viewBoxHeight = bounds.maxY - bounds.minY
+  const scale = width / viewBoxWidth
+  const translateX = -bounds.minX * scale
+  const translateY = -viewBoxY * scale
+  const innerSvg = svg.replace(/^<svg[^>]*>/, "").replace(/<\/svg>\s*$/, "")
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><defs><clipPath id="lbrn-focus-clip"><rect width="${width}" height="${height}"/></clipPath></defs><g clip-path="url(#lbrn-focus-clip)"><g transform="translate(${translateX} ${translateY}) scale(${scale})">${innerSvg}</g></g><rect x="1" y="1" width="${width - 2}" height="${height - 2}" fill="none" stroke="#888" stroke-width="2"/></svg>`
+}
 
 test("repro05 - stm display BTN1 pointed copper cut fill", async () => {
+  // Rendered from tscircuit/biscuit-boards@78dbe6523daadc0d8fc88e4c20cac893ecbe76b7.
   const typedCircuitJson = circuitJson as CircuitJson
-  const board = typedCircuitJson.find(
-    (element): element is PcbBoard => element.type === "pcb_board",
+  const targetSourceComponentIds = new Set(
+    typedCircuitJson.flatMap((element) =>
+      element.type === "source_component" &&
+      TARGET_COMPONENT_NAMES.has(element.name)
+        ? [element.source_component_id]
+        : [],
+    ),
   )
-  if (!board || board.width === undefined || board.height === undefined) {
-    throw new Error("Expected the reproduction fixture to have a sized board")
-  }
-  const { width: boardWidth, height: boardHeight } = board
   const components = typedCircuitJson.filter(
-    (element): element is PcbComponent => element.type === "pcb_component",
+    (element): element is PcbComponent =>
+      element.type === "pcb_component" &&
+      targetSourceComponentIds.has(element.source_component_id),
   )
+  expect(components).toHaveLength(2)
 
   const componentBounds = {
     minX: Math.min(
@@ -35,26 +75,44 @@ test("repro05 - stm display BTN1 pointed copper cut fill", async () => {
       ...components.map(({ center, height }) => center.y + height / 2),
     ),
   }
-  const boardBounds = {
-    minX: board.center.x - boardWidth / 2,
-    maxX: board.center.x + boardWidth / 2,
-    minY: board.center.y - boardHeight / 2,
-    maxY: board.center.y + boardHeight / 2,
+  const visualBounds = {
+    minX: componentBounds.minX - VISUAL_PADDING_MM,
+    maxX: componentBounds.maxX + VISUAL_PADDING_MM,
+    minY: componentBounds.minY - VISUAL_PADDING_MM,
+    maxY: componentBounds.maxY + VISUAL_PADDING_MM,
   }
 
-  expect(componentBounds.minX - boardBounds.minX).toBeCloseTo(VISUAL_PADDING_MM)
-  expect(boardBounds.maxX - componentBounds.maxX).toBeCloseTo(VISUAL_PADDING_MM)
-  expect(componentBounds.minY - boardBounds.minY).toBeCloseTo(VISUAL_PADDING_MM)
-  expect(boardBounds.maxY - componentBounds.maxY).toBeCloseTo(VISUAL_PADDING_MM)
+  expect(componentBounds.minX - visualBounds.minX).toBeCloseTo(
+    VISUAL_PADDING_MM,
+  )
+  expect(visualBounds.maxX - componentBounds.maxX).toBeCloseTo(
+    VISUAL_PADDING_MM,
+  )
+  expect(componentBounds.minY - visualBounds.minY).toBeCloseTo(
+    VISUAL_PADDING_MM,
+  )
+  expect(visualBounds.maxY - componentBounds.maxY).toBeCloseTo(
+    VISUAL_PADDING_MM,
+  )
 
   const snapshotWidth = 1000
-  const snapshotHeight = snapshotWidth * (boardHeight / boardWidth)
-  const pcbSvg = await convertCircuitJsonToPcbSvg(typedCircuitJson, {
-    width: snapshotWidth,
-    height: snapshotHeight,
-    matchBoardAspectRatio: true,
-    drawPaddingOutsideBoard: true,
-  })
+  const snapshotHeight =
+    snapshotWidth *
+    ((visualBounds.maxY - visualBounds.minY) /
+      (visualBounds.maxX - visualBounds.minX))
+  const pcbSvg = addPixelFrame(
+    convertCircuitJsonToPcbSvg(typedCircuitJson, {
+      width: snapshotWidth,
+      height: snapshotHeight,
+      viewport: visualBounds,
+      drawPaddingOutsideBoard: false,
+      layer: "top",
+      showSolderMask: false,
+      showPcbNotes: false,
+    }),
+    snapshotWidth,
+    snapshotHeight,
+  )
   const project = await convertCircuitJsonToLbrn(typedCircuitJson, {
     includeLayers: ["top"],
     includeCopper: true,
@@ -63,17 +121,17 @@ test("repro05 - stm display BTN1 pointed copper cut fill", async () => {
     copperCutFillMargin: 0.5,
     clipCopperCutFillToBoardOutline: true,
     includeHolePunch: false,
-    origin: {
-      x: boardWidth / 2 - board.center.x,
-      y: boardHeight / 2 - board.center.y,
-    },
+    origin: { x: 0, y: 0 },
   })
-  const lbrnSvg = generateLightBurnSvg(project, {
-    defaultStrokeWidth: 0.01,
-    margin: 1,
-    width: snapshotWidth,
-    height: snapshotHeight,
-  })
+  const lbrnSvg = cropLightBurnSvg(
+    generateLightBurnSvg(project, {
+      defaultStrokeWidth: 0.01,
+      margin: 1,
+    }),
+    visualBounds,
+    snapshotWidth,
+    snapshotHeight,
+  )
 
   expect(stackSvgsVertically([pcbSvg, lbrnSvg])).toMatchSvgSnapshot(
     import.meta.filename,
