@@ -44,7 +44,7 @@ const cropLightBurnSvg = (
 }
 
 test("repro05 - stm display BTN1 pointed copper cut fill", async () => {
-  // Rendered from tscircuit/biscuit-boards@78dbe6523daadc0d8fc88e4c20cac893ecbe76b7.
+  // Rendered from tscircuit/biscuit-boards@18839b5851fc14dbf5b567a3a2b125984fad53c4.
   const typedCircuitJson = circuitJson as CircuitJson
   const targetSourceComponentIds = new Set(
     typedCircuitJson.flatMap((element) =>
