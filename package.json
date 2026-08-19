@@ -5,6 +5,10 @@
     "dist"
   ],
   "version": "0.0.88",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tscircuit/circuit-json-to-lbrn.git"
+  },
   "type": "module",
   "scripts": {
     "start": "bun run site/index.html",
