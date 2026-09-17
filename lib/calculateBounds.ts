@@ -69,52 +69,8 @@ export const calculateCircuitBounds = (circuitJson: CircuitJson): Bounds => {
   // Calculate bounds from plated holes
   for (const hole of db.pcb_plated_hole.list()) {
     if (hole.shape === "circle") {
-      const radius = (hole.outer_diameter ?? hole.hole_diameter ?? 0) / 2
+      const radius = hole.outer_diameter / 2
 
-      minX = Math.min(minX, hole.x - radius)
-      minY = Math.min(minY, hole.y - radius)
-      maxX = Math.max(maxX, hole.x + radius)
-      maxY = Math.max(maxY, hole.y + radius)
-    } else if (
-      "outer_width" in hole &&
-      "outer_height" in hole &&
-      typeof (hole as any).outer_width === "number" &&
-      typeof (hole as any).outer_height === "number"
-    ) {
-      const halfWidth = (hole as any).outer_width / 2
-      const halfHeight = (hole as any).outer_height / 2
-
-      minX = Math.min(minX, hole.x - halfWidth)
-      minY = Math.min(minY, hole.y - halfHeight)
-      maxX = Math.max(maxX, hole.x + halfWidth)
-      maxY = Math.max(maxY, hole.y + halfHeight)
-    } else if (
-      "hole_width" in hole &&
-      "hole_height" in hole &&
-      typeof (hole as any).hole_width === "number" &&
-      typeof (hole as any).hole_height === "number"
-    ) {
-      const halfWidth = (hole as any).hole_width / 2
-      const halfHeight = (hole as any).hole_height / 2
-
-      minX = Math.min(minX, hole.x - halfWidth)
-      minY = Math.min(minY, hole.y - halfHeight)
-      maxX = Math.max(maxX, hole.x + halfWidth)
-      maxY = Math.max(maxY, hole.y + halfHeight)
-    } else if (
-      "outer_diameter" in hole &&
-      typeof (hole as any).outer_diameter === "number"
-    ) {
-      const radius = (hole as any).outer_diameter / 2
-      minX = Math.min(minX, hole.x - radius)
-      minY = Math.min(minY, hole.y - radius)
-      maxX = Math.max(maxX, hole.x + radius)
-      maxY = Math.max(maxY, hole.y + radius)
-    } else if (
-      "hole_diameter" in hole &&
-      typeof (hole as any).hole_diameter === "number"
-    ) {
-      const radius = (hole as any).hole_diameter / 2
       minX = Math.min(minX, hole.x - radius)
       minY = Math.min(minY, hole.y - radius)
       maxX = Math.max(maxX, hole.x + radius)
