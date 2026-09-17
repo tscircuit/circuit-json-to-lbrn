@@ -69,13 +69,103 @@ export const calculateCircuitBounds = (circuitJson: CircuitJson): Bounds => {
   // Calculate bounds from plated holes
   for (const hole of db.pcb_plated_hole.list()) {
     if (hole.shape === "circle") {
-      const radius = hole.outer_diameter / 2
+      const radius = (hole.outer_diameter ?? hole.hole_diameter ?? 0) / 2
 
       minX = Math.min(minX, hole.x - radius)
       minY = Math.min(minY, hole.y - radius)
       maxX = Math.max(maxX, hole.x + radius)
       maxY = Math.max(maxY, hole.y + radius)
+    } else if (
+      "outer_width" in hole &&
+      "outer_height" in hole &&
+      typeof (hole as any).outer_width === "number" &&
+      typeof (hole as any).outer_height === "number"
+    ) {
+      const halfWidth = (hole as any).outer_width / 2
+      const halfHeight = (hole as any).outer_height / 2
+
+      minX = Math.min(minX, hole.x - halfWidth)
+      minY = Math.min(minY, hole.y - halfHeight)
+      maxX = Math.max(maxX, hole.x + halfWidth)
+      maxY = Math.max(maxY, hole.y + halfHeight)
+    } else if (
+      "hole_width" in hole &&
+      "hole_height" in hole &&
+      typeof (hole as any).hole_width === "number" &&
+      typeof (hole as any).hole_height === "number"
+    ) {
+      const halfWidth = (hole as any).hole_width / 2
+      const halfHeight = (hole as any).hole_height / 2
+
+      minX = Math.min(minX, hole.x - halfWidth)
+      minY = Math.min(minY, hole.y - halfHeight)
+      maxX = Math.max(maxX, hole.x + halfWidth)
+      maxY = Math.max(maxY, hole.y + halfHeight)
+    } else if (
+      "outer_diameter" in hole &&
+      typeof (hole as any).outer_diameter === "number"
+    ) {
+      const radius = (hole as any).outer_diameter / 2
+      minX = Math.min(minX, hole.x - radius)
+      minY = Math.min(minY, hole.y - radius)
+      maxX = Math.max(maxX, hole.x + radius)
+      maxY = Math.max(maxY, hole.y + radius)
+    } else if (
+      "hole_diameter" in hole &&
+      typeof (hole as any).hole_diameter === "number"
+    ) {
+      const radius = (hole as any).hole_diameter / 2
+      minX = Math.min(minX, hole.x - radius)
+      minY = Math.min(minY, hole.y - radius)
+      maxX = Math.max(maxX, hole.x + radius)
+      maxY = Math.max(maxY, hole.y + radius)
     }
+  }
+
+  // Calculate bounds from unplated holes
+  for (const hole of db.pcb_hole.list()) {
+    if (
+      hole.hole_shape === "circle" ||
+      hole.hole_shape === "square" ||
+      (!hole.hole_shape && "hole_diameter" in hole)
+    ) {
+      const radius = (hole.hole_diameter ?? (hole as any).hole_width ?? 0) / 2
+
+      minX = Math.min(minX, hole.x - radius)
+      minY = Math.min(minY, hole.y - radius)
+      maxX = Math.max(maxX, hole.x + radius)
+      maxY = Math.max(maxY, hole.y + radius)
+    } else if (
+      "hole_width" in hole &&
+      "hole_height" in hole &&
+      typeof (hole as any).hole_width === "number" &&
+      typeof (hole as any).hole_height === "number"
+    ) {
+      const halfWidth = (hole as any).hole_width / 2
+      const halfHeight = (hole as any).hole_height / 2
+
+      minX = Math.min(minX, hole.x - halfWidth)
+      minY = Math.min(minY, hole.y - halfHeight)
+      maxX = Math.max(maxX, hole.x + halfWidth)
+      maxY = Math.max(maxY, hole.y + halfHeight)
+    } else {
+      const diameter =
+        (hole as any).hole_diameter ?? (hole as any).hole_width ?? 0
+      const radius = diameter / 2
+      minX = Math.min(minX, hole.x - radius)
+      minY = Math.min(minY, hole.y - radius)
+      maxX = Math.max(maxX, hole.x + radius)
+      maxY = Math.max(maxY, hole.y + radius)
+    }
+  }
+
+  // Calculate bounds from vias
+  for (const via of db.pcb_via.list()) {
+    const radius = ((via as any).outer_diameter ?? via.hole_diameter ?? 0) / 2
+    minX = Math.min(minX, via.x - radius)
+    minY = Math.min(minY, via.y - radius)
+    maxX = Math.max(maxX, via.x + radius)
+    maxY = Math.max(maxY, via.y + radius)
   }
 
   // If no elements were found, return a default bounds
