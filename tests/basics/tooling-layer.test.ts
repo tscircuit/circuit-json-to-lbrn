@@ -199,3 +199,78 @@ test("omits T1 when tooling paths are on an excluded board layer", async () => {
   expect(xml).not.toContain('<CutSetting type="Tool">')
   expect(xml).not.toContain('CutIndex="30"')
 })
+
+test("copies connected circular plated hole lands of selected tooling components to T1 and accepts full fabrication path IDs", async () => {
+  const thCircuit: CircuitJson = [
+    board as unknown as CircuitJson[number],
+    {
+      type: "source_component",
+      source_component_id: "source_component_th1",
+      name: "TP_TH1",
+      ftype: "simple_test_point",
+    } as unknown as CircuitJson[number],
+    {
+      type: "source_port",
+      source_port_id: "source_port_th1",
+      source_component_id: "source_component_th1",
+      name: "pin1",
+    } as unknown as CircuitJson[number],
+    {
+      type: "source_net",
+      source_net_id: "source_net_gnd",
+      name: "GND",
+      member_source_group_ids: [],
+    } as unknown as CircuitJson[number],
+    {
+      type: "source_trace",
+      source_trace_id: "source_trace_th1",
+      connected_source_port_ids: ["source_port_th1"],
+      connected_source_net_ids: ["source_net_gnd"],
+    } as unknown as CircuitJson[number],
+    {
+      type: "pcb_component",
+      pcb_component_id: "pcb_component_th1",
+      source_component_id: "source_component_th1",
+      center: { x: 4, y: -3 },
+      width: 2,
+      height: 2,
+      layer: "top",
+      rotation: 0,
+      obstructs_within_bounds: false,
+    } as unknown as CircuitJson[number],
+    {
+      type: "pcb_port",
+      pcb_port_id: "pcb_port_th1",
+      source_port_id: "source_port_th1",
+      pcb_component_id: "pcb_component_th1",
+      x: 4,
+      y: -3,
+      layers: ["top", "bottom"],
+    } as unknown as CircuitJson[number],
+    {
+      type: "pcb_plated_hole",
+      pcb_plated_hole_id: "pcb_plated_hole_th1",
+      pcb_component_id: "pcb_component_th1",
+      pcb_port_id: "pcb_port_th1",
+      shape: "circle",
+      x: 4,
+      y: -3,
+      outer_diameter: 1.6,
+      hole_diameter: 0.9,
+      layers: ["top", "bottom"],
+    } as unknown as CircuitJson[number],
+    toolingPath as unknown as CircuitJson[number],
+  ]
+
+  const project = await convertCircuitJsonToLbrn(thCircuit, {
+    origin: { x: 0, y: 0 },
+    includeLayers: ["top"],
+    toolingLayerIncludeRefs: [
+      ".TP_TH1",
+      "pcb_fabrication_note_path_test_short_top_left_top_trace",
+    ],
+  })
+
+  const toolShapes = getToolingShapes(project.children)
+  expect(toolShapes).toHaveLength(2)
+})

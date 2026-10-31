@@ -36,8 +36,12 @@ export const addPcbVia = (via: PcbVia, ctx: ConvertContext): void => {
     // 2. pcb_port at the same location
     let netId: string | undefined
 
-    // Try pcb_trace_id first (vias created during routing have this)
-    if (via.pcb_trace_id) {
+    if (via.pcb_via_id) {
+      netId = connMap.getNetConnectedToId(via.pcb_via_id)
+    }
+
+    // Try pcb_trace_id next (vias created during routing have this)
+    if (!netId && via.pcb_trace_id) {
       netId = connMap.getNetConnectedToId(via.pcb_trace_id)
     }
 
@@ -59,9 +63,11 @@ export const addPcbVia = (via: PcbVia, ctx: ConvertContext): void => {
     if (netId) {
       // Add to netGeoms so it can be unified with traces on the same net
       if (includeLayers.includes("top") && topCopperCutSetting) {
+        if (!topCutNetGeoms.has(netId)) topCutNetGeoms.set(netId, [])
         topCutNetGeoms.get(netId)?.push(polygon.clone())
       }
       if (includeLayers.includes("bottom") && bottomCopperCutSetting) {
+        if (!bottomCutNetGeoms.has(netId)) bottomCutNetGeoms.set(netId, [])
         bottomCutNetGeoms.get(netId)?.push(polygon.clone())
       }
     } else {

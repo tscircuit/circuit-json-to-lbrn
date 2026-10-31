@@ -33,7 +33,11 @@ export const addCirclePlatedHole = (
   // Add outer circle (copper annulus) if drawing copper - add to netGeoms for merging
   // Plated holes go through all layers, so add to both top and bottom
   if (platedHole.outer_diameter > 0 && includeCopper) {
-    const netId = connMap.getNetConnectedToId(platedHole.pcb_plated_hole_id)
+    const netId =
+      connMap.getNetConnectedToId(platedHole.pcb_plated_hole_id) ??
+      (platedHole.pcb_port_id
+        ? connMap.getNetConnectedToId(platedHole.pcb_port_id)
+        : undefined)
     const outerRadius = platedHole.outer_diameter / 2
     const circle = new Circle(point(centerX, centerY), outerRadius)
     const polygon = circleToPolygon(circle)
@@ -41,9 +45,11 @@ export const addCirclePlatedHole = (
     if (netId) {
       // Add to both top and bottom netGeoms since plated holes go through the board
       if (includeLayers.includes("top") && topCopperCutSetting) {
+        if (!topCutNetGeoms.has(netId)) topCutNetGeoms.set(netId, [])
         topCutNetGeoms.get(netId)?.push(polygon.clone())
       }
       if (includeLayers.includes("bottom") && bottomCopperCutSetting) {
+        if (!bottomCutNetGeoms.has(netId)) bottomCutNetGeoms.set(netId, [])
         bottomCutNetGeoms.get(netId)?.push(polygon.clone())
       }
     } else {

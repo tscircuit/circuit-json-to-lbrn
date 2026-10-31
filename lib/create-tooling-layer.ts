@@ -30,7 +30,11 @@ export const getToolingFabricationPaths = (
   includeRefs: string[],
 ): ToolingFabricationPath[] => {
   const includedPathIds = new Set(
-    includeRefs.map((ref) => `${TOOLING_PATH_ID_PREFIX}${ref}`),
+    includeRefs.flatMap((ref) =>
+      ref.startsWith(TOOLING_PATH_ID_PREFIX)
+        ? [ref]
+        : [ref, `${TOOLING_PATH_ID_PREFIX}${ref}`],
+    ),
   )
 
   return circuitJson
