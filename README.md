@@ -64,10 +64,7 @@ convertCircuitJsonToLbrn(circuitJson, {
   "pcb_fabrication_note_path_id": "pcb_fabrication_note_path_test_short_top_left_top_trace",
   "pcb_component_id": "pcb_component_0",
   "layer": "top",
-  "route": [
-    { "x": 0, "y": 0 },
-    { "x": 2, "y": 0 }
-  ],
+  "route": [{ "x": 0, "y": 0 }, { "x": 2, "y": 0 }],
   "stroke_width": 1,
   "role": "tooling"
 }
@@ -137,8 +134,8 @@ The crosshatch pattern ablates copper in the margin area, with line spacing dete
 ```tsx
 const lbrn = convertCircuitJsonToLbrn(circuitJson, {
   includeCopper: true,
-  traceMargin: 0.2,      // 0.2mm clearance around traces
-  laserSpotSize: 0.005,  // 0.005mm spot size (crosshatch spacing)
+  traceMargin: 0.2, // 0.2mm clearance around traces
+  laserSpotSize: 0.005, // 0.005mm spot size (crosshatch spacing)
 })
 ```
 

@@ -80,40 +80,48 @@ export const calculateCircuitBounds = (circuitJson: CircuitJson): Bounds => {
 
   // Calculate bounds from unplated holes
   for (const hole of db.pcb_hole.list()) {
-    let halfWidth: number
-    let halfHeight: number
+    if (
+      hole.hole_shape === "circle" ||
+      hole.hole_shape === "square" ||
+      (!hole.hole_shape && "hole_diameter" in hole)
+    ) {
+      const radius = (hole.hole_diameter ?? (hole as any).hole_width ?? 0) / 2
 
-    switch (hole.hole_shape) {
-      case "circle":
-      case "square":
-        halfWidth = hole.hole_diameter / 2
-        halfHeight = hole.hole_diameter / 2
-        break
-      case "rotated_pill": {
-        // Expand the half extents to the axis-aligned bounding box of the
-        // rotated pill
-        const rotation = ((hole.ccw_rotation ?? 0) * Math.PI) / 180
-        const cos = Math.abs(Math.cos(rotation))
-        const sin = Math.abs(Math.sin(rotation))
-        halfWidth = (hole.hole_width * cos + hole.hole_height * sin) / 2
-        halfHeight = (hole.hole_width * sin + hole.hole_height * cos) / 2
-        break
-      }
-      case "rect":
-      case "oval":
-      case "pill":
-        // These hole shapes are axis-aligned
-        halfWidth = hole.hole_width / 2
-        halfHeight = hole.hole_height / 2
-        break
-      default:
-        continue
+      minX = Math.min(minX, hole.x - radius)
+      minY = Math.min(minY, hole.y - radius)
+      maxX = Math.max(maxX, hole.x + radius)
+      maxY = Math.max(maxY, hole.y + radius)
+    } else if (
+      "hole_width" in hole &&
+      "hole_height" in hole &&
+      typeof (hole as any).hole_width === "number" &&
+      typeof (hole as any).hole_height === "number"
+    ) {
+      const halfWidth = (hole as any).hole_width / 2
+      const halfHeight = (hole as any).hole_height / 2
+
+      minX = Math.min(minX, hole.x - halfWidth)
+      minY = Math.min(minY, hole.y - halfHeight)
+      maxX = Math.max(maxX, hole.x + halfWidth)
+      maxY = Math.max(maxY, hole.y + halfHeight)
+    } else {
+      const diameter =
+        (hole as any).hole_diameter ?? (hole as any).hole_width ?? 0
+      const radius = diameter / 2
+      minX = Math.min(minX, hole.x - radius)
+      minY = Math.min(minY, hole.y - radius)
+      maxX = Math.max(maxX, hole.x + radius)
+      maxY = Math.max(maxY, hole.y + radius)
     }
+  }
 
-    minX = Math.min(minX, hole.x - halfWidth)
-    minY = Math.min(minY, hole.y - halfHeight)
-    maxX = Math.max(maxX, hole.x + halfWidth)
-    maxY = Math.max(maxY, hole.y + halfHeight)
+  // Calculate bounds from vias
+  for (const via of db.pcb_via.list()) {
+    const radius = ((via as any).outer_diameter ?? via.hole_diameter ?? 0) / 2
+    minX = Math.min(minX, via.x - radius)
+    minY = Math.min(minY, via.y - radius)
+    maxX = Math.max(maxX, via.x + radius)
+    maxY = Math.max(maxY, via.y + radius)
   }
 
   // If no elements were found, return a default bounds
