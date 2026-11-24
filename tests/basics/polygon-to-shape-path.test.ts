@@ -4,11 +4,34 @@ import { polygonToShapePathDatas } from "../../lib/polygon-to-shape-path"
 
 const ringPolygon = () => {
   const bars = [
-    [[0, 0], [10, 0], [10, 2], [0, 2]],
-    [[8, 0], [10, 0], [10, 10], [8, 10]],
-    [[0, 8], [10, 8], [10, 10], [0, 10]],
-    [[0, 0], [2, 0], [2, 10], [0, 10]],
-  ].map((points) => new Flatten.Polygon(points.map(([x, y]) => Flatten.point(x, y))))
+    [
+      [0, 0],
+      [10, 0],
+      [10, 2],
+      [0, 2],
+    ],
+    [
+      [8, 0],
+      [10, 0],
+      [10, 10],
+      [8, 10],
+    ],
+    [
+      [0, 8],
+      [10, 8],
+      [10, 10],
+      [0, 10],
+    ],
+    [
+      [0, 0],
+      [2, 0],
+      [2, 10],
+      [0, 10],
+    ],
+  ].map(
+    (points) =>
+      new Flatten.Polygon(points.map(([x, y]) => Flatten.point(x, y))),
+  )
   let ring = bars[0]!
   for (const bar of bars.slice(1)) {
     ring = Flatten.BooleanOperations.unify(ring, bar)

@@ -64,10 +64,7 @@ convertCircuitJsonToLbrn(circuitJson, {
   "pcb_fabrication_note_path_id": "pcb_fabrication_note_path_test_short_top_left_top_trace",
   "pcb_component_id": "pcb_component_0",
   "layer": "top",
-  "route": [
-    { "x": 0, "y": 0 },
-    { "x": 2, "y": 0 }
-  ],
+  "route": [{ "x": 0, "y": 0 }, { "x": 2, "y": 0 }],
   "stroke_width": 1,
   "role": "tooling"
 }
@@ -100,6 +97,7 @@ paths are emitted as closed shapes on the Copper Cut Fill scan layer:
 ## Soldermask Support
 
 The `includeSoldermask` flag enables generation of soldermask openings for cutting Kapton tape (polyimide sheet). When enabled:
+
 - SMT pads and plated holes will have soldermask openings
 - Traces are NOT included in the soldermask layer (to avoid accidental bridging during soldering)
 - Holes are always cut through the board regardless of the mode
@@ -112,8 +110,8 @@ The soldermask layer uses LightBurn's "Scan" mode with filled shapes. This is de
 1. **Generate LBRN file**: Use `includeSoldermask: true` to export filled pad shapes
 2. **Laser cut Kapton tape**: The laser will fill/ablate the pad areas.
 
-
 You can generate:
+
 - **Copper only**: `{ includeCopper: true, includeSoldermask: false }` - Traditional copper cutting
 - **Soldermask only**: `{ includeCopper: false, includeSoldermask: true }` - Just Kapton tape (polyimide) cutting patterns (filled shapes)
 - **Both**: `{ includeCopper: true, includeSoldermask: true }` - Complete fabrication file with both layers
@@ -125,6 +123,7 @@ The `traceMargin` option enables smart trace rasterization for creating clearanc
 ### How it works
 
 When `traceMargin` is specified:
+
 1. Generates trace geometries at normal width (inner trace union)
 2. Generates trace geometries at width + 2×`traceMargin` (outer trace union)
 3. Calculates clearance area = outer - inner
@@ -137,12 +136,13 @@ The crosshatch pattern ablates copper in the margin area, with line spacing dete
 ```tsx
 const lbrn = convertCircuitJsonToLbrn(circuitJson, {
   includeCopper: true,
-  traceMargin: 0.2,      // 0.2mm clearance around traces
-  laserSpotSize: 0.005,  // 0.005mm spot size (crosshatch spacing)
+  traceMargin: 0.2, // 0.2mm clearance around traces
+  laserSpotSize: 0.005, // 0.005mm spot size (crosshatch spacing)
 })
 ```
 
 This will:
+
 - Cut trace outlines (vector mode)
 - Fill 0.2mm margin zones around traces with crosshatch pattern (scan mode)
 - Use 0.005mm spacing for the crosshatch lines
