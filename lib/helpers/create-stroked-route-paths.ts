@@ -1,5 +1,5 @@
 import { BooleanOperations, Point, Polygon } from "@flatten-js/core"
-import { polygonToShapePathData } from "../polygon-to-shape-path"
+import { polygonToShapePathDatas } from "../polygon-to-shape-path"
 import {
   createStrokedSegmentPath,
   type CreateStrokedSegmentPathParams,
@@ -44,6 +44,6 @@ export const createStrokedRoutePaths = ({
 
   return routePolygon
     .splitToIslands()
-    .map(polygonToShapePathData)
+    .flatMap(polygonToShapePathDatas)
     .filter(({ verts }) => verts.length > 0)
 }

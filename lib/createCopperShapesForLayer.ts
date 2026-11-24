@@ -2,7 +2,7 @@ import { Box, Point, Polygon } from "@flatten-js/core"
 import type { ConvertContext } from "./ConvertContext"
 import { getManifold } from "./getManifold"
 import { createLayerShapePath } from "./helpers/createLayerShapePath"
-import { polygonToShapePathData } from "./polygon-to-shape-path"
+import { polygonToShapePathDatas } from "./polygon-to-shape-path"
 
 type Contour = Array<[number, number]>
 
@@ -43,33 +43,35 @@ const outputPolygon = (
       }
       if (facePoints.length >= 3) {
         const facePoly = new Polygon(facePoints)
-        const { verts, prims } = polygonToShapePathData(facePoly)
-        if (verts.length > 0) {
-          project.children.push(
-            createLayerShapePath({
-              cutIndex,
-              pathData: { verts, prims },
-              layer,
-              isClosed: false,
-              ctx,
-            }),
-          )
+        for (const { verts, prims } of polygonToShapePathDatas(facePoly)) {
+          if (verts.length > 0) {
+            project.children.push(
+              createLayerShapePath({
+                cutIndex,
+                pathData: { verts, prims },
+                layer,
+                isClosed: false,
+                ctx,
+              }),
+            )
+          }
         }
       }
     }
     return
   }
 
-  const { verts, prims } = polygonToShapePathData(poly)
-  project.children.push(
-    createLayerShapePath({
-      cutIndex,
-      pathData: { verts, prims },
-      layer,
-      isClosed: false,
-      ctx,
-    }),
-  )
+  for (const { verts, prims } of polygonToShapePathDatas(poly)) {
+    project.children.push(
+      createLayerShapePath({
+        cutIndex,
+        pathData: { verts, prims },
+        layer,
+        isClosed: false,
+        ctx,
+      }),
+    )
+  }
 }
 
 /**

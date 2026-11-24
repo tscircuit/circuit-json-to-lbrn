@@ -3,7 +3,7 @@ import { ShapeGroup } from "lbrnts"
 import type { ConvertContext } from "./ConvertContext"
 import { getManifold } from "./getManifold"
 import { createLayerShapePath } from "./helpers/createLayerShapePath"
-import { polygonToShapePathData } from "./polygon-to-shape-path"
+import { polygonToShapePathDatas } from "./polygon-to-shape-path"
 
 export type Contour = Array<[number, number]>
 
@@ -208,17 +208,18 @@ export const createCopperCutFillForLayer = async ({
       if (!polygon) continue
 
       for (const island of polygon.splitToIslands()) {
-        const { verts, prims } = polygonToShapePathData(island)
-        if (verts.length > 0) {
-          shapeGroup.children.push(
-            createLayerShapePath({
-              cutIndex: cutSetting.index,
-              pathData: { verts, prims },
-              layer,
-              isClosed: true, // Filled shapes should be closed
-              ctx,
-            }),
-          )
+        for (const { verts, prims } of polygonToShapePathDatas(island)) {
+          if (verts.length > 0) {
+            shapeGroup.children.push(
+              createLayerShapePath({
+                cutIndex: cutSetting.index,
+                pathData: { verts, prims },
+                layer,
+                isClosed: true, // Filled shapes should be closed
+                ctx,
+              }),
+            )
+          }
         }
       }
     }
