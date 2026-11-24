@@ -9,7 +9,7 @@ import {
 } from "./createCopperCutFillForLayer"
 import { getManifold } from "./getManifold"
 import { createLayerShapePath } from "./helpers/createLayerShapePath"
-import { polygonToShapePathData } from "./polygon-to-shape-path"
+import { polygonToShapePathDatas } from "./polygon-to-shape-path"
 
 export const createSoldermaskAblationOutline = async (
   ctx: ConvertContext,
@@ -71,18 +71,19 @@ export const createSoldermaskAblationOutline = async (
       if (!polygon) continue
 
       for (const island of polygon.splitToIslands()) {
-        const pathData = polygonToShapePathData(island)
-        if (pathData.verts.length === 0) continue
+        for (const pathData of polygonToShapePathDatas(island)) {
+          if (pathData.verts.length === 0) continue
 
-        outlineGroup.children.push(
-          createLayerShapePath({
-            cutIndex: topSoldermaskAblationCutSetting.index,
-            pathData,
-            layer: "top",
-            isClosed: true,
-            ctx,
-          }),
-        )
+          outlineGroup.children.push(
+            createLayerShapePath({
+              cutIndex: topSoldermaskAblationCutSetting.index,
+              pathData,
+              layer: "top",
+              isClosed: true,
+              ctx,
+            }),
+          )
+        }
       }
     }
 
